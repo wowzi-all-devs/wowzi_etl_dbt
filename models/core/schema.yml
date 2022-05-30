@@ -1,0 +1,460 @@
+
+version: 2
+
+models:
+  - name: bank_details
+    description: "Influencer bank details"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: influencer_id
+        description: "Influencer ID associated to this bank details"
+      - name: recipient_id
+        description: ""
+      - name: bank_account_number
+        description: ""
+      - name: bank_code
+        description: ""
+      - name: fullname
+        description: ""
+      - name: bank_name
+        description: ""
+      - name: destination_branch_code
+        description: ""
+
+  - name: campaign_influencer_groups
+    description: "Influencer groups associated with campaigns."
+    columns:
+      - name: campaign_id
+        description: "Campaign ID"
+      - name: influencer_group_id
+        description: "Influencer group ID associated to the campaign"
+      - name: creation_time
+        description: ""
+
+  - name: campaign_task_hashtags
+    description: "Hashtags associated to tasks in the campaigns."
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: value
+        description: "Hashtag value"
+      - name: campaign_id
+        description: "Campaign ID"
+      - name: campaign_task_id
+        description: "Campaign Task ID"
+
+  - name: campaign_tasks
+    description: "Tasks associated to the campaigns."
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID"
+      - name: channel
+        description: "Channel where the task is created"
+        tests:
+          - accepted_values:
+              values: ['TIKTOK', 'TWITTER', 'FACEBOOK', 'LINKEDIN', 'INSTAGRAM']
+          - not_null
+      - name: description
+        description: "Description Task"
+
+  - name: campaigns
+    description: "Campaigns table"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_id
+        description: "Same that ID column: used to join data"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_creation_date
+        description: "Datetime when the campaign was created"
+      - name: merchant_id
+        description: "Merchant ID who run the campaign"
+      - name: budget
+        description: "Money associated to the campaign"
+      - name: gender
+        description: "Gender target: MALE, FEMALE or BOTH"
+      - name: bonus_amount
+        description: "Extra money as reward"
+      - name: pre_live_check_status
+        description: "Status campaign"
+
+  - name: categories
+    description: "Categories associated to influencer interests and campaigns"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: enum_value
+        description: "Category value"
+
+  - name: companies
+    description: "Companies table"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Name company"
+      - name: company_type
+        description: ""
+      - name: company_size
+        description: ""
+      - name: company_industry
+        description: ""
+      - name: email
+        description: "Email company"
+      - name: phone
+        description: "Phone company"
+      - name: kra_pin
+        description: ""
+      - name: country
+        description: "Country company"
+      - name: location
+        description: "Location company"
+      - name: city
+        description: "City company"
+      - name: address
+        description: "Address company"
+      - name: postal_code
+        description: "Postal Code company"
+
+  - name: dims_influencers
+    description: "Influencer model denormalized"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: "The influencer name"
+  
+  - name: dims_advertisers
+    description: "Advertiser model denormalized"
+    columns:
+      - name: advertiser_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+  
+  - name: influencer_channel_data
+    description: "Influencer social media accounts"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: channel
+        description: "Social media account associated"
+        tests:
+          - accepted_values:
+              values: ['TIKTOK', 'TWITTER', 'FACEBOOK', 'LINKEDIN', 'INSTAGRAM']
+      - name: influencer_id
+        description: "Influencer associated to this social media account"
+      - name: api_key
+        description: ""
+      - name: api_id
+        description: ""
+      - name: followers_count
+        description: "Count of followers influencer has on this social media account"
+      - name: username
+        description: "Social media account username"
+      - name: status
+        description: ""
+      - name: status_backofficer_id
+        description: ""
+      - name: status_comment
+        description: ""
+      - name: status_update_time
+        description: ""
+
+  - name: influencer_group_influencers
+    description: "Influencer groups by influencer"
+    columns:
+      - name: influencer_id
+        description: ""
+        tests:
+          - not_null
+      - name: influencer_group_id
+        description: ""
+        tests:
+          - not_null
+      - name: creation_time
+        description: ""
+  
+  - name: influencer_groups
+    description: "Influencer groups"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: invitation_code
+        description: "Group invitation code"
+        tests:
+          - not_null
+      - name: name
+        description: ""
+        tests:
+          - not_null
+      - name: description
+        description: ""
+      - name: company_id
+        description: "Company who belong the influencer group"
+      - name: deleted
+        description: ""
+      - name: creation_time
+        description: ""
+      
+  - name: influencer_subcategories
+    description: "Influencer Subcategories"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: subcategory_id
+        description: "Subcategory ID"
+        tests:
+          - not_null
+      - name: influencer_id
+        description: "Influencer ID"
+        tests:
+          - not_null
+
+  - name: influencer_tasks
+    description: "Influencer Tasks"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID"
+        tests:
+          - not_null
+      - name: campaign_task_id
+        description: "Campaign Task ID"
+        tests:
+          - not_null
+      - name: job_id
+        description: "Job ID"
+        tests:
+          - not_null
+      - name: influencer_id
+        description: "Influencer ID"
+        tests:
+          - not_null
+      - name: submission_status
+        description: "Task status"
+
+  - name: influencer_transfers
+    description: "Influencer Transfers"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: transfer_id
+        description: "Transfer ID"
+        tests:
+          - not_null
+      - name: influencer_id
+        description: "Influencer ID"
+        tests:
+          - not_null
+      - name: task_id
+        description: "Task ID"
+        tests:
+          - not_null
+      - name: account_number
+        description: ""
+      - name: bank_code
+        description: ""
+      - name: fullname
+        description: ""
+      - name: date_created
+        description: ""
+      - name: currency
+        description: ""
+      - name: amount
+        description: ""
+      - name: fee
+        description: ""
+      - name: status
+        description: ""
+      - name: reference
+        description: ""
+      - name: narration
+        description: ""
+      - name: approver
+        description: ""
+      - name: complete_message
+        description: ""
+      - name: requires_approval
+        description: ""
+      - name: is_approved
+        description: ""
+      - name: bank_name
+        description: ""
+      - name: creation_time
+        description: ""
+
+  - name: jobs
+    description: "Jobs associated to influencers"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID"
+        tests:
+          - not_null
+      - name: influencer_id
+        description: "Influencer ID"
+        tests:
+          - not_null
+      - name: invitation_status
+        description: ""
+      - name: payment_status
+        description: ""
+      - name: offer_creation_time
+        description: ""
+      - name: offer_expire_time
+        description: ""
+      - name: submission_expire_time
+        description: ""
+      - name: review_expire_time
+        description: ""
+      - name: offer_acception_or_rejection_time
+        description: ""
+      - name: creation_time
+        description: ""
+      - name: max_influencer_tasks_count
+        description: ""
+      - name: max_influencer_amounts_list
+        description: ""
+
+  - name: merchant_payments
+    description: "Merchants payments"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: created
+        description: "Date payment created"
+      - name: merchant_id
+        description: "Merchant ID"
+        tests:
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID"
+        tests:
+          - not_null
+      - name: amount
+        description: ""
+      - name: currency
+        description: ""
+      - name: ref_x
+        description: ""
+      - name: transfer_status
+        description: ""
+      - name: flw_ref
+        description: ""
+      - name: campaign_name
+        description: ""
+
+  - name: merchant_subscriptions
+    description: "Merchants subscriptions"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: merchant_id
+        description: "Merchant ID"
+        tests:
+          - not_null
+      - name: subscription_id
+        description: "Subscription ID"
+        tests:
+          - not_null
+      - name: merchant_email
+        description: ""
+      - name: status
+        description: ""
+      - name: date_created
+        description: ""
+      - name: valid_until
+        description: ""
+      - name: payment_plan_id
+        description: ""
+
+  - name: subcategories
+    description: "Subcategories"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: parent_category_id
+        description: "Parent category ID"
+        tests:
+          - not_null
+      - name: enum_value
+        description: "Subcategory name"
+        tests:
+          - not_null
+
+sources:
+    - name: core
+      #For bigquery:
+      database: bi-staging-1-309112
+      schema: wowzi_data
+      tables:
+        - name: bank_details
+        - name: campaign_influencer_groups
+        - name: campaign_task_hashtags
+        - name: campaign_tasks
+        - name: campaigns
+        - name: categories
+        - name: companies
+        - name: influencer_channel_data
+        - name: influencer_subcategories
+        - name: merchant_payments
+        - name: merchant_subscriptions
+        - name: merchants
+        - name: subcategories

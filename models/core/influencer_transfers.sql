@@ -1,0 +1,22 @@
+SELECT
+    id,
+    transfer_id,
+    influencer_id,
+    task_id,
+    account_number,
+    bank_code,
+    fullname,
+    date_created,
+    currency,
+    amount,
+    fee,
+    status,
+    reference,
+    narration,
+    approver,
+    complete_message,
+    requires_approval,
+    is_approved,
+    bank_name,
+    creation_time
+FROM {{ source('staging', 'influencer_transfers') }}

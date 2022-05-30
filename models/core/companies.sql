@@ -1,0 +1,21 @@
+SELECT
+    id,
+    name,
+    company_type,
+    company_size,
+    company_industry,
+    email,
+    phone,
+    kra_pin,
+    country,
+    location,
+    city,
+    address,
+    postal_code,
+    outgoing_currency,
+    company_payment_method,
+    company_payment_plan,
+    creation_time,
+    agency,
+    agency_commission
+FROM {{ source('core', 'companies') }}
