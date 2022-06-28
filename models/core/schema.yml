@@ -452,7 +452,9 @@ sources:
         - name: campaigns
         - name: categories
         - name: companies
+        - name: hidden_tags
         - name: influencer_channel_data
+        - name: influencer_referral_code
         - name: influencer_subcategories
         - name: merchant_payments
         - name: merchant_subscriptions
