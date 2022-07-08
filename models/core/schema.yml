@@ -158,24 +158,6 @@ models:
         tests:
           - unique
           - not_null
-
-  - name: hidden_tags
-    description: "Hidden tags"
-    columns:
-      - name: hidden_tag
-        description: "The primary key for this table"
-        tests:
-          - unique
-          - not_null
-      - name: en_label
-        description: "Label tag"
-        tests:
-          - unique
-          - not_null
-      - name: update_time
-        description: ""
-      - name: creation_time
-        description: ""
   
   - name: influencer_channel_data
     description: "Influencer social media accounts"
@@ -502,7 +484,6 @@ sources:
         - name: campaigns
         - name: categories
         - name: companies
-        - name: hidden_tags
         - name: influencer_channel_data
         - name: influencer_referral_code
         - name: influencer_referral_influencer
