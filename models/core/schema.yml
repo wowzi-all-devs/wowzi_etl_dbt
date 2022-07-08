@@ -158,6 +158,24 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: hidden_tags
+    description: "Hidden tags"
+    columns:
+      - name: hidden_tag
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: en_label
+        description: "Label tag"
+        tests:
+          - unique
+          - not_null
+      - name: update_time
+        description: ""
+      - name: creation_time
+        description: ""
   
   - name: influencer_channel_data
     description: "Influencer social media accounts"
@@ -227,6 +245,38 @@ models:
         description: "Company who belong the influencer group"
       - name: deleted
         description: ""
+      - name: creation_time
+        description: ""
+
+  - name: influencer_referral_code
+    description: "Influencer Referral Code assign codes to influencers who are Ambassadors"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: code
+        description: "Ambassador code that should be share with others influencers"
+        tests:
+          - not_null
+      - name: is_enabled
+        description: ""
+      - name: creation_time
+        description: ""
+
+  - name: influencer_referral_influencer
+    description: "Influencer Referral table link the Ambassador influencer with the influencer who used the code"
+    columns:
+      - name: influencer_id
+        description: "Influencer ID who was referred"
+        tests:
+          - unique
+          - not_null
+      - name: referred_by_influencer_id
+        description: "Ambassador Influencer ID"
+        tests:
+          - not_null
       - name: creation_time
         description: ""
       
@@ -455,6 +505,7 @@ sources:
         - name: hidden_tags
         - name: influencer_channel_data
         - name: influencer_referral_code
+        - name: influencer_referral_influencer
         - name: influencer_subcategories
         - name: merchant_payments
         - name: merchant_subscriptions
