@@ -9,4 +9,4 @@ SELECT
     transfer_status,
     flw_ref,
     campaign_name
-FROM {{ ref('stg_merchant_payments') }}
+FROM {{ source('staging', 'merchant_payments') }}

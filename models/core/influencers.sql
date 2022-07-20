@@ -53,28 +53,28 @@ from (
                                                 id.*,
                                                 id2.*
                                                 except(influencer_id),
-                                            from {{ref('influencer_demographics')}} as id
+                                            from {{ref('stg_influencer_demographics')}} as id
                                             left join (
                                                 select *
                                                 -- from `bi-staging-1-309112.temp_tables.approval_rates`
-                                                from {{ref('approval_rates')}}
+                                                from {{ref('stg_approval_rates')}}
                                             ) as id2 on id.influencer_id = id2.influencer_id
                                         ) as id3
                                     left join(
                                         select *
-                                        from {{ref('influencer_first_campaign')}}
+                                        from {{ref('stg_influencer_first_campaign')}}
                                     ) as id4 on id3.influencer_id = id4.influencer_id
                                 ) as id5
                             left join(
                                 select *
                                 -- from `bi-staging-1-309112.temp_tables.last_campaign`
-                                from {{ref('influencer_last_campaign')}}
+                                from {{ref('stg_influencer_last_campaign')}}
                             ) as id6 on id5.influencer_id = id6.influencer_id
                         ) as j1
                         left join(
                             SELECT *
                             -- FROM `bi-staging-1-309112.temp_tables.num_distinct_groups`
-                            from {{ref('distinct_groups_per_influencer')}}
+                            from {{ref('stg_distinct_groups_per_influencer')}}
                         ) as j2 on j1.influencer_id = j2.influencer_id
                     ) as j3
                     left join (
@@ -87,13 +87,13 @@ from (
                         -- group by 1
                         -- order by 2 desc
                         SELECT *
-                        from {{ref('total_jobs_per_influencer')}}
+                        from {{ref('stg_total_jobs_per_influencer')}}
                     ) as j4 on j3.influencer_id = j4.influencer_id
             ) as j5
             left join(
                 select *
                 -- from `bi-staging-1-309112.temp_tables.jobs_last_3_months`
-                from {{ref('jobs_last_months')}}
+                from {{ref('stg_jobs_last_months')}}
             ) as j6 on cast(j5.influencer_id as INT64) = cast(j6.influencer_id as INT64)
     )
     left join fb using(influencer_id)

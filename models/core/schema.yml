@@ -1,4 +1,3 @@
-
 version: 2
 
 models:
@@ -139,7 +138,7 @@ models:
       - name: postal_code
         description: "Postal Code company"
 
-  - name: dims_influencers
+  - name: influencers
     description: "Influencer model denormalized"
     columns:
       - name: influencer_id
@@ -488,7 +487,6 @@ sources:
         - name: influencer_referral_code
         - name: influencer_referral_influencer
         - name: influencer_subcategories
-        - name: merchant_payments
         - name: merchant_subscriptions
         - name: merchants
         - name: subcategories

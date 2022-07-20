@@ -2,7 +2,7 @@
 version: 2
 
 models:
-  - name: influencer_first_campaign
+  - name: stg_influencer_first_campaign
     description: "First campaign date by influencer"
     columns:
       - name: influencer_id
@@ -11,7 +11,7 @@ models:
           - unique
           - not_null
 
-  - name: influencer_last_campaign
+  - name: stg_influencer_last_campaign
     description: "Last campaign date by influencer"
     columns:
       - name: influencer_id
@@ -20,7 +20,7 @@ models:
           - unique
           - not_null
 
-  - name: total_jobs_per_influencer
+  - name: stg_total_jobs_per_influencer
     description: "Total jobs by influencer: offered, accepted, expired, not accepted"
     columns:
       - name: influencer_id
@@ -29,7 +29,7 @@ models:
           - unique
           - not_null
 
-  - name: approval_rates
+  - name: stg_approval_rates
     description: "Approval rates in each step verification: 1st, 2nd and 3rd."
     columns:
       - name: influencer_id
@@ -38,7 +38,7 @@ models:
           - unique
           - not_null
   
-  - name: influencer_demographics
+  - name: stg_influencer_demographics
     description: "Influencer basic information"
     columns:
       - name: influencer_id
@@ -47,7 +47,7 @@ models:
           - unique
           - not_null
 
-  - name: distinct_groups_per_influencer
+  - name: stg_distinct_groups_per_influencer
     description: "Count of groups by influencer"
     columns:
       - name: influencer_id
@@ -58,7 +58,7 @@ models:
       - name: distinct_groups
         description: "Total of groups the influencer has"
 
-  - name: jobs_last_months
+  - name: stg_jobs_last_months
     description: "Count of jobs ACCEPTED by the influencer in: last 6 months, last 3 months, last 2 months, last month, last 4 weeks, last 2 weeks, last week"
     columns:
       - name: influencer_id
@@ -81,7 +81,7 @@ models:
       - name: jobs_last_week
         description: "Total of jobs the influencer accepted last week"
 
-  - name: first_campaign_complete_and_paid
+  - name: stg_first_campaign_complete_and_paid
     description: "First Task Completed and Paid by influencer"
     columns:
       - name: influencer_id
@@ -89,6 +89,37 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: stg_merchant_payments
+    description: "Staging merchant payment model"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: created
+        description: "Date payment created"
+      - name: merchant_id
+        description: "Merchant ID"
+        tests:
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID"
+        tests:
+          - not_null
+      - name: amount
+        description: ""
+      - name: currency
+        description: ""
+      - name: ref_x
+        description: ""
+      - name: transfer_status
+        description: ""
+      - name: flw_ref
+        description: ""
+      - name: campaign_name
+        description: ""
 
 sources:
     - name: staging
@@ -102,3 +133,4 @@ sources:
         - name: influencer_groups
         - name: jobs
         - name: influencer_transfers
+        - name: merchant_payments

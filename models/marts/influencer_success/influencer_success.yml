@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: influencer_facts
+    description: "Influencer model denormalized"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: date_account_created
+        description: "Date account was created"
+      - name: first_name
+      - name: last_name
+      - name: email
+      - name: mobile_number
+      - name: gender
+      - name: country
+      - name: location
+      - name: dob
+      - name: income_category
+      - name: income_currency
+      - name: smileidentity_status
+      - name: total_campaigns
+      - name: total_net_payment
+      - name: first_campaign_date
+      - name: last_campaign_date
+      - name: offered_jobs
+      - name: total_accepted
+      - name: total_expired
+      - name: total_not_accepted
+      - name: age_range
+      - name: job_activity
+      - name: job_eligibility
+      - name: username_INSTAGRAM
+      - name: followers_count_INSTAGRAM
+      - name: channel_status_INSTAGRAM
+      - name: username_FACEBOOK
+      - name: followers_count_FACEBOOK
+      - name: channel_status_FACEBOOK
+      - name: username_TWITTER
+      - name: followers_count_TWITTER
+      - name: channel_status_TWITTER
+      - name: username_LINKEDIN
+      - name: followers_count_LINKEDIN
+      - name: channel_status_LINKEDIN
+      - name: username_TIKTOK
+      - name: followers_count_TIKTOK
+      - name: channel_status_TIKTOK
