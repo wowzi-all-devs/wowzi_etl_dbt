@@ -67,11 +67,14 @@ FROM (
     END
     AS job_activity,
     CASE 
-        WHEN smileidentity_status='APPROVED' and inf.influencer_id in (
-                                                                        select influencer_id
-                                                                        from `dims.influencer_channel_data`
-                                                                        where status='APPROVED' and followers_count>=251
-                                                                      ) 
+        WHEN smileidentity_status='APPROVED'
+        AND DATE_DIFF(CURRENT_DATE(), inf.dob, year) >= 18
+        AND inf.location IS NOT NULL
+        AND inf.country IS NOT NULL
+        AND inf.gender IS NOT NULL
+        AND inf.dob IS NOT NULL
+        AND inf.income_category IS NOT NULL
+        AND inf.influencer_id in (select influencer_id from `dims.influencer_channel_data`where status='APPROVED' and followers_count>=251)
        then 'Eligible' else 'Ineligible'
     END 
     AS job_eligibility
