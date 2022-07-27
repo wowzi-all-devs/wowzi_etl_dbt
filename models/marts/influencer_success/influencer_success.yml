@@ -74,3 +74,20 @@ models:
       - name: quality_verified_tasks
       - name: problematic_verified_tasks
       - name: time_verified_tasks
+
+  - name: influencer_task_facts
+    description: "Influencer tasks"
+    columns:
+      - name: influencer_id
+      - name: company_id
+      - name: campaign_id
+      - name: channel
+      - name: submission_link
+      - name: submission_status
+      - name: first_verification_status
+      - name: second_verification_status
+      - name: third_verification_status
+      - name: payment_amount_list
+      - name: top_post
+      - name: task_creation_time
+      - name: country
