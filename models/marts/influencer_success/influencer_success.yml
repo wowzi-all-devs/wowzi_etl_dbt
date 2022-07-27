@@ -48,3 +48,29 @@ models:
       - name: username_TIKTOK
       - name: followers_count_TIKTOK
       - name: channel_status_TIKTOK
+
+  - name: influencer_campaign_facts
+    description: "Campaigns with extra information like status tasks, status jobs, budget spent, etc."
+    columns:
+      - name: campaign_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_name
+      - name: campaign_creation_date
+      - name: start_date
+      - name: end_date
+      - name: currency
+      - name: budget
+      - name: budget_spent
+      - name: bonus_amount
+      - name: canceled
+      - name: canceled_timestamp
+      - name: influencers_invited_count
+      - name: influencers_accepted_count
+      - name: company_name
+      - name: total_tasks
+      - name: quality_verified_tasks
+      - name: problematic_verified_tasks
+      - name: time_verified_tasks

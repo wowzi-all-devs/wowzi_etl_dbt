@@ -24,6 +24,43 @@ models:
       - name: destination_branch_code
         description: ""
 
+  - name: campaign_expenditure
+    description: "Campaign Expenditure with campaign stats"
+    columns:
+      - name: campaign_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_name
+        description: ""
+      - name: campaign_start_date
+        description: ""
+      - name: campaign_end_date
+        description: ""
+      - name: campaign_bonus_amount
+        description: ""
+      - name: campaign_budget
+        description: ""
+      - name: budget_spent
+        description: ""
+      - name: agency_commission
+        description: ""
+      - name: influencers_invited_count
+        description: "Count of Influencers invited to the campaign"
+      - name: influencers_accepted_count
+        description: "Count of Influencers who already accepted the campaign invitation"
+      - name: merchant_id
+        description: ""
+      - name: merchant_name
+        description: ""
+      - name: company_name
+        description: ""
+      - name: currency
+        description: ""
+      - name: canceled
+        description: ""
+
   - name: campaign_influencer_groups
     description: "Influencer groups associated with campaigns."
     columns:
@@ -490,3 +527,9 @@ sources:
         - name: merchant_subscriptions
         - name: merchants
         - name: subcategories
+    - name: dbt_caleb
+      #For bigquery:
+      database: bi-staging-1-309112
+      schema: dbt_caleb
+      tables:
+        - name: campaign_expenditure
