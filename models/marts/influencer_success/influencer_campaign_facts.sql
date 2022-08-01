@@ -29,7 +29,8 @@ SELECT
   task_data.total_tasks,
   task_data.quality_verified_tasks,
   task_data.problematic_verified_tasks,
-  task_data.time_verified_tasks
+  task_data.time_verified_tasks,
+  adv.country
 FROM
   {{ ref('campaigns') }} c
 LEFT JOIN
@@ -40,5 +41,9 @@ LEFT JOIN
   {{ ref('campaign_expenditure') }} ce
 ON
   c.campaign_id=CAST(ce.campaign_id AS integer)
+LEFT JOIN
+  {{ ref('dims_advertisers') }} adv
+ON
+  c.merchant_id=adv.advertiser_id
 ORDER BY
   c.campaign_id DESC
