@@ -185,13 +185,6 @@ models:
           - not_null
       - name: first_name
         description: "The influencer name"
-    config:
-      re_data_monitored: true
-      re_data_time_filter: date_account_created
-      re_data_columns:
-        - offered_jobs
-        - total_accepted
-        - jobs_last_month
   
   - name: dims_advertisers
     description: "Advertiser model denormalized"
