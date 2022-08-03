@@ -1,9 +1,10 @@
 SELECT
     influencer_id,
-    influencer_type,
-    location,
+    gender,
     country,
+    location,
     age_range,
+    job_activity,
     job_eligibility,
-    job_activity
+    influencer_type
 FROM {{ ref('influencer_facts') }}

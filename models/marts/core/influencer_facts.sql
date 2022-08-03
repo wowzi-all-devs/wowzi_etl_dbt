@@ -52,6 +52,13 @@ FROM (
     username,
     channel,
     followers_count,
+    jobs_last_week,
+    jobs_last_2_weeks,
+    jobs_last_4_weeks,
+    jobs_last_month,
+    jobs_last_2_months,
+    jobs_last_3_months,
+    jobs_last_6_months,
     status AS channel_status,
     CASE
         WHEN DATE_DIFF(current_date, dob, year) <18 THEN 'Under 18'
@@ -63,7 +70,7 @@ FROM (
     END
     AS age_range,
     CASE 
-        WHEN jobs_last_4_weeks IS NULL THEN 'Inactive' ELSE 'Active'
+        WHEN jobs_last_6_months IS NULL THEN 'Inactive' ELSE 'Active'
     END
     AS job_activity,
     CASE 
@@ -77,7 +84,8 @@ FROM (
         AND inf.influencer_id in (select influencer_id from `dims.influencer_channel_data`where status='APPROVED' and followers_count>=251)
        then 'Eligible' else 'Ineligible'
     END 
-    AS job_eligibility
+    AS job_eligibility,
+    cd.influencer_type
   FROM
     {{ ref('influencers') }} inf
   left JOIN
