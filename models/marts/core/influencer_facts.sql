@@ -81,7 +81,7 @@ FROM (
         AND inf.gender IS NOT NULL
         AND inf.dob IS NOT NULL
         AND inf.income_category IS NOT NULL
-        AND inf.influencer_id in (select influencer_id from `dims.influencer_channel_data`where status='APPROVED' and followers_count>=251)
+        AND inf.influencer_id in (select influencer_id from {{ ref('influencer_channel_data') }} where status='APPROVED' and followers_count>=251)
        then 'Eligible' else 'Ineligible'
     END 
     AS job_eligibility,
@@ -93,6 +93,7 @@ FROM (
   ON
     cd.influencer_id=inf.influencer_id) PIVOT(MAX(username) AS username,
     MAX(followers_count) AS followers_count,
+    MAX(influencer_type) as influencer_type,
     MAX(channel_status) AS channel_status FOR channel IN ("INSTAGRAM","FACEBOOK","TWITTER","LINKEDIN","TIKTOK"))
 )
 select *

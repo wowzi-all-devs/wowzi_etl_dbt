@@ -1,3 +1,5 @@
+{{ config(tags=["influencer_success"]) }}
+
 WITH
   task_data AS(
   SELECT

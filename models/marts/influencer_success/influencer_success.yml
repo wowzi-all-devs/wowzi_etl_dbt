@@ -15,7 +15,25 @@ models:
       - name: age_range
       - name: job_activity
       - name: job_eligibility
-      - name: influencer_type
+      - name: followers_count_INSTAGRAM
+      - name: channel_status_INSTAGRAM
+      - name: influencer_type_INSTAGRAM
+      - name: username_FACEBOOK
+      - name: followers_count_FACEBOOK
+      - name: channel_status_FACEBOOK
+      - name: influencer_type_FACEBOOK
+      - name: username_TWITTER
+      - name: followers_count_TWITTER
+      - name: channel_status_TWITTER
+      - name: influencer_type_TWITTER
+      - name: username_LINKEDIN
+      - name: followers_count_LINKEDIN
+      - name: channel_status_LINKEDIN
+      - name: influencer_type_LINKEDIN
+      - name: username_TIKTOK
+      - name: followers_count_TIKTOK
+      - name: channel_status_TIKTOK
+      - name: influencer_type_TIKTOK
 
   - name: influencer_campaign_facts
     description: "Campaigns with extra information like status tasks, status jobs, budget spent, etc."

@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: facts_advertisers_budget_spent_by_month
+    description: "Advertiser Budget spent groupd by month and currency."
+    columns:
+      - name: primary_key
+        description: "The surrogated primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: merchant_id
+      - name: company_name
+      - name: country
+      - name: campaign_start_month
+      - name: total_spent
+      - name: currency

@@ -1,3 +1,5 @@
+{{ config(tags=["influencer_success"]) }}
+
 SELECT
     influencer_id,
     gender,
@@ -6,5 +8,10 @@ SELECT
     age_range,
     job_activity,
     job_eligibility,
-    influencer_type
+    {% for channel in ['FACEBOOK', 'INSTAGRAM', 'TWITTER', 'LINKEDIN', 'TIKTOK'] -%}
+       `username_{{ channel }}`,
+       `followers_count_{{ channel }}`,
+       `influencer_type_{{ channel }}`,
+       `channel_status_{{ channel }}`
+    {% endfor %}
 FROM {{ ref('influencer_facts') }}

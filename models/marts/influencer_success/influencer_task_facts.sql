@@ -1,3 +1,5 @@
+{{ config(tags=["influencer_success"]) }}
+
 SELECT
   inft.influencer_id,
   c.company_id,
