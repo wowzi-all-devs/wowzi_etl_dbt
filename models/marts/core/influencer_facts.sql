@@ -24,6 +24,14 @@ FROM (
       AS influencer_type
     FROM {{ ref('influencer_channel_data') }} )
 ),
+active_influencers AS (
+    SELECT 
+        influencer_id,
+    FROM {{ ref('jobs') }}
+    WHERE (invitation_status = "ACCEPTED" or invitation_status = "REJECTED")
+        and date_diff(date(current_timestamp()),date(offer_creation_time),MONTH) <= 6
+    GROUP BY 1
+),
 influencer_facts AS (
 SELECT *
 FROM (
@@ -70,7 +78,7 @@ FROM (
     END
     AS age_range,
     CASE 
-        WHEN jobs_last_6_months IS NULL THEN 'Inactive' ELSE 'Active'
+        WHEN inf.influencer_id IN (select * from active_influencers) THEN 'Active' ELSE 'Inactive'
     END
     AS job_activity,
     CASE 
