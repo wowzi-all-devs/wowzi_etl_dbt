@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: influencer_payouts
+    description: "Influencer payments denormalized"
+    columns:
+      - name: primary_key
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: influencer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('influencers')
+              field: influencer_id
+      - name: mobile_number
+      - name: advertiser_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dims_advertisers')
+              field: advertiser_id
+      - name: campaign_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('campaigns')
+              field: id
+      - name: task_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('influencer_tasks')
+              field: id
+      - name: campaign_name
+      - name: payment_date
+      - name: country
+      - name: amount
+      - name: currency
+        tests:
+          - accepted_values:
+              values: ['KES', 'TZS', 'NGN', 'UGX', 'GHS']
+      - name: payment_status
+        tests:
+          - accepted_values:
+              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out']
+      - name: bank_name
+      - name: company_name
+
+  - name: influencer_weekly_successful_payouts_by_currency
+    description: "Influencer successful payments by week by currency"
+    columns:
+      - name: payment_date_week
+      - name: currency
+        tests:
+          - accepted_values:
+              values: ['KES', 'TZS', 'NGN', 'UGX', 'GHS']
+      - name: total_amount
+
+  - name: influencer_expected_payouts
+    description: "Influencer Payments from the last 2 weeks"
+    columns:
+      - name: primary_key
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: influencer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('influencers')
+              field: influencer_id
+      - name: first_verification_status
+      - name: second_verification_status
+      - name: mobile_number
+      - name: campaign_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('campaigns')
+              field: id
+      - name: task_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('influencer_tasks')
+              field: id
+      - name: first_verification_datetime
+      - name: payment_date
+      - name: payment_amount_list
+      - name: country
+      - name: bank_name
+      - name: bank_account_number
+      - name: currency
+      - name: weekday_name_abbreviated
+      - name: payment_dates
+      - name: payment_method
+        tests:
+          - accepted_values:
+              values: ['Mobile Money', 'Bank']
+      - name: payment_status
+        tests:
+          - accepted_values:
+              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out']
