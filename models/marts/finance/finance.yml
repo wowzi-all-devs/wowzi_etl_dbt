@@ -105,3 +105,27 @@ models:
         tests:
           - accepted_values:
               values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out']
+            
+  - name: influencers_withholding_by_month_by_status
+    description: "Influencers list from Kenya with a total payment greater than 24000 KES by month"
+    columns:
+      - name: primary_key
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: influencer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('influencers')
+              field: influencer_id
+      - name: month
+      - name: payment_status
+        tests:
+          - accepted_values:
+              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out']
+      - name: total_amount
+      - name: name
+      - name: email
+      - name: mobile_number
