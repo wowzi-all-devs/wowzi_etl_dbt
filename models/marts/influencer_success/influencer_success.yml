@@ -35,7 +35,7 @@ models:
       - name: channel_status_TIKTOK
       - name: influencer_type_TIKTOK
 
-  - name: influencer_campaign_facts
+  - name: campaign_facts
     description: "Campaigns with extra information like status tasks, status jobs, budget spent, etc."
     columns:
       - name: campaign_id
