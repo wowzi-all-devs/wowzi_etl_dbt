@@ -6,6 +6,7 @@ SELECT
   inft.campaign_id,
   ct.channel,
   submission_link,
+  submission_link_add_time,
   submission_status,
   first_verification_status,
   second_verification_status,

@@ -13,6 +13,7 @@ models:
         description: "Date account was created"
       - name: first_name
       - name: last_name
+      - name: personal_id_number
       - name: email
       - name: mobile_number
       - name: gender

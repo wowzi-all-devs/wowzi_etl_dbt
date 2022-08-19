@@ -69,6 +69,7 @@ models:
       - name: campaign_id
       - name: channel
       - name: submission_link
+      - name: submission_link_add_time
       - name: submission_status
       - name: first_verification_status
       - name: second_verification_status
