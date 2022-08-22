@@ -1,5 +1,3 @@
-{{ config(tags=["influencer_success"]) }}
-
 WITH
 channel_details AS (
 SELECT

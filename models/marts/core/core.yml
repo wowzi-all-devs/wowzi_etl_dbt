@@ -54,3 +54,37 @@ models:
       - name: followers_count_TIKTOK
       - name: channel_status_TIKTOK
       - name: influencer_type_TIKTOK
+
+  - name: job_facts
+    description: "Jobs table"
+    columns:
+      - name: job_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('campaigns')
+              field: campaign_id
+      - name: influencer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('influencers')
+              field: influencer_id
+      - name: invitation_status
+        tests:
+          - accepted_values:
+              values: ['ACCEPTED', 'NOT_ACCEPTED', 'EXPIRED', 'OFFERED']
+      - name: payment_status
+      - name: offer_creation_time
+      - name: offer_expire_time
+      - name: submission_expire_time
+      - name: review_expire_time
+      - name: offer_acception_or_rejection_time
+      - name: creation_time
+      - name: max_influencer_tasks_count
+      - name: max_influencer_amounts_list

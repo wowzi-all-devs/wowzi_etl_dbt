@@ -33,6 +33,7 @@ SELECT
   task_data.problematic_verified_tasks,
   task_data.time_verified_tasks,
   adv.company_id,
+  adv.advertiser_id,
   adv.country
 FROM
   {{ ref('campaigns') }} c

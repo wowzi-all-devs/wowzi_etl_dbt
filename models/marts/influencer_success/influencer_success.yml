@@ -60,6 +60,10 @@ models:
       - name: quality_verified_tasks
       - name: problematic_verified_tasks
       - name: time_verified_tasks
+      - name: company_id
+      - name: advertiser_id
+      - name: country
+
 
   - name: influencer_task_facts
     description: "Influencer tasks"
