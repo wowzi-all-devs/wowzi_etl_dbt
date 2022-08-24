@@ -88,3 +88,55 @@ models:
       - name: creation_time
       - name: max_influencer_tasks_count
       - name: max_influencer_amounts_list
+
+  - name: advertisers
+    description: "Advertisers model denormalized"
+    columns:
+        - name: advertiser_id
+          description: "The primary key for this table"
+          tests:
+            - unique
+            - not_null
+        - name: company_id
+          tests:
+            - not_null
+            - relationships:
+                to: ref('companies')
+                field: id
+        - name: date_account_created
+        - name: first_name
+        - name: last_name
+        - name: email
+        - name: role
+        - name: phone
+        - name: gender
+        - name: country
+        - name: location
+        - name: city
+        - name: personal_id_number
+        - name: dob
+        - name: avatar
+        - name: name
+        - name: company_type
+        - name: company_size
+        - name: company_industry
+        - name: kra_pin
+        - name: address
+        - name: postal_code
+        - name: outgoing_currency
+        - name: company_payment_method
+        - name: company_payment_plan
+        - name: company_creation_date
+        - name: agency
+        - name: agency_commission
+        - name: total_accepted_jobs
+        - name: total_expired_jobs
+        - name: total_not_accepted_jobs
+        - name: first_campaign_date
+        - name: last_campaign_date
+        - name: total_campaigns
+        - name: total_budget_allocation
+        - name: total_male_campaigns
+        - name: total_female_campaigns
+        - name: total_mixed_campaigns
+        - name: total_bonus_amount
