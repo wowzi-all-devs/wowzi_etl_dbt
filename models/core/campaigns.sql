@@ -38,5 +38,7 @@ select
     sunday_to,
     multi_campaign,
     bonus_amount,
-    bonus_type
+    bonus_type,
+    creator_type,
+    creator_id
 FROM {{ source('core', 'campaigns') }}
