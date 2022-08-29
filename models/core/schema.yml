@@ -24,6 +24,21 @@ models:
       - name: destination_branch_code
         description: ""
 
+  - name: back_officers
+    description: "Back officers"
+    columns:
+      - name: backofficer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: backofficer_name
+        description: ""
+      - name: email
+        description: ""
+      - name: role
+        description: ""
+
   - name: campaign_expenditure
     description: "Campaign Expenditure with campaign stats"
     columns:
@@ -514,6 +529,7 @@ sources:
       schema: wowzi_data
       tables:
         - name: bank_details
+        - name: backofficers
         - name: campaign_influencer_groups
         - name: campaign_task_hashtags
         - name: campaign_tasks

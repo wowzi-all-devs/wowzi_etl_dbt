@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: top_post_verification_last_month_by_backofficer_by_day
+    description: "Influencer Tasks marked as top post in the last month by backofficer by day"
+    columns:
+      - name: primary_key
+        description: "The surrogated primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: top_post_selected_time
+      - name: backofficer_id
+      - name: backofficer_name
+      - name: num_top_posts_verification
