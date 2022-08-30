@@ -67,6 +67,52 @@ models:
       - name: advertiser_id
       - name: country
 
+  - name: influencer_social_media_channels
+    description: "Joined tables influencers and influencer_channel_data in order to be able to filter by social media channel" 
+    columns:
+      - name: primary_key
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: influencer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('influencers')
+              field: influencer_id
+      - name: date_account_created
+        description: "Date account was created"
+      - name: first_name
+      - name: last_name
+      - name: personal_id_number
+      - name: email
+      - name: email_verified
+      - name: mobile_number
+      - name: mobile_number_verified
+      - name: gender
+      - name: country
+      - name: location
+      - name: dob
+      - name: income_category
+      - name: income_currency
+      - name: smileidentity_status
+      - name: total_campaigns
+      - name: total_net_payment
+      - name: first_campaign_date
+      - name: last_campaign_date
+      - name: offered_jobs
+      - name: total_accepted
+      - name: total_expired
+      - name: total_not_accepted
+      - name: username
+      - name: channel
+      - name: followers_count
+      - name: channel_status
+      - name: influencer_type
+      - name: age_range
+      - name: job_activity
+      - name: job_eligibility
 
   - name: influencer_task_facts
     description: "Influencer tasks"
