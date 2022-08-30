@@ -51,6 +51,9 @@ models:
       - name: budget
       - name: budget_spent
       - name: bonus_amount
+      - name: bonus_type
+      - name: creator_type
+      - name: creator_id
       - name: canceled
       - name: canceled_timestamp
       - name: influencers_invited_count

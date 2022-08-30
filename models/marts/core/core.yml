@@ -15,7 +15,9 @@ models:
       - name: last_name
       - name: personal_id_number
       - name: email
+      - name: email_verified
       - name: mobile_number
+      - name: mobile_number_verified
       - name: gender
       - name: country
       - name: location
