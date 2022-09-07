@@ -131,3 +131,39 @@ models:
       - name: top_post
       - name: task_creation_time
       - name: country
+
+  - name: twitter_campaign_metrics
+    description: "Twitter campaign metrics with information about the campaign"
+    columns:
+      - name: primary_key
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: influencer_id
+        tests:
+          - not_null
+      - name: task_id
+        tests:
+          - not_null
+      - name: campaign_id
+        tests:
+          - not_null
+      - name: tweet_id
+        tests:
+          - not_null
+      - name: channel
+      - name: followers_count
+      - name: quote_count
+      - name: reply_count
+      - name: likes
+      - name: retweet_count
+      - name: username
+      - name: processed_at
+      - name: post_created_at
+      - name: submission_link
+      - name: campaign_name
+      - name: budget_spent
+      - name: merchant_id
+      - name: merchant_name
+      - name: company_name
