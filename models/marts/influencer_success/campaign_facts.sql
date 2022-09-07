@@ -22,6 +22,7 @@ SELECT
   c.currency,
   c.budget,
   ce.budget_spent,
+  round(ce.budget_spent/ cr.currency_rate,2) as budget_spent_usd,
   c.bonus_amount,
   c.bonus_type,
   c.creator_type,
@@ -52,5 +53,9 @@ LEFT JOIN
   {{ ref('dims_advertisers') }} adv
 ON
   c.merchant_id=adv.advertiser_id
+LEFT JOIN
+  {{ ref('currency_rates') }} cr
+ON 
+  DATE(c.end_date)=DATE(cr.date) AND c.currency=cr.currency
 ORDER BY
   c.campaign_id DESC

@@ -190,6 +190,22 @@ models:
       - name: postal_code
         description: "Postal Code company"
 
+  - name: currency_rates
+    description: "Currency rates to USD by country by day"
+    columns:
+      - name: date
+        tests:
+          - not_null
+      - name: base
+        tests:
+          - not_null
+      - name: currency
+        tests:
+          - not_null
+      - name: currency_rate
+        tests:
+          - not_null
+
   - name: influencers
     description: "Influencer model denormalized"
     columns:
@@ -584,3 +600,10 @@ sources:
       tables:
         - name: campaign_expenditure
         - name: twitter_campaign_data_redux
+      
+    - name: rates
+      #For bigquery:
+      database: bi-staging-1-309112
+      schema: fx_rates
+      tables:
+        - name: currency_rates_test

@@ -50,6 +50,7 @@ models:
       - name: currency
       - name: budget
       - name: budget_spent
+      - name: budget_spent_usd
       - name: bonus_amount
       - name: bonus_type
       - name: creator_type
