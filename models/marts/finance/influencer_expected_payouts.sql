@@ -45,7 +45,7 @@ SELECT
   END
   AS payment_dates,
   CASE 
-    WHEN lower(weekdays.bank_name)='mpesa' or (weekdays.bankname)='airtel kenya' THEN 'Mobile Money' ELSE 'Bank' 
+    WHEN lower(weekdays.bank_name)='mpesa' or lower(weekdays.bank_name)='airtel kenya' THEN 'Mobile Money' ELSE 'Bank' 
   END
   AS payment_method,
   it.status as payment_status
