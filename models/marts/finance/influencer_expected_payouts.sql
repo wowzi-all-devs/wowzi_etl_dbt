@@ -33,6 +33,11 @@ weekdays AS (
   FROM payments_due
 )
 SELECT
+*,
+  CASE
+    WHEN (payment_status IS NULL OR LOWER(payment_status)  not in ('successful','manual')) and date(payment_dates) < current_date()  THEN "Late" else "Fulfilled"
+END as payment_fulfillment
+FROM(SELECT
   {{ dbt_utils.surrogate_key(['weekdays.influencer_id', 'weekdays.campaign_id', 'weekdays.task_id']) }} as primary_key,
   weekdays.*,
   CASE
@@ -50,4 +55,4 @@ SELECT
   AS payment_method,
   it.status as payment_status
 FROM weekdays
-LEFT JOIN {{ ref('influencer_transfers') }} it using(task_id)
+LEFT JOIN {{ ref('influencer_transfers') }} it using(task_id))
