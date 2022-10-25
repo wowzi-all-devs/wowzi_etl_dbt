@@ -62,11 +62,6 @@ models:
   - name: influencer_expected_payouts
     description: "Influencer Payments from the last 2 weeks"
     columns:
-      - name: primary_key
-        description: "The primary key for this table"
-        tests:
-          - unique
-          - not_null
       - name: influencer_id
         tests:
           - not_null
