@@ -33,21 +33,30 @@ weekdays AS (
   FROM payments_due
 )
 SELECT
-  -- {{ dbt_utils.surrogate_key(['weekdays.influencer_id', 'weekdays.campaign_id', 'weekdays.task_id']) }} as primary_key,
-  weekdays.*,
-  CASE
-    WHEN weekday_name_abbreviated IN('Fri', 'Sat', 'Sun') THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(MONDAY)), INTERVAL 1 WEEK)
-    WHEN weekday_name_abbreviated IN('Tue','Wed') THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(ThURSDAY)), INTERVAL 1 WEEK)
-    WHEN weekday_name_abbreviated IN('Thu') AND EXTRACT(hour FROM payment_date)<17 THEN DATE_TRUNC(payment_date, WEEK(THURSDAY))
-    WHEN weekday_name_abbreviated IN('Thu') AND EXTRACT(hour FROM payment_date)>=17 THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(MONDAY)), INTERVAL 1 WEEK)
-    WHEN weekday_name_abbreviated IN('Mon') AND EXTRACT(hour FROM payment_date)<17 THEN DATE_TRUNC(payment_date, WEEK(MONDAY))
-    WHEN weekday_name_abbreviated IN('Mon') AND EXTRACT(hour FROM payment_date)>=17 THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(THURSDAY)), INTERVAL 1 WEEK)
-  END
-  AS payment_dates,
-  CASE 
-    WHEN lower(weekdays.bank_name)='mpesa' or lower(weekdays.bank_name)='airtel kenya' THEN 'Mobile Money' ELSE 'Bank' 
-  END
-  AS payment_method,
-  it.status as payment_status
-FROM weekdays
-LEFT JOIN {{ ref('influencer_transfers') }} it using(task_id)
+*,
+CASE
+    WHEN LOWER(payment_status)  not in ('successful','manual') and date(payment_dates) < current_date() THEN "Late"
+    WHEN payment_status is null then "Pending Payment"
+    WHEN lower(payment_status) in ('successful','manual') then 'Payment Done'
+END as payment_fulfillment
+FROM  (
+        SELECT
+    -- {{ dbt_utils.surrogate_key(['weekdays.influencer_id', 'weekdays.campaign_id', 'weekdays.task_id']) }} as primary_key,
+          weekdays.*,
+          CASE
+            WHEN weekday_name_abbreviated IN('Fri', 'Sat', 'Sun') THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(MONDAY)), INTERVAL 1 WEEK)
+            WHEN weekday_name_abbreviated IN('Tue','Wed') THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(ThURSDAY)), INTERVAL 1 WEEK)
+            WHEN weekday_name_abbreviated IN('Thu') AND EXTRACT(hour FROM payment_date)<17 THEN DATE_TRUNC(payment_date, WEEK(THURSDAY))
+            WHEN weekday_name_abbreviated IN('Thu') AND EXTRACT(hour FROM payment_date)>=17 THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(MONDAY)), INTERVAL 1 WEEK)
+            WHEN weekday_name_abbreviated IN('Mon') AND EXTRACT(hour FROM payment_date)<17 THEN DATE_TRUNC(payment_date, WEEK(MONDAY))
+            WHEN weekday_name_abbreviated IN('Mon') AND EXTRACT(hour FROM payment_date)>=17 THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(THURSDAY)), INTERVAL 1 WEEK)
+          END
+          AS payment_dates,
+          CASE 
+            WHEN lower(weekdays.bank_name)='mpesa' or lower(weekdays.bank_name)='airtel kenya' THEN 'Mobile Money' ELSE 'Bank' 
+          END
+          AS payment_method,
+          it.status as payment_status
+        FROM weekdays
+        LEFT JOIN {{ ref('influencer_transfers') }} it using(task_id)
+      )
