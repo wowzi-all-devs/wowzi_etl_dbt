@@ -41,7 +41,6 @@ CASE
 END as payment_fulfillment
 FROM  (
         SELECT
-    -- {{ dbt_utils.surrogate_key(['weekdays.influencer_id', 'weekdays.campaign_id', 'weekdays.task_id']) }} as primary_key,
           weekdays.*,
           CASE
             WHEN weekday_name_abbreviated IN('Fri', 'Sat', 'Sun') THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(MONDAY)), INTERVAL 1 WEEK)
