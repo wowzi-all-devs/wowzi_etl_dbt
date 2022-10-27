@@ -606,4 +606,4 @@ sources:
       database: bi-staging-1-309112
       schema: fx_rates
       tables:
-        - name: currency_rates_test
+        - name: dim_currency_rates

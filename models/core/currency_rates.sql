@@ -8,7 +8,7 @@ SELECT
         PARTITION BY date, base, currency
         ORDER BY date desc
     ) as row_number,
-FROM {{ source('rates', 'currency_rates_test') }}
+FROM {{ source('rates', 'dim_currency_rates') }}
 )
 SELECT
     date,
