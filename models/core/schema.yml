@@ -576,7 +576,7 @@ sources:
     - name: core
       #For bigquery:
       database: bi-staging-1-309112
-      schema: airbyte_staging
+      schema: wowzi_airbyte
       tables:
         - name: bank_details
         - name: backofficers
