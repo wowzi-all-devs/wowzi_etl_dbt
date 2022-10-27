@@ -125,7 +125,7 @@ sources:
     - name: staging
       #For bigquery:
       database: bi-staging-1-309112
-      schema: wowzi_data
+      schema: airbyte_staging
       tables:
         - name: influencer_tasks
         - name: influencers
