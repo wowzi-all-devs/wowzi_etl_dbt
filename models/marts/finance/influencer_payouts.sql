@@ -29,7 +29,6 @@ FROM {{ ref('influencer_transfers') }} inf_transfers
    LEFT join {{ ref('companies') }} companies on companies.id = campaigns.company_id
 )
 SELECT
-    primary_key,
     influencer_id,
     mobile_number,
     advertiser_id,
