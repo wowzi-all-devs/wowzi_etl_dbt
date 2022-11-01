@@ -4,11 +4,6 @@ models:
   - name: influencer_payouts
     description: "Influencer payments denormalized"
     columns:
-      - name: primary_key
-        description: "The primary key for this table"
-        tests:
-          - unique
-          - not_null
       - name: influencer_id
         tests:
           - not_null
