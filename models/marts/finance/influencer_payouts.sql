@@ -43,6 +43,8 @@ SELECT
     currency,
     payment_status,
     bank_name,
-    company_name 
+    company_name,
+    reference,
+    narration
 FROM 
     dims_payments
