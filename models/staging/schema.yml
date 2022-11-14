@@ -121,6 +121,15 @@ models:
       - name: campaign_name
         description: ""
 
+  - name: stg_bank_details
+    description: "Updated Bank Details"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
 sources:
     - name: staging
       #For bigquery:
