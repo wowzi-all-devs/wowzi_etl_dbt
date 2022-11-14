@@ -12,7 +12,7 @@ select
     location,
     city,
     personal_id_number,
-    dob,
+    dob_date,
     avatar,
     name,
     company_type,
