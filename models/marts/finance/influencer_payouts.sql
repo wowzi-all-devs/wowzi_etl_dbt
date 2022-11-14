@@ -2,7 +2,7 @@
 
 WITH dims_payments AS (
 SELECT      
-    {{ dbt_utils.surrogate_key(['inf_transfers.id', 'inf_transfers.influencer_id', 'inf_tasks.campaign_id', 'inf_transfers.task_id']) }} as primary_key,
+    {{ dbt_utils.surrogate_key(['inf_transfers.id', 'inf_transfers.date_created']) }} as primary_key,
     inf_transfers.influencer_id as influencer_id,
     inf.mobile_number,
     inf_tasks.campaign_id,
