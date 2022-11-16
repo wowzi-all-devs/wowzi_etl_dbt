@@ -13,7 +13,7 @@ WITH successful_payments as (
 ),
 successful_payments_by_week_by_currency as ( 
     SELECT
-        TIMESTAMP_TRUNC(payment_date, WEEK) AS payment_date_week,
+        TIMESTAMP_TRUNC(TIMESTAMP(SAFE_CAST(PARSE_DATETIME('%Y-%m-%dT%H:%M:%E3SZ', payment_date) as DATETIME)), WEEK) AS payment_date_week,
         currency,
         sum(amount) AS total_amount
     FROM 
