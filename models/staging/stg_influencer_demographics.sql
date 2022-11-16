@@ -16,18 +16,18 @@ SELECT cast(id as INT64) as influencer_id,
     personal_id_number,
     income_currency,
     income_category,
-    date(timestamp(dob)) dob,
+    date(timestamp(dob_date)) dob,
     extract(
         year
-        from date(timestamp(dob))
+        from date(timestamp(dob_date))
     ) as dob_year,
     extract(
         month
-        from date(timestamp(dob))
+        from date(timestamp(dob_date))
     ) as dob_month,
     extract(
         day
-        from date(timestamp(dob))
+        from date(timestamp(dob_date))
     ) as dob_day,
     payment_method,
     accepted_terms_version,
