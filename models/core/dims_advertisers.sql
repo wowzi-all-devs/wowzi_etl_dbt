@@ -13,7 +13,7 @@ with advertisers as (
         location,
         city,
         personal_id_number,
-        dob,
+        dob_date,
         avatar,
         -- FROM `bi-staging-1-309112.dims.merchants`
         FROM {{ source('core', 'merchants') }}
