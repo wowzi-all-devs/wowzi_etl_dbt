@@ -18,13 +18,13 @@ SELECT
     adv.last_name as advertiser_lname,
     campaigns.name as campaign_name,
     inf_transfers.task_id,
-    (CASE WHEN lower(inf_tasks.submission_link) LIKE '%twitter%' THEN 'Twitter'
-    WHEN lower(inf_tasks.submission_link) LIKE '%t.co%' THEN 'Twitter'
-    WHEN lower(inf_tasks.submission_link) LIKE '%facebook%' THEN 'Facebook'
-    WHEN lower(inf_tasks.submission_link) LIKE '%linkedin%' THEN 'LinkedIn'
-    WHEN lower(inf_tasks.submission_link) LIKE '%tiktok%' THEN 'TikTok'
-    WHEN lower(inf_tasks.submission_link) LIKE '%instagram%' THEN 'Instagram'
-    WHEN lower(inf_tasks.submission_link) LIKE '%youtube%' THEN 'YouTube'
+    (CASE WHEN lower(inf_tasks.submission_link) LIKE '%twitter%' THEN 'TWITTER'
+    WHEN lower(inf_tasks.submission_link) LIKE '%t.co%' THEN 'TWITTER'
+    WHEN lower(inf_tasks.submission_link) LIKE '%facebook%' THEN 'FACEBOOK'
+    WHEN lower(inf_tasks.submission_link) LIKE '%linkedin%' THEN 'LINKEDIN'
+    WHEN lower(inf_tasks.submission_link) LIKE '%tiktok%' THEN 'TIKTOK'
+    WHEN lower(inf_tasks.submission_link) LIKE '%instagram%' THEN 'INSTAGRAM'
+    WHEN lower(inf_tasks.submission_link) LIKE '%youtube%' THEN 'YOUTUBE'
     WHEN lower(inf_tasks.submission_link) IS NULL THEN 'NOT-SUBMITTED'
     end) as social_media_channel,
     inf_transfers.amount,
@@ -58,13 +58,13 @@ SELECT
     campaign_id,
     task_id,
     social_media_channel,
-    (case when social_media_channel = 'Twitter'
+    (case when social_media_channel = 'TWITTER'
     then influencer_type_TWITTER
-    when social_media_channel = 'Facebook'
+    when social_media_channel = 'FACEBOOK'
     then influencer_type_FACEBOOK
-    when social_media_channel = 'Linkedin'
+    when social_media_channel = 'LINKEDIN'
     then influencer_type_LINKEDIN
-    when social_media_channel = 'Tiktok'
+    when social_media_channel = 'TIKTOK'
     then influencer_type_TIKTOK
     end) as task_influencer_type,
     campaign_name,
