@@ -2,7 +2,7 @@
 
 WITH dims_payments AS (
 SELECT      
-    {{ dbt_utils.surrogate_key(['inf_transfers.id', 'inf_transfers.influencer_id', 'inf_tasks.campaign_id', 'inf_transfers.task_id']) }} as primary_key,
+    inf_transfers.id as transfer_id,
     inf_transfers.influencer_id as influencer_id,
     inf.mobile_number,
     inf.gender,
@@ -11,6 +11,7 @@ SELECT
     inf.influencer_type_FACEBOOK,
     inf.influencer_type_LINKEDIN,
     inf.influencer_type_TIKTOK,
+    inf.influencer_type_INSTAGRAM,
     inf_tasks.campaign_id,
     companies.name as company_name,
     adv.advertiser_id,
@@ -39,17 +40,16 @@ SELECT
     inf_transfers.reference
 FROM {{ ref('influencer_transfers') }} inf_transfers
    LEFT JOIN {{ ref('influencer_facts') }} inf USING (influencer_id)
-   LEFT JOIN {{ ref('bank_details') }} bd USING (influencer_id)
+   LEFT JOIN {{ ref('stg_bank_details') }} bd USING (influencer_id)
    LEFT JOIN {{ ref('influencer_tasks') }} inf_tasks ON inf_tasks.id = inf_transfers.task_id
    LEFT JOIN {{ ref('campaigns') }} campaigns ON campaigns.id=inf_tasks.campaign_id
-   LEFT join {{ ref('dims_advertisers') }} adv ON adv.advertiser_id=campaigns.merchant_id
-   LEFT join {{ ref('companies') }} companies ON companies.id = campaigns.company_id
+   LEFT join {{ ref('dims_advertisers') }} adv on adv.advertiser_id=campaigns.merchant_id
+   LEFT join {{ ref('companies') }} companies on companies.id = campaigns.company_id
    LEFT JOIN {{ ref('currency_rates') }} rates ON cast(left(inf_transfers.date_created, 10) as date) = cast(rates.date as date)
     AND upper(inf_transfers.currency) = upper(rates.currency)
 )
-
 SELECT
-    primary_key,
+    transfer_id,
     influencer_id,
     mobile_number,
     gender,
@@ -58,15 +58,17 @@ SELECT
     campaign_id,
     task_id,
     social_media_channel,
-    (case when social_media_channel = 'TWITTER'
-    then influencer_type_TWITTER
-    when social_media_channel = 'FACEBOOK'
-    then influencer_type_FACEBOOK
-    when social_media_channel = 'LINKEDIN'
-    then influencer_type_LINKEDIN
-    when social_media_channel = 'TIKTOK'
-    then influencer_type_TIKTOK
-    end) as task_influencer_type,
+    (CASE WHEN social_media_channel = 'TWITTER'
+    THEN influencer_type_TWITTER
+    WHEN social_media_channel = 'FACEBOOK'
+    THEN influencer_type_FACEBOOK
+    WHEN social_media_channel = 'LINKEDIN'
+    THEN influencer_type_LINKEDIN
+    WHEN social_media_channel = 'TIKTOK'
+    THEN influencer_type_TIKTOK
+    WHEN social_media_channel = 'INSTAGRAM'
+    THEN influencer_type_INSTAGRAM
+    END) as task_influencer_type,
     campaign_name,
     payment_date,
     country,
@@ -75,5 +77,8 @@ SELECT
     currency,
     payment_status,
     bank_name,
-    company_name 
-FROM dims_payments
+    company_name,
+    reference,
+    narration
+FROM 
+    dims_payments
