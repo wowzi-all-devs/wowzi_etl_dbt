@@ -120,6 +120,7 @@ models:
     columns:
       - name: influencer_id
       - name: company_id
+      - name: task_id
       - name: campaign_id
       - name: channel
       - name: submission_link
