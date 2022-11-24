@@ -14,7 +14,7 @@ SELECT
     inf_transfers.task_id,
     inf_transfers.amount,
     inf_transfers.status as payment_status,
-    inf_transfers.date_created as payment_date,
+    date(inf_transfers.date_created) as payment_date,
     inf_transfers.currency as currency,
     inf.country,
     bd.bank_name as bank_name,
