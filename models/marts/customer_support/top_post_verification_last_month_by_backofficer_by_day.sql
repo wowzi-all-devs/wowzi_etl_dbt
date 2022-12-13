@@ -9,7 +9,7 @@ WITH approvals AS (
     date(top_post_selected_time) AS top_post_selected_time,
     submission_link,
     cast(first_verification_feedback_backofficer_id AS int) AS backofficer_id,
-  FROM {{ ref('influencer_tasks') }}
+  FROM {{ ref('postgres_stg__influencer_tasks') }}
   WHERE top_post IS TRUE
 ),
 bo AS (
@@ -18,7 +18,7 @@ bo AS (
     backofficer_name,
     email,
     role
-  FROM {{ ref('back_officers') }}
+  FROM {{ ref('postgres_stg__back_officers') }}
 ),
 joined_tables AS (
   SELECT *
