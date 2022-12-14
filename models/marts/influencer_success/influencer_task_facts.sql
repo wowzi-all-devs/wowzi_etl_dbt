@@ -18,16 +18,16 @@ SELECT
   inft.creation_time AS task_creation_time,
   country
 FROM
-  {{ ref('influencer_tasks') }} inft
+  {{ ref('postgres_stg__influencer_tasks') }} inft
 LEFT JOIN
-  {{ ref('influencers') }}
+  {{ ref('postgres_stg__influencers') }}
 USING
   (influencer_id)
 LEFT JOIN
-  {{ ref('campaigns') }} c
+  {{ ref('postgres_stg__campaigns') }} c
 ON
   inft.campaign_id=c.id
 LEFT JOIN
-  {{ ref('campaign_tasks') }} ct
+  {{ ref('postgres_stg__campaign_tasks') }} ct
 ON
   inft.campaign_task_id=ct.id

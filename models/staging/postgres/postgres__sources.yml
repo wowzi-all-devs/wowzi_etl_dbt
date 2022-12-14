@@ -1,0 +1,45 @@
+version: 2
+
+sources:
+    - name: staging
+      #For bigquery:
+      database: bi-staging-1-309112
+      schema: wowzi_airbyte
+      tables:
+        - name: influencer_tasks
+        - name: influencers
+        - name: influencer_group_influencers
+        - name: influencer_groups
+        - name: jobs
+        - name: influencer_transfers
+        - name: merchant_payments
+        - name: bank_details
+        - name: backofficers
+        - name: campaign_influencer_groups
+        - name: campaign_task_hashtags
+        - name: campaign_tasks
+        - name: campaigns
+        - name: categories
+        - name: companies
+        - name: influencer_channel_data
+        - name: influencer_referral_code
+        - name: influencer_referral_influencer
+        - name: influencer_subcategories
+        - name: merchant_subscriptions
+        - name: merchants
+        - name: subcategories
+
+    - name: dbt_caleb
+      #For bigquery:
+      database: bi-staging-1-309112
+      schema: dbt_caleb
+      tables:
+        - name: campaign_expenditure
+        - name: twitter_campaign_data_redux
+
+    - name: rates
+      #For bigquery:
+      database: bi-staging-1-309112
+      schema: fx_rates
+      tables:
+        - name: dim_currency_rates

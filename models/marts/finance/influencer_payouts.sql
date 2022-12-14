@@ -21,13 +21,13 @@ SELECT
     bd.bank_account_number,
     inf_transfers.narration,
     inf_transfers.reference
-FROM {{ ref('influencer_transfers') }} inf_transfers
-   LEFT JOIN {{ ref('influencers') }} inf USING (influencer_id)
-   LEFT JOIN {{ ref('stg_bank_details') }} bd USING (influencer_id)
-   LEFT JOIN {{ ref('influencer_tasks') }} inf_tasks ON inf_tasks.id = inf_transfers.task_id
-   LEFT JOIN {{ ref('campaigns') }} campaigns ON campaigns.id=inf_tasks.campaign_id
-   LEFT join {{ ref('dims_advertisers') }} adv on adv.advertiser_id=campaigns.merchant_id
-   LEFT join {{ ref('companies') }} companies on companies.id = campaigns.company_id
+FROM {{ ref('postgres_stg__influencer_transfers') }} inf_transfers
+   LEFT JOIN {{ ref('postgres_stg__influencers') }} inf USING (influencer_id)
+   LEFT JOIN {{ ref('postgres_stg__bank_details') }} bd USING (influencer_id)
+   LEFT JOIN {{ ref('postgres_stg__influencer_tasks') }} inf_tasks ON inf_tasks.id = inf_transfers.task_id
+   LEFT JOIN {{ ref('postgres_stg__campaigns') }} campaigns ON campaigns.id=inf_tasks.campaign_id
+   LEFT join {{ ref('postgres_stg__merchants') }} adv on adv.advertiser_id=campaigns.merchant_id
+   LEFT join {{ ref('postgres_stg__companies') }} companies on companies.id = campaigns.company_id
 )
 SELECT
     transfer_id,

@@ -12,4 +12,4 @@ SELECT
     creation_time,
     max_influencer_tasks_count,
     max_influencer_amounts_list
-FROM {{ ref('postgres_stg__jobs') }}
+FROM {{ source('staging', 'jobs') }}

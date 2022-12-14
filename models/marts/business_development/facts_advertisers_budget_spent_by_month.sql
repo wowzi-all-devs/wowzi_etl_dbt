@@ -25,7 +25,7 @@ advertisers_with_name as (
   FROM
     advertisers_grouped
   LEFT JOIN
-    {{ ref('dims_advertisers') }} adv
+    {{ ref('postgres_stg__merchants') }} adv
   ON 
     advertisers_grouped.merchant_id=adv.advertiser_id
 )
