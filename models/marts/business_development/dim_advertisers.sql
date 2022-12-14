@@ -1,8 +1,8 @@
 with advertisers as (
     SELECT
-        cast(id as INT64) as advertiser_id,
-        cast(company_id as INT64) as company_id,
-        date(creation_time) as date_account_created,
+        advertiser_id,
+        company_id,
+        date_account_created,
         first_name,
         last_name,
         email,
@@ -13,14 +13,14 @@ with advertisers as (
         location,
         city,
         personal_id_number,
-        dob_date as dob,
+        dob_date,
         avatar,
         -- FROM `bi-staging-1-309112.dims.merchants`
         FROM {{ ref('postgres_stg__merchants') }}
 ),
 companies as (
-    SELECT id as company_id,
-        name,
+    SELECT company_id,
+        company_name,
         company_type,
         company_size,
         company_industry,
@@ -30,7 +30,7 @@ companies as (
         outgoing_currency,
         company_payment_method,
         company_payment_plan,
-        date(creation_time) as company_creation_date,
+        company_creation_date,
         agency,
         agency_commission
     -- FROM `bi-staging-1-309112.dims.companies`

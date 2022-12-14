@@ -1,12 +1,7 @@
 WITH
 channel_details AS (
 SELECT
-    * EXCEPT(id,
-      api_id,
-      api_key,
-      status_backofficer_id,
-      status_comment,
-      status_update_time)
+    * 
 FROM (
     SELECT
       *,

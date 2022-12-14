@@ -1,5 +1,5 @@
 SELECT
-    id as influencer_group_id,
+    id,
     invitation_code,
     name,
     description,

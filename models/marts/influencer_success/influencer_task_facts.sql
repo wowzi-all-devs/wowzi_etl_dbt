@@ -26,7 +26,7 @@ USING
 LEFT JOIN
   {{ ref('postgres_stg__campaigns') }} c
 ON
-  inft.campaign_id=c.id
+  inft.campaign_id=c.campaign_id
 LEFT JOIN
   {{ ref('postgres_stg__campaign_tasks') }} ct
 ON

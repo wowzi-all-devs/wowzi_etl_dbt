@@ -76,7 +76,7 @@ influencer_social_media_channels AS (
     END 
     AS job_eligibility
   FROM
-    {{ ref('postgres_stg__influencers') }} inf
+    {{ ref('dim_influencers') }} inf
   left JOIN
     channel_details cd
   ON

@@ -2,14 +2,14 @@
 
 
 WITH approvals AS (
-  SELECT id,
+  SELECT task_id,
     date(creation_time) AS date_creation,
     submission_status,
     top_post,
     date(top_post_selected_time) AS top_post_selected_time,
     submission_link,
     cast(first_verification_feedback_backofficer_id AS int) AS backofficer_id,
-  FROM {{ ref('postgres_stg__influencer_tasks') }}
+  FROM {{ref('postgres_stg__influencer_tasks') }}
   WHERE top_post IS TRUE
 ),
 bo AS (

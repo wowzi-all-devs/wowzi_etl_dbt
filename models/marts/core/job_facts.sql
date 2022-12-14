@@ -1,5 +1,5 @@
 SELECT
-    id as job_id,
+    job_id,
     campaign_id,
     influencer_id,
     invitation_status,

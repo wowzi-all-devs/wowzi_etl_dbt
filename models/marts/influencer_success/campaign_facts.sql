@@ -4,7 +4,7 @@ WITH
   task_data AS(
   SELECT
     campaign_id,
-    COUNT(id) AS total_tasks,
+    COUNT(task_id) AS total_tasks,
     COUNTIF(first_verification_status="APPROVED") quality_verified_tasks,
     COUNTIF(second_verification_status="APPROVED") problematic_verified_tasks,
     COUNTIF(third_verification_status="APPROVED") time_verified_tasks,
@@ -15,7 +15,7 @@ WITH
 )
 SELECT
   c.campaign_id,
-  c.name as campaign_name,
+  c.campaign_name,
   c.campaign_creation_date,
   c.start_date,
   c.end_date,

@@ -29,7 +29,7 @@ renamed as (
         updated_at,
         email_token,
         code_attempts,
-        creation_time,
+        date(creation_time) as date_account_created,
         code_timestamp,
         manually_premium,
         personal_id_number,

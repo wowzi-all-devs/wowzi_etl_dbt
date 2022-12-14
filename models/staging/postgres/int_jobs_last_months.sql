@@ -1,7 +1,7 @@
 with jobs_previous_3_months as (
     SELECT 
         cast(influencer_id as INT64) AS influencer_id,
-        count(id) as jobs_last_3_months,
+        count(job_id) as jobs_last_3_months,
         FROM {{ ref('postgres_stg__jobs') }}
     where invitation_status = "ACCEPTED"
         and date_diff(date(current_timestamp()),date(offer_creation_time),MONTH) <= 3
@@ -11,7 +11,7 @@ with jobs_previous_3_months as (
 jobs_previous_1_month as (
     SELECT 
         cast(influencer_id as INT64) AS influencer_id,
-        count(id) as jobs_last_month,
+        count(job_id) as jobs_last_month,
         FROM {{ ref('postgres_stg__jobs') }}
     where invitation_status = "ACCEPTED"
         and date_diff(date(current_timestamp()),date(offer_creation_time),MONTH) <= 1
@@ -21,7 +21,7 @@ jobs_previous_1_month as (
 jobs_previous_6_months as (
     SELECT 
         cast(influencer_id as INT64) AS influencer_id,
-        count(id) as jobs_last_6_months,
+        count(job_id) as jobs_last_6_months,
         FROM {{ ref('postgres_stg__jobs') }}
     where invitation_status = "ACCEPTED"
         and date_diff(date(current_timestamp()),date(offer_creation_time),MONTH) <= 6
@@ -31,7 +31,7 @@ jobs_previous_6_months as (
 jobs_previous_2_months as (
     SELECT 
         cast(influencer_id as INT64) AS influencer_id,
-        count(id) as jobs_last_2_months,
+        count(job_id) as jobs_last_2_months,
         FROM {{ ref('postgres_stg__jobs') }}
     where invitation_status = "ACCEPTED"
         and date_diff(date(current_timestamp()),date(offer_creation_time),MONTH) <= 2
@@ -41,7 +41,7 @@ jobs_previous_2_months as (
 jobs_previous_2_weeks as (
     SELECT 
         cast(influencer_id as INT64) AS influencer_id,
-        count(id) as jobs_last_2_weeks,
+        count(job_id) as jobs_last_2_weeks,
         FROM {{ ref('postgres_stg__jobs') }}
     where invitation_status = "ACCEPTED"
         and date_diff(date(current_timestamp()),date(offer_creation_time),WEEK) <= 2
@@ -51,7 +51,7 @@ jobs_previous_2_weeks as (
 jobs_previous_4_weeks as (
     SELECT 
         cast(influencer_id as INT64) AS influencer_id,
-        count(id) as jobs_last_4_weeks,
+        count(job_id) as jobs_last_4_weeks,
         FROM {{ ref('postgres_stg__jobs') }}
     where invitation_status = "ACCEPTED"
         and date_diff(date(current_timestamp()),date(offer_creation_time),WEEK) <= 4
@@ -61,7 +61,7 @@ jobs_previous_4_weeks as (
 jobs_previous_1_week as (
     SELECT
         cast(influencer_id as INT64) AS influencer_id,
-        count(id) as jobs_last_week,
+        count(job_id) as jobs_last_week,
     FROM {{ ref('postgres_stg__jobs') }}
     where invitation_status = "ACCEPTED"
         and date_diff(date(current_timestamp()), date(offer_creation_time), WEEK) <= 1
@@ -69,7 +69,7 @@ jobs_previous_1_week as (
     order by 2 desc
 ),
 inf as (
-    SELECT cast(id as INT64) as influencer_id,
+    SELECT influencer_id,
         FROM {{ ref('postgres_stg__influencers') }}
 )
 select *
