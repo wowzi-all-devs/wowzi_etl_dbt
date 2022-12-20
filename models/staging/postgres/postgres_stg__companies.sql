@@ -1,0 +1,21 @@
+SELECT
+    cast(id as INT) as company_id,
+    name as company_name,
+    company_type,
+    company_size,
+    company_industry,
+    email,
+    phone,
+    kra_pin,
+    country,
+    location,
+    city,
+    address,
+    postal_code,
+    outgoing_currency,
+    company_payment_method,
+    company_payment_plan,
+    date(creation_time) as company_creation_date,
+    agency,
+    agency_commission
+FROM {{ source('staging', 'companies') }}

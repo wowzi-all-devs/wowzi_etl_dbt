@@ -8,7 +8,7 @@ payments_due AS (
     second_verification_status,
     mobile_number,
     task.campaign_id,
-    task.id AS task_id,
+    task.task_id,
     datetime(first_verification_feedback_time,"Africa/Nairobi") first_verification_datetime,
     DATE_ADD(datetime(first_verification_feedback_time,"Africa/Nairobi"), INTERVAL 120 hour) payment_date,
     payment_amount_list,
@@ -16,10 +16,10 @@ payments_due AS (
     bank_name,
     bank_account_number,
     cmp.currency AS currency
-  FROM {{ ref('influencer_tasks') }} task
-  LEFT JOIN {{ ref('influencers') }} USING (influencer_id)
-  LEFT JOIN {{ ref('bank_details') }} USING (influencer_id)
-  LEFT JOIN {{ ref('campaigns') }} cmp ON task.campaign_id=cmp.id
+  FROM {{ ref('postgres_stg__influencer_tasks') }} task
+  LEFT JOIN {{ ref('postgres_stg__influencers') }} USING (influencer_id)
+  LEFT JOIN {{ ref('postgres_stg__bank_details') }} USING (influencer_id)
+  LEFT JOIN {{ ref('postgres_stg__campaigns') }} cmp ON task.campaign_id=cmp.campaign_id
   WHERE
     first_verification_status="APPROVED"
     AND DATE(first_verification_feedback_time, 'Africa/Nairobi') > DATE_SUB(CURRENT_DATE('Africa/Nairobi'), INTERVAL 2 week)
@@ -57,5 +57,5 @@ FROM  (
           AS payment_method,
           it.status as payment_status
         FROM weekdays
-        LEFT JOIN {{ ref('influencer_transfers') }} it using(task_id)
+        LEFT JOIN {{ ref('postgres_stg__influencer_transfers') }} it using(task_id)
       )

@@ -1,0 +1,706 @@
+
+version: 2
+
+models:
+  - name: int_influencer_first_campaign
+    description: "First campaign date by influencer"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
+  - name: int_influencer_last_campaign
+    description: "Last campaign date by influencer"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
+  - name: int_total_jobs_per_influencer
+    description: "Total jobs by influencer: offered, accepted, expired, not accepted"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
+  - name: int_approval_rates
+    description: "Approval rates in each step verification: 1st, 2nd and 3rd."
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+  
+  - name: int_influencer_demographics
+    description: "Influencer basic information"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
+  - name: int_distinct_groups_per_influencer
+    description: "Count of groups by influencer"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: distinct_groups
+        description: "Total of groups the influencer has"
+
+  - name: int_jobs_last_months
+    description: "Count of jobs ACCEPTED by the influencer in: last 6 months, last 3 months, last 2 months, last month, last 4 weeks, last 2 weeks, last week"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: jobs_last_3_months
+        description: "Total of jobs the influencer accepted in the last 3 months"
+      - name: jobs_last_month
+        description: "Total of jobs the influencer accepted in the last month"
+      - name: jobs_last_6_months
+        description: "Total of jobs the influencer accepted in the last 6 months"
+      - name: jobs_last_2_months
+        description: "Total of jobs the influencer accepted in the last 2 months"
+      - name: jobs_last_2_weeks
+        description: "Total of jobs the influencer accepted in the last 2 weeks"
+      - name: jobs_last_4_weeks
+        description: "Total of jobs the influencer accepted in the last 4 weeks"
+      - name: jobs_last_week
+        description: "Total of jobs the influencer accepted last week"
+
+  - name: int_first_campaign_complete_and_paid
+    description: "First Task Completed and Paid by influencer"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
+  - name: int_merchant_payments
+    description: "Staging merchant payment model"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: created
+        description: "Date payment created"
+      - name: merchant_id
+        description: "Merchant ID"
+        tests:
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID"
+        tests:
+          - not_null
+      - name: amount
+        description: ""
+      - name: currency
+        description: ""
+      - name: ref_x
+        description: ""
+      - name: transfer_status
+        description: ""
+      - name: flw_ref
+        description: ""
+      - name: campaign_name
+        description: ""
+
+
+  - name: postgres_stg__bank_details
+    description: "Influencer bank details"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: influencer_id
+        description: "Influencer ID associated to this bank details"
+      - name: recipient_id
+        description: ""
+      - name: bank_account_number
+        description: ""
+      - name: bank_code
+        description: ""
+      - name: fullname
+        description: ""
+      - name: bank_name
+        description: ""
+      - name: destination_branch_code
+        description: ""
+
+  - name: postgres_stg__back_officers
+    description: "Back officers"
+    columns:
+      - name: backofficer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: backofficer_name
+        description: ""
+      - name: email
+        description: ""
+      - name: role
+        description: ""
+# TODO: Move this to Finance YML
+  - name: campaign_expenditure
+    description: "Campaign Expenditure with campaign stats"
+    columns:
+      - name: campaign_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_name
+        description: ""
+      - name: campaign_start_date
+        description: ""
+      - name: campaign_end_date
+        description: ""
+      - name: campaign_bonus_amount
+        description: ""
+      - name: campaign_budget
+        description: ""
+      - name: budget_spent
+        description: ""
+      - name: agency_commission
+        description: ""
+      - name: influencers_invited_count
+        description: "Count of Influencers invited to the campaign"
+      - name: influencers_accepted_count
+        description: "Count of Influencers who already accepted the campaign invitation"
+      - name: merchant_id
+        description: ""
+      - name: merchant_name
+        description: ""
+      - name: company_name
+        description: ""
+      - name: currency
+        description: ""
+      - name: canceled
+        description: ""
+
+  - name: postgres_stg__campaign_influencer_groups
+    description: "Influencer groups associated with campaigns."
+    columns:
+      - name: campaign_id
+        description: "Campaign ID"
+      - name: influencer_group_id
+        description: "Influencer group ID associated to the campaign"
+      - name: creation_time
+        description: ""
+
+  - name: postgres_stg__campaign_task_hashtags
+    description: "Hashtags associated to tasks in the campaigns."
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: value
+        description: "Hashtag value"
+      - name: campaign_id
+        description: "Campaign ID"
+      - name: campaign_task_id
+        description: "Campaign Task ID"
+
+  - name: postgres_stg__campaign_tasks
+    description: "Tasks associated to the campaigns."
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID"
+      - name: channel
+        description: "Channel where the task is created"
+        tests:
+          - accepted_values:
+              values: ['TIKTOK', 'TWITTER', 'FACEBOOK', 'LINKEDIN', 'INSTAGRAM']
+          - not_null
+      - name: description
+        description: "Description Task"
+
+  - name: postgres_stg__campaigns
+    description: "Campaigns table"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_id
+        description: "Same that ID column: used to join data"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_creation_date
+        description: "Datetime when the campaign was created"
+      - name: merchant_id
+        description: "Merchant ID who run the campaign"
+      - name: budget
+        description: "Money associated to the campaign"
+      - name: gender
+        description: "Gender target: MALE, FEMALE or BOTH"
+      - name: bonus_amount
+        description: "Extra money as reward"
+      - name: pre_live_check_status
+        description: "Status campaign"
+
+  - name: postgres_stg__categories
+    description: "Categories associated to influencer interests and campaigns"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: enum_value
+        description: "Category value"
+
+  - name: postgres_stg__companies
+    description: "Companies table"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Name company"
+      - name: company_type
+        description: ""
+      - name: company_size
+        description: ""
+      - name: company_industry
+        description: ""
+      - name: email
+        description: "Email company"
+      - name: phone
+        description: "Phone company"
+      - name: kra_pin
+        description: ""
+      - name: country
+        description: "Country company"
+      - name: location
+        description: "Location company"
+      - name: city
+        description: "City company"
+      - name: address
+        description: "Address company"
+      - name: postal_code
+        description: "Postal Code company"
+#TODO: Move this to core yml in Marts
+  - name: currency_rates
+    description: "Currency rates to USD by country by day"
+    columns:
+      - name: date
+        tests:
+          - not_null
+      - name: base
+        tests:
+          - not_null
+      - name: currency
+        tests:
+          - not_null
+      - name: currency_rate
+        tests:
+          - not_null
+
+#TODO Rename and Add to core yml in marts
+  - name: postgres_stg__influencers
+    description: "Influencer model denormalized"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: "The influencer name"
+
+#TODO Rename this and move to core yml
+  - name: dims_advertisers
+    description: "Advertiser model denormalized"
+    columns:
+      - name: advertiser_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
+  - name: postgres_stg__influencer_channel_data
+    description: "Influencer social media accounts"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: channel
+        description: "Social media account associated"
+        tests:
+          - accepted_values:
+              values: ['TIKTOK', 'TWITTER', 'FACEBOOK', 'LINKEDIN', 'INSTAGRAM']
+      - name: influencer_id
+        description: "Influencer associated to this social media account"
+      - name: api_key
+        description: ""
+      - name: api_id
+        description: ""
+      - name: followers_count
+        description: "Count of followers influencer has on this social media account"
+      - name: username
+        description: "Social media account username"
+      - name: status
+        description: ""
+      - name: status_backofficer_id
+        description: ""
+      - name: status_comment
+        description: ""
+      - name: status_update_time
+        description: ""
+
+  - name: postgres_stg__influencer_group_influencers
+    description: "Influencer groups by influencer"
+    columns:
+      - name: influencer_id
+        description: ""
+        tests:
+          - not_null
+      - name: influencer_group_id
+        description: ""
+        tests:
+          - not_null
+      - name: creation_time
+        description: ""
+
+  - name: postgres_stg__influencer_groups
+    description: "Influencer groups"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: invitation_code
+        description: "Group invitation code"
+        tests:
+          - not_null
+      - name: name
+        description: ""
+        tests:
+          - not_null
+      - name: description
+        description: ""
+      - name: company_id
+        description: "Company who belong the influencer group"
+      - name: deleted
+        description: ""
+      - name: creation_time
+        description: ""
+
+  - name: postgres_stg__influencer_referral_code
+    description: "Influencer Referral Code assign codes to influencers who are Ambassadors"
+    columns:
+      - name: influencer_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: code
+        description: "Ambassador code that should be share with others influencers"
+        tests:
+          - not_null
+      - name: is_enabled
+        description: ""
+      - name: creation_time
+        description: ""
+
+  - name: postgres_stg__influencer_referral_influencer
+    description: "Influencer Referral table link the Ambassador influencer with the influencer who used the code"
+    columns:
+      - name: influencer_id
+        description: "Influencer ID who was referred"
+        tests:
+          - unique
+          - not_null
+      - name: referred_by_influencer_id
+        description: "Ambassador Influencer ID"
+        tests:
+          - not_null
+      - name: creation_time
+        description: ""
+
+  - name: postgres_stg__influencer_subcategories
+    description: "Influencer Subcategories"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: subcategory_id
+        description: "Subcategory ID"
+        tests:
+          - not_null
+      - name: influencer_id
+        description: "Influencer ID"
+        tests:
+          - not_null
+
+  - name: postgres_stg__influencer_tasks
+    description: "Influencer Tasks"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID"
+        tests:
+          - not_null
+      - name: campaign_task_id
+        description: "Campaign Task ID"
+        tests:
+          - not_null
+      - name: job_id
+        description: "Job ID"
+        tests:
+          - not_null
+      - name: influencer_id
+        description: "Influencer ID"
+        tests:
+          - not_null
+      - name: submission_status
+        description: "Task status"
+
+  - name: postgres_stg__influencer_transfers
+    description: "Influencer Transfers"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: transfer_id
+        description: "Transfer ID"
+        tests:
+          - not_null
+      - name: influencer_id
+        description: "Influencer ID"
+        tests:
+          - not_null
+      - name: task_id
+        description: "Task ID"
+        tests:
+          - not_null
+      - name: account_number
+        description: ""
+      - name: bank_code
+        description: ""
+      - name: fullname
+        description: ""
+      - name: date_created
+        description: ""
+      - name: currency
+        description: ""
+      - name: amount
+        description: ""
+      - name: fee
+        description: ""
+      - name: status
+        description: ""
+      - name: reference
+        description: ""
+      - name: narration
+        description: ""
+      - name: approver
+        description: ""
+      - name: complete_message
+        description: ""
+      - name: requires_approval
+        description: ""
+      - name: is_approved
+        description: ""
+      - name: bank_name
+        description: ""
+      - name: creation_time
+        description: ""
+
+  - name: postgres_stg__jobs
+    description: "Jobs associated to influencers"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID"
+        tests:
+          - not_null
+      - name: influencer_id
+        description: "Influencer ID"
+        tests:
+          - not_null
+      - name: invitation_status
+        description: ""
+      - name: payment_status
+        description: ""
+      - name: offer_creation_time
+        description: ""
+      - name: offer_expire_time
+        description: ""
+      - name: submission_expire_time
+        description: ""
+      - name: review_expire_time
+        description: ""
+      - name: offer_acception_or_rejection_time
+        description: ""
+      - name: creation_time
+        description: ""
+      - name: max_influencer_tasks_count
+        description: ""
+      - name: max_influencer_amounts_list
+        description: ""
+
+  - name: postgres_stg__merchants
+    description: "Merchants payments"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
+  - name: postgres_stg__merchant_payments
+    description: "Merchants payments"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: created
+        description: "Date payment created"
+      - name: merchant_id
+        description: "Merchant ID"
+        tests:
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID"
+        tests:
+          - not_null
+      - name: amount
+        description: ""
+      - name: currency
+        description: ""
+      - name: ref_x
+        description: ""
+      - name: transfer_status
+        description: ""
+      - name: flw_ref
+        description: ""
+      - name: campaign_name
+        description: ""
+
+  - name: postgres_stg__merchant_subscriptions
+    description: "Merchants subscriptions"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: merchant_id
+        description: "Merchant ID"
+        tests:
+          - not_null
+      - name: subscription_id
+        description: "Subscription ID"
+        tests:
+          - not_null
+      - name: merchant_email
+        description: ""
+      - name: status
+        description: ""
+      - name: date_created
+        description: ""
+      - name: valid_until
+        description: ""
+      - name: payment_plan_id
+        description: ""
+
+  - name: postgres_stg__subcategories
+    description: "Subcategories"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: parent_category_id
+        description: "Parent category ID"
+        tests:
+          - not_null
+      - name: enum_value
+        description: "Subcategory name"
+        tests:
+          - not_null
+# TODO Move this to influencer_success yml in marts
+  - name: twitter_campaign_data
+    description: "Twitter data extracted from a data pipeline"
+    columns:
+      - name: task_id
+        tests:
+          - not_null
+      - name: influencer_id
+        tests:
+          - not_null
+      - name: campaign_id
+        tests:
+          - not_null
+      - name: tweet_id
+        tests:
+          - not_null
+      - name: channel
+      - name: tweet_text
+      - name: error
+      - name: followers_count
+      - name: hashtags
+      - name: likes
+      - name: location
+      - name: possibly_sensitive
+      - name: created_at
+      - name: processed_at
+      - name: profile_location
+      - name: quote_count
+      - name: reply_count
+      - name: retweet_count
+      - name: source
+      - name: stage
+      - name: status
+      - name: submission_link
+      - name: username

@@ -7,7 +7,7 @@ WITH payouts AS (
     status as payment_status,
     SUM(amount) as total_amount
   FROM 
-    {{ ref('influencer_transfers') }}
+    {{ ref('postgres_stg__influencer_transfers') }}
   GROUP BY 1, 2, 3
   HAVING SUM(amount) >=24000
 )
@@ -18,7 +18,7 @@ SELECT
   email,
   mobile_number
 FROM 
-  {{ ref('influencers') }}
+  {{ ref('postgres_stg__influencers') }}
 RIGHT JOIN 
   payouts USING (influencer_id)
 WHERE 
