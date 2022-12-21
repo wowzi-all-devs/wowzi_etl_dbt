@@ -29,7 +29,7 @@ models:
           - unique
           - not_null
 
-  - name: int_approval_rates
+  - name: int_post_approval_rates
     description: "Approval rates in each step verification: 1st, 2nd and 3rd."
     columns:
       - name: influencer_id
@@ -90,36 +90,36 @@ models:
           - unique
           - not_null
 
-  - name: int_merchant_payments
-    description: "Staging merchant payment model"
-    columns:
-      - name: id
-        description: "The primary key for this table"
-        tests:
-          - unique
-          - not_null
-      - name: created
-        description: "Date payment created"
-      - name: merchant_id
-        description: "Merchant ID"
-        tests:
-          - not_null
-      - name: campaign_id
-        description: "Campaign ID"
-        tests:
-          - not_null
-      - name: amount
-        description: ""
-      - name: currency
-        description: ""
-      - name: ref_x
-        description: ""
-      - name: transfer_status
-        description: ""
-      - name: flw_ref
-        description: ""
-      - name: campaign_name
-        description: ""
+  # - name: int_merchant_payments
+  #   description: "Staging merchant payment model"
+  #   columns:
+  #     - name: id
+  #       description: "The primary key for this table"
+  #       tests:
+  #         - unique
+  #         - not_null
+  #     - name: created
+  #       description: "Date payment created"
+  #     - name: merchant_id
+  #       description: "Merchant ID"
+  #       tests:
+  #         - not_null
+  #     - name: campaign_id
+  #       description: "Campaign ID"
+  #       tests:
+  #         - not_null
+  #     - name: amount
+  #       description: ""
+  #     - name: currency
+  #       description: ""
+  #     - name: ref_x
+  #       description: ""
+  #     - name: transfer_status
+  #       description: ""
+  #     - name: flw_ref
+  #       description: ""
+  #     - name: campaign_name
+  #       description: ""
 
 
   - name: postgres_stg__bank_details
@@ -310,22 +310,7 @@ models:
         description: "Address company"
       - name: postal_code
         description: "Postal Code company"
-#TODO: Move this to core yml in Marts
-  - name: currency_rates
-    description: "Currency rates to USD by country by day"
-    columns:
-      - name: date
-        tests:
-          - not_null
-      - name: base
-        tests:
-          - not_null
-      - name: currency
-        tests:
-          - not_null
-      - name: currency_rate
-        tests:
-          - not_null
+
 
 #TODO Rename and Add to core yml in marts
   - name: postgres_stg__influencers
@@ -338,16 +323,6 @@ models:
           - not_null
       - name: first_name
         description: "The influencer name"
-
-#TODO Rename this and move to core yml
-  - name: dims_advertisers
-    description: "Advertiser model denormalized"
-    columns:
-      - name: advertiser_id
-        description: "The primary key for this table"
-        tests:
-          - unique
-          - not_null
 
   - name: postgres_stg__influencer_channel_data
     description: "Influencer social media accounts"

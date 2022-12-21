@@ -20,7 +20,7 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('dims_advertisers')
+              to: ref('dim_advertisers')
               field: advertiser_id
       - name: campaign_id
         tests:
