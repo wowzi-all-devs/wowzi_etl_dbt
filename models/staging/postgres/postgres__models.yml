@@ -244,13 +244,8 @@ models:
   - name: postgres_stg__campaigns
     description: "Campaigns table"
     columns:
-      - name: id
-        description: "The primary key for this table"
-        tests:
-          - unique
-          - not_null
       - name: campaign_id
-        description: "Same that ID column: used to join data"
+        description: "The primary key for this table"
         tests:
           - unique
           - not_null
@@ -281,7 +276,7 @@ models:
   - name: postgres_stg__companies
     description: "Companies table"
     columns:
-      - name: id
+      - name: company_id
         description: "The primary key for this table"
         tests:
           - unique
@@ -447,7 +442,7 @@ models:
   - name: postgres_stg__influencer_tasks
     description: "Influencer Tasks"
     columns:
-      - name: id
+      - name: task_id
         description: "The primary key for this table"
         tests:
           - unique
@@ -527,7 +522,7 @@ models:
   - name: postgres_stg__jobs
     description: "Jobs associated to influencers"
     columns:
-      - name: id
+      - name: job_id
         description: "The primary key for this table"
         tests:
           - unique
@@ -564,7 +559,7 @@ models:
   - name: postgres_stg__merchants
     description: "Merchants payments"
     columns:
-      - name: id
+      - name: advertiser_id
         description: "The primary key for this table"
         tests:
           - unique
