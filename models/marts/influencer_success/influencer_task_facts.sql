@@ -3,7 +3,7 @@
 SELECT
   inft.influencer_id,
   c.company_id,
-  inft.id AS task_id,
+  inft.task_id,
   inft.job_id,
   inft.campaign_id,
   ct.channel,
