@@ -1,0 +1,28 @@
+SELECT
+    campaign_id,
+    influencer_id,
+    task_id,
+    tweet_id,
+    tweet_text,
+    username,
+    submission_link,
+    channel,
+    created_at,
+    error,
+    followers_count,
+    hashtags,
+    likes,
+    location,
+    possibly_sensitive,
+    profile_location,
+    quote_count,
+    reply_count,
+    retweet_count,
+    source,
+    stage,
+    status,
+    processed_at
+FROM
+    {{ ref('stg_tweets_posted') }}
+WHERE
+    status=200 and error='None'

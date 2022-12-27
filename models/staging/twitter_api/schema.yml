@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: stg_tweets_posted
+    description: "Twitter data collected about posts campaigns"
+    columns: 
+      - name: campaign_id
+      - name: influencer_id
+      - name: task_id
+      - name: tweet_id
+      - name: tweet_text
+      - name: username
+      - name: submission_link
+      - name: channel
+      - name: created_at
+      - name: error
+      - name: followers_count
+      - name: hashtags
+      - name: likes
+      - name: location
+      - name: possibly_sensitive
+      - name: profile_location
+      - name: quote_count
+      - name: reply_count
+      - name: retweet_count
+      - name: source
+      - name: stage
+      - name: status
+      - name: processed_at
+sources:
+    - name: twitter_api
+      #For bigquery:
+      database: bi-staging-1-309112
+      schema: dbt_caleb
+      tables:
+        - name: twitter_campaign_data_redux
