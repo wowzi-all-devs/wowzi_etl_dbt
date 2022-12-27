@@ -23,6 +23,6 @@ SELECT
     status,
     processed_at
 FROM
-    {{ ref('stg_tweets_posted') }}
+    {{ ref('twitter_campaign_data') }}
 WHERE
     status=200 and error='None'

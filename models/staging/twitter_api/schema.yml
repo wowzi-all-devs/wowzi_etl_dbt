@@ -1,13 +1,21 @@
 version: 2
 
 models:
-  - name: stg_tweets_posted
-    description: "Twitter data collected about posts campaigns"
+  - name: twitter_campaign_data
+    description: "Twitter data extracted from a data pipeline"
     columns: 
       - name: campaign_id
+        tests:
+          - not_null
       - name: influencer_id
+        tests:
+          - not_null
       - name: task_id
+        tests:
+          - not_null
       - name: tweet_id
+        tests:
+          - not_null
       - name: tweet_text
       - name: username
       - name: submission_link
@@ -33,4 +41,5 @@ sources:
       database: bi-staging-1-309112
       schema: dbt_caleb
       tables:
+        - name: campaign_expenditure
         - name: twitter_campaign_data_redux

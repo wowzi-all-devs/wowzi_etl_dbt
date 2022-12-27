@@ -22,4 +22,4 @@ SELECT
     status,
     submission_link,
     username
-FROM {{ source('dbt_caleb', 'twitter_campaign_data_redux') }}
+FROM {{ source('twitter_api', 'twitter_campaign_data_redux') }}

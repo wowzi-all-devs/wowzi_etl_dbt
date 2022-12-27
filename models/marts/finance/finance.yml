@@ -13,7 +13,7 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('influencers')
+              to: ref('postgres_stg__influencers')
               field: influencer_id
       - name: mobile_number
       - name: advertiser_id
@@ -26,14 +26,14 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('campaigns')
-              field: id
+              to: ref('postgres_stg__campaigns')
+              field: campaign_id
       - name: task_id
         tests:
           - not_null
           - relationships:
-              to: ref('influencer_tasks')
-              field: id
+              to: ref('postgres_stg__influencer_tasks')
+              field: task_id
       - name: campaign_name
       - name: payment_date
       - name: country
@@ -66,7 +66,7 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('influencers')
+              to: ref('postgres_stg__influencers')
               field: influencer_id
       - name: first_verification_status
       - name: second_verification_status
@@ -75,14 +75,14 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('campaigns')
-              field: id
+              to: ref('postgres_stg__campaigns')
+              field: campaign_id
       - name: task_id
         tests:
           - not_null
           - relationships:
-              to: ref('influencer_tasks')
-              field: id
+              to: ref('postgres_stg__influencer_tasks')
+              field: task_id
       - name: first_verification_datetime
       - name: payment_date
       - name: payment_amount_list
@@ -113,7 +113,7 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('influencers')
+              to: ref('postgres_stg__influencers')
               field: influencer_id
       - name: month
       - name: payment_status

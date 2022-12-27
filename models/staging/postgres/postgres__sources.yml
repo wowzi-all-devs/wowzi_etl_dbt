@@ -29,14 +29,6 @@ sources:
         - name: merchants
         - name: subcategories
 
-    - name: dbt_caleb
-      #For bigquery:
-      database: bi-staging-1-309112
-      schema: dbt_caleb
-      tables:
-        - name: campaign_expenditure
-        - name: twitter_campaign_data_redux
-
     - name: rates
       #For bigquery:
       database: bi-staging-1-309112

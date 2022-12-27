@@ -14,4 +14,4 @@ SELECT
     company_name,
     currency,
     canceled
-FROM {{ source('dbt_caleb', 'campaign_expenditure') }}
+FROM {{ source('twitter_api', 'campaign_expenditure') }}
