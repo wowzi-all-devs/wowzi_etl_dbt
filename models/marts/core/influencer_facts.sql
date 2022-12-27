@@ -1,22 +1,17 @@
 WITH
 channel_details AS (
 SELECT
-    * EXCEPT(id,
-      api_id,
-      api_key,
-      status_backofficer_id,
-      status_comment,
-      status_update_time)
+    * 
 FROM (
     SELECT
       *,
       {{ influencer_type(followers_count) }} AS influencer_type
-    FROM {{ ref('influencer_channel_data') }} )
+    FROM {{ ref('postgres_stg__influencer_channel_data') }} )
 ),
 active_influencers AS (
     SELECT 
         influencer_id,
-    FROM {{ ref('jobs') }}
+    FROM {{ ref('postgres_stg__jobs') }}
     WHERE (invitation_status = "ACCEPTED" or invitation_status = "REJECTED")
         and date_diff(date(current_timestamp()),date(offer_creation_time),MONTH) <= 6
     GROUP BY 1
@@ -81,13 +76,13 @@ FROM (
         AND inf.gender IS NOT NULL
         AND inf.dob IS NOT NULL
         AND inf.income_category IS NOT NULL
-        AND inf.influencer_id in (select influencer_id from {{ ref('influencer_channel_data') }} where status='APPROVED' and followers_count>=251)
+        AND inf.influencer_id in (select influencer_id from {{ ref('postgres_stg__influencer_channel_data') }} where status='APPROVED' and followers_count>=251)
        then 'Eligible' else 'Ineligible'
     END 
     AS job_eligibility,
     cd.influencer_type
   FROM
-    {{ ref('influencers') }} inf
+    {{ ref('dim_influencers') }} inf
   left JOIN
     channel_details cd
   ON

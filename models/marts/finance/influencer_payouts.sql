@@ -3,14 +3,14 @@
 WITH dims_payments AS (
 SELECT      
     inf_transfers.id as transfer_id,
-    inf_transfers.influencer_id as influencer_id,
+    inf_transfers.influencer_id,
     inf.mobile_number,
     inf_tasks.campaign_id,
-    companies.name as company_name,
+    companies.company_name,
     adv.advertiser_id,
     adv.first_name as advertiser_fname,
     adv.last_name as advertiser_lname,
-    campaigns.name as campaign_name,
+    campaigns.campaign_name,
     inf_transfers.task_id,
     inf_transfers.amount,
     inf_transfers.status as payment_status,
@@ -21,13 +21,13 @@ SELECT
     bd.bank_account_number,
     inf_transfers.narration,
     inf_transfers.reference
-FROM {{ ref('influencer_transfers') }} inf_transfers
-   LEFT JOIN {{ ref('influencers') }} inf USING (influencer_id)
-   LEFT JOIN {{ ref('stg_bank_details') }} bd USING (influencer_id)
-   LEFT JOIN {{ ref('influencer_tasks') }} inf_tasks ON inf_tasks.id = inf_transfers.task_id
-   LEFT JOIN {{ ref('campaigns') }} campaigns ON campaigns.id=inf_tasks.campaign_id
-   LEFT join {{ ref('dims_advertisers') }} adv on adv.advertiser_id=campaigns.merchant_id
-   LEFT join {{ ref('companies') }} companies on companies.id = campaigns.company_id
+FROM {{ ref('postgres_stg__influencer_transfers') }} inf_transfers
+   LEFT JOIN {{ ref('postgres_stg__influencers') }} inf USING (influencer_id)
+   LEFT JOIN {{ ref('int_bank_details') }} bd USING (influencer_id)
+   LEFT JOIN {{ ref('postgres_stg__influencer_tasks') }} inf_tasks ON inf_tasks.task_id = inf_transfers.task_id
+   LEFT JOIN {{ ref('postgres_stg__campaigns') }} campaigns ON campaigns.campaign_id=inf_tasks.campaign_id
+   LEFT join {{ ref('postgres_stg__merchants') }} adv on adv.advertiser_id=campaigns.merchant_id
+   LEFT join {{ ref('postgres_stg__companies') }} companies on companies.company_id = campaigns.company_id
 )
 SELECT
     transfer_id,

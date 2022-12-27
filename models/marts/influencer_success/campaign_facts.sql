@@ -4,18 +4,18 @@ WITH
   task_data AS(
   SELECT
     campaign_id,
-    COUNT(id) AS total_tasks,
+    COUNT(task_id) AS total_tasks,
     COUNTIF(first_verification_status="APPROVED") quality_verified_tasks,
     COUNTIF(second_verification_status="APPROVED") problematic_verified_tasks,
     COUNTIF(third_verification_status="APPROVED") time_verified_tasks,
   FROM
-    {{ ref('influencer_tasks') }}
+    {{ ref('postgres_stg__influencer_tasks') }}
   GROUP BY
     1 
 )
 SELECT
   c.campaign_id,
-  c.name as campaign_name,
+  c.campaign_name,
   c.campaign_creation_date,
   c.start_date,
   c.end_date,
@@ -40,7 +40,7 @@ SELECT
   adv.advertiser_id,
   adv.country
 FROM
-  {{ ref('campaigns') }} c
+  {{ ref('postgres_stg__campaigns') }} c
 LEFT JOIN
   task_data
 ON
@@ -50,11 +50,11 @@ LEFT JOIN
 ON
   c.campaign_id=CAST(ce.campaign_id AS integer)
 LEFT JOIN
-  {{ ref('dims_advertisers') }} adv
+  {{ ref('postgres_stg__merchants') }} adv
 ON
   c.merchant_id=adv.advertiser_id
 LEFT JOIN
-  {{ ref('currency_rates') }} cr
+  {{ ref('int_currency_rates') }} cr
 ON 
   DATE(c.end_date)=DATE(cr.date) AND c.currency=cr.currency
 ORDER BY
