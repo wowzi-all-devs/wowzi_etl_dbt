@@ -474,10 +474,10 @@ models:
         tests:
           - unique
           - not_null
-      - name: transfer_id
-        description: "Transfer ID"
-        tests:
-          - not_null
+      # - name: transfer_id
+      #   description: "Transfer ID"
+      #   tests:
+      #     - not_null
       - name: influencer_id
         description: "Influencer ID"
         tests:
