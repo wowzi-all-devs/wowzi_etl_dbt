@@ -64,6 +64,7 @@ FROM (
         ELSE '>45'
     END
     AS age_range,
+    inf.tax_external_id,
     CASE 
         WHEN inf.influencer_id IN (select * from active_influencers) THEN 'Active' ELSE 'Inactive'
     END

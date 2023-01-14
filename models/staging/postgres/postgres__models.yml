@@ -640,3 +640,23 @@ models:
         tests:
           - not_null
 
+  - name: postgres_stg__influencer_taxes_info
+    description: "Data about taxes like Kra Pin in Kenya"
+    columns:
+      - name: id
+        tests:
+          - unique
+          - not_null
+      - name: influencer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('influencers')
+              field: influencer_id
+      - name: tax_external_id
+        tests:
+          - unique
+          - not_null
+      - name: country
+      - name: created_at
+      - name: updated_at

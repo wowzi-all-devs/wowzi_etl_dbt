@@ -28,6 +28,7 @@ sources:
         - name: merchant_subscriptions
         - name: merchants
         - name: subcategories
+        - name: influencer_taxes_info
 
     - name: rates
       #For bigquery:

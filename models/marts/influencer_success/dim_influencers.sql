@@ -15,6 +15,10 @@ ig as (
         true as instagram,
     FROM {{ ref('postgres_stg__influencer_channel_data') }}
     where channel = 'INSTAGRAM'
+),
+influencer_taxes_info as (
+    select influencer_id, tax_external_id
+    FROM {{ ref('postgres_stg__influencer_taxes_info') }}
 )
 select *
 from (
@@ -99,3 +103,4 @@ from (
     left join fb using(influencer_id)
     left join ig using(influencer_id)
     left join twitter using(influencer_id)
+    left join influencer_taxes_info using(influencer_id)

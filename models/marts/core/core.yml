@@ -34,6 +34,7 @@ models:
       - name: total_expired
       - name: total_not_accepted
       - name: age_range
+      - name: tax_external_id
       - name: job_activity
       - name: job_eligibility
       - name: username_INSTAGRAM
