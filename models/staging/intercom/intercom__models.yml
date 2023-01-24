@@ -5,7 +5,7 @@ models:
   - name: intercom_stg__conversations
     description: "First campaign date by influencer"
     columns:
-      - name: id
+      - name: conversation_id
         description: "The primary key for this table"
         tests:
           - unique
