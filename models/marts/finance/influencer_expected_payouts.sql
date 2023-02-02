@@ -28,7 +28,7 @@ payments_due AS (
 ),
 weekdays AS (
   SELECT
-      *,
+      distinct*,
       FORMAT_DATE('%a',payments_due.payment_date) AS weekday_name_abbreviated,
   FROM payments_due
 )
