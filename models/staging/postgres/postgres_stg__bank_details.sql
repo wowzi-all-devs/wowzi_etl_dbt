@@ -6,5 +6,6 @@ select
     bank_code,
     fullname,
     bank_name,
-    destination_branch_code
+    destination_branch_code,
+    updated_at
 FROM {{ source('staging', 'bank_details') }}
