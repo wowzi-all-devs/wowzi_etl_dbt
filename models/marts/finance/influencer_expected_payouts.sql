@@ -18,7 +18,7 @@ payments_due AS (
     cmp.currency AS currency
   FROM {{ ref('postgres_stg__influencer_tasks') }} task
   LEFT JOIN {{ ref('postgres_stg__influencers') }} USING (influencer_id)
-  LEFT JOIN {{ ref('postgres_stg__bank_details') }} USING (influencer_id)
+  LEFT JOIN {{ ref('int_bank_details') }} USING (influencer_id)
   LEFT JOIN {{ ref('postgres_stg__campaigns') }} cmp ON task.campaign_id=cmp.campaign_id
   WHERE
     first_verification_status="APPROVED"

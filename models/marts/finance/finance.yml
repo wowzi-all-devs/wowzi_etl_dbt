@@ -1,6 +1,19 @@
 version: 2
 
 models:
+  - name: int_bank_details
+    description: "Unique Influener Bank Details"
+    columns:
+      - name: influencer_id
+        tests:
+          - not_null
+          - unique
+      - name: bank_name
+        tests:
+          - not_null
+      - name: bank_account_number
+        tests:
+          - not_null
   - name: influencer_payouts
     description: "Influencer payments denormalized"
     columns:
