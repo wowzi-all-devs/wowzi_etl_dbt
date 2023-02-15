@@ -10,6 +10,7 @@ FROM {{ ref('influencer_payouts') }}
 influencer_referrals AS (
 SELECT
     ref.influencer_id,
+    inf.first_name || ' ' || inf.last_name as influencer_name,
     (CASE WHEN inf.gender IS NULL THEN 'GENDER NOT SET'
     ELSE inf.gender END) AS gender,
     inf.job_eligibility,
