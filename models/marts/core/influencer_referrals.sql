@@ -27,12 +27,13 @@ SELECT
     ELSE 'NO' END) AS inf_completed_job,
     inf.job_activity,
     ref.referred_by_influencer_id as ambassador_influencer_id,
+    inf2.first_name || ' ' || inf2.last_name as ambassador_name,
     inf2.job_eligibility as ambassador_job_eligibility,
     inf2.country as ambassador_country,
     ref.creation_time
 FROM {{ ref('postgres_stg__influencer_referral_influencer') }} ref
 LEFT JOIN {{ ref('influencer_facts') }} inf on ref.influencer_id = inf.influencer_id
-LEFT JOIN {{ ref('influencer_facts') }} inf2 on ref.influencer_id = inf2.influencer_id
+LEFT JOIN {{ ref('influencer_facts') }} inf2 on ref.referred_by_influencer_id = inf2.influencer_id
 LEFT JOIN payments p on ref.influencer_id = p.influencer_id
 )
 
