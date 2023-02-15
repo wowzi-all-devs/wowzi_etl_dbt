@@ -4,6 +4,7 @@ WITH
 payments_due AS (
   SELECT
     influencer_id,
+    first_name || ' ' || last_name as influencer_name,
     first_verification_status,
     second_verification_status,
     mobile_number,
