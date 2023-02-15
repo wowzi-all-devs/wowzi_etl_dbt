@@ -4,6 +4,7 @@ WITH payments AS (
 SELECT      
     inf_transfers.id as transfer_id,
     inf_transfers.influencer_id,
+    inf.first_name || ' ' || inf.last_name as influencer_name,
     inf.mobile_number,
     inf.gender,
     inf.influencer_type_TWITTER,
@@ -52,6 +53,7 @@ dims_payments as (
 SELECT
     transfer_id,
     influencer_id,
+    influencer_name,
     mobile_number,
     gender,
     advertiser_id,
