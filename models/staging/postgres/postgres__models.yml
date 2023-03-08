@@ -289,6 +289,11 @@ models:
         description: ""
       - name: company_industry
         description: ""
+      - name: company_role
+        description: ""
+        tests:
+          - accepted_values:
+              values: ['AGENCY', 'BRAND']
       - name: email
         description: "Email company"
       - name: phone
@@ -306,6 +311,20 @@ models:
       - name: postal_code
         description: "Postal Code company"
 
+  - name: postgres_stg__company_merchants
+    description: "Table to link merchants to companies."
+    columns:
+      - name: primary_key
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: company_id
+      - name: merchant_id
+      - name: merchant_role
+        description: "Merchant role in the company"
+      - name: created_at
+      - name: updated_at
 
 #TODO Rename and Add to core yml in marts
   - name: postgres_stg__influencers

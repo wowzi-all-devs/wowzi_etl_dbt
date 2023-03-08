@@ -15,6 +15,7 @@ WITH
 )
 SELECT
   c.campaign_id,
+  c.company_id,
   c.campaign_name,
   c.campaign_creation_date,
   c.start_date,
@@ -36,7 +37,6 @@ SELECT
   task_data.quality_verified_tasks,
   task_data.problematic_verified_tasks,
   task_data.time_verified_tasks,
-  adv.company_id,
   adv.advertiser_id,
   adv.country
 FROM

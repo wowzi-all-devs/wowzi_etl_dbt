@@ -4,6 +4,7 @@ SELECT
     company_type,
     company_size,
     company_industry,
+    company_role,
     email,
     phone,
     kra_pin,
@@ -16,6 +17,5 @@ SELECT
     company_payment_method,
     company_payment_plan,
     date(creation_time) as company_creation_date,
-    agency,
     agency_commission
 FROM {{ source('staging', 'companies') }}

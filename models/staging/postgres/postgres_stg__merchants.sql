@@ -9,7 +9,6 @@ with source as (
 renamed as (
 
     select
-        _airbyte_unique_key,
         id as advertiser_id,
         city,
         code,
@@ -23,7 +22,6 @@ renamed as (
         location,
         password,
         last_name,
-        company_id,
         created_at,
         first_name,
         updated_at,

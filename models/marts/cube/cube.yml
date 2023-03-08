@@ -6,7 +6,13 @@ models:
     columns: 
       - name: campaign_id
       - name: influencer_id
+      - name: first_name
+      - name: last_name
       - name: task_id
+      - name: submission_status
+      - name: first_verification_status
+      - name: second_verification_status
+      - name: third_verification_status
       - name: tweet_id
       - name: tweet_text
       - name: username
@@ -17,12 +23,23 @@ models:
       - name: followers_count
       - name: hashtags
       - name: likes
+        tests:
+          - not_null
       - name: location
       - name: possibly_sensitive
       - name: profile_location
       - name: quote_count
+        tests:
+            - not_null
       - name: reply_count
+        tests:
+          - not_null
       - name: retweet_count
+        tests:
+            - not_null
+      - name: impressions
+        tests:
+            - not_null
       - name: source
       - name: stage
       - name: status
@@ -33,7 +50,13 @@ models:
     columns: 
       - name: campaign_id
       - name: influencer_id
+      - name: first_name
+      - name: last_name
       - name: task_id
+      - name: submission_status
+      - name: first_verification_status
+      - name: second_verification_status
+      - name: third_verification_status
       - name: tweet_id
       - name: tweet_text
       - name: username
@@ -50,7 +73,25 @@ models:
       - name: quote_count
       - name: reply_count
       - name: retweet_count
+      - name: impressions
       - name: source
       - name: stage
       - name: status
       - name: processed_at
+
+  - name: tweets_insights_by_task_by_day
+    description: "Unique daily tweets aggregating likes, comments, retweets and impressions by campaign by day"
+    columns:
+      - name: processed_at
+      - name: task_id
+      - name: campaign_id
+      - name: influencer_id
+      - name: likes
+      - name: comments
+      - name: retweets
+      - name: impressions
+
+  - name: dbt_last_run
+    description: "Last time models were updated"
+    columns:
+      - name: last_update

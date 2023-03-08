@@ -1,3 +1,5 @@
+{{ config(tags=["cube"]) }}
+
 WITH tweets_last_updated as (
   SELECT task_id as task_id_1, max(processed_at) as last_update
   FROM {{ ref('tweets_insights') }}
@@ -16,7 +18,13 @@ ON
 SELECT
     campaign_id,
     influencer_id,
+    first_name,
+    last_name,
     task_id,
+    submission_status,
+    first_verification_status,
+    second_verification_status,
+    third_verification_status,
     tweet_id,
     tweet_text,
     username,
@@ -33,6 +41,7 @@ SELECT
     quote_count,
     reply_count,
     retweet_count,
+    impressions,
     source,
     stage,
     status,

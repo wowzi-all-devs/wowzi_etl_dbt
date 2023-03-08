@@ -21,6 +21,7 @@ sources:
         - name: campaigns
         - name: categories
         - name: companies
+        - name: company_merchants
         - name: influencer_channel_data
         - name: influencer_referral_code
         - name: influencer_referral_influencer

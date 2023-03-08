@@ -17,6 +17,7 @@ SELECT
     quote_count,
     reply_count,
     retweet_count,
+    impressions,
     source,
     stage,
     status,

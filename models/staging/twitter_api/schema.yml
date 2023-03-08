@@ -31,6 +31,7 @@ models:
       - name: quote_count
       - name: reply_count
       - name: retweet_count
+      - name: impressions
       - name: source
       - name: stage
       - name: status
