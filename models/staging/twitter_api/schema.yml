@@ -39,7 +39,7 @@ models:
 sources:
     - name: twitter_api
       #For bigquery:
-      database: bi-staging-1-309112
+      database: wowzi-data-dev-env
       schema: dbt_caleb
       tables:
         - name: campaign_expenditure
