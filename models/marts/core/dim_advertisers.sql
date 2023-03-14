@@ -23,6 +23,7 @@ companies as (
         company_name,
         company_type,
         company_size,
+        company_role,
         company_industry,
         kra_pin,
         address,
@@ -31,7 +32,6 @@ companies as (
         company_payment_method,
         company_payment_plan,
         company_creation_date,
-        agency,
         agency_commission
     -- FROM `bi-staging-1-309112.dims.companies`
     FROM {{ ref('postgres_stg__companies') }}
