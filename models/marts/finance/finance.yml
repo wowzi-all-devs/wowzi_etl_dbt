@@ -15,7 +15,7 @@ models:
         tests:
           - not_null
   - name: influencer_payouts
-    description: "Influencer payments denormalized"
+    description: "Payouts made to Creators/Influencers"
     columns:
       - name: transfer_id
         description: "The primary key for this table"
@@ -26,7 +26,7 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('postgres_stg__influencers')
+              to: ref('postgres_stg__influencer_transfers')
               field: influencer_id
       - name: mobile_number
       - name: advertiser_id
@@ -73,13 +73,14 @@ models:
       - name: total_amount
 
   - name: influencer_expected_payouts
-    description: "Influencer Payments from the last 2 weeks"
+    description: "A list of payouts expected to be made to creators based on first verification post approval in a 2 
+    week time window"
     columns:
       - name: influencer_id
         tests:
           - not_null
           - relationships:
-              to: ref('postgres_stg__influencers')
+              to: ref('postgres_stg__influencer_tasks')
               field: influencer_id
       - name: first_verification_status
       - name: second_verification_status
