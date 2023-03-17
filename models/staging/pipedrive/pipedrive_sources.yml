@@ -3,7 +3,7 @@ version: 2
 sources:
     - name: staging
       #For bigquery:
-      database: bi-staging-1-309112
+      database: wowzi-data-dev-env
       schema: wowzi_airbyte_pipedrive
       tables:
         - name: organizations
