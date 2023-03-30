@@ -55,6 +55,7 @@ FROM (
     jobs_last_3_months,
     jobs_last_6_months,
     status AS channel_status,
+    DATE_DIFF(current_date, dob, year) age,
     CASE
         WHEN DATE_DIFF(current_date, dob, year) <18 THEN 'Under 18'
         WHEN DATE_DIFF(current_date, dob, year) BETWEEN 18 AND 25 THEN '18-25'
@@ -66,9 +67,9 @@ FROM (
     AS age_range,
     inf.tax_external_id,
     CASE 
-        WHEN inf.influencer_id IN (select * from active_influencers) THEN 'Active' ELSE 'Inactive'
+        WHEN inf.influencer_id IN (select * from active_influencers) THEN True ELSE False
     END
-    AS job_activity,
+    AS active,
     CASE 
         WHEN smileidentity_status='APPROVED'
         AND DATE_DIFF(CURRENT_DATE(), inf.dob, year) >= 18
@@ -78,7 +79,7 @@ FROM (
         AND inf.dob IS NOT NULL
         AND inf.income_category IS NOT NULL
         AND inf.influencer_id in (select influencer_id from {{ ref('postgres_stg__influencer_channel_data') }} where status='APPROVED' and followers_count>=251)
-       then 'Eligible' else 'Ineligible'
+       then True else False
     END 
     AS job_eligibility,
     cd.influencer_type
