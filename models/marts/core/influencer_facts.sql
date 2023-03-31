@@ -69,7 +69,7 @@ FROM (
     CASE 
         WHEN inf.influencer_id IN (select * from active_influencers) THEN True ELSE False
     END
-    AS active,
+    AS job_activity,
     CASE 
         WHEN smileidentity_status='APPROVED'
         AND DATE_DIFF(CURRENT_DATE(), inf.dob, year) >= 18
