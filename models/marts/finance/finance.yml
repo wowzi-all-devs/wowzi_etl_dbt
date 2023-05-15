@@ -58,7 +58,7 @@ models:
       - name: payment_status
         tests:
           - accepted_values:
-              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out']
+              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out', 'COMPLETED']
       - name: bank_name
       - name: company_name
 
@@ -113,7 +113,7 @@ models:
       - name: payment_status
         tests:
           - accepted_values:
-              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out']
+              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out', 'COMPLETED']
             
   - name: influencers_withholding_by_month_by_status
     description: "Influencers list from Kenya with a total payment greater than 24000 KES by month"
@@ -133,7 +133,7 @@ models:
       - name: payment_status
         tests:
           - accepted_values:
-              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out']
+              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out', 'COMPLETED']
       - name: total_amount
       - name: name
       - name: email
