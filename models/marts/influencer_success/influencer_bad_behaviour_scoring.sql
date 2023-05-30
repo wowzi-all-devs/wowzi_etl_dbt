@@ -160,7 +160,7 @@ SELECT
   f.archived_tasks_score,
   f.task_archiving_ratio_score,
   f.bad_behaviour_score,--,
-  (CASE WHEN f.bad_behaviour_score >= 5 THEN 'MISDEMEANOR MASTERS'
+  (CASE WHEN f.bad_behaviour_score > 5 THEN 'MISDEMEANOR MASTERS'
   WHEN f.bad_behaviour_score >= 4 AND f.bad_behaviour_score <= 5 
   THEN 'UPCOMING MISDEMEANOR MASTERS'
   WHEN f.bad_behaviour_score >= 2 AND f.bad_behaviour_score <= 3 
