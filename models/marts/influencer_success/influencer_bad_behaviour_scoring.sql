@@ -160,9 +160,13 @@ SELECT
   f.archived_tasks_score,
   f.task_archiving_ratio_score,
   f.bad_behaviour_score,--,
-  (CASE WHEN f.bad_behaviour_score >= 5 THEN 'WORST BEHAVED'
+  (CASE WHEN f.bad_behaviour_score >= 5 THEN 'MISDEMEANOR MASTERS'
   WHEN f.bad_behaviour_score >= 4 AND f.bad_behaviour_score <= 5 
-  THEN 'UPCOMING WORST BEHAVED'
+  THEN 'UPCOMING MISDEMEANOR MASTERS'
+  WHEN f.bad_behaviour_score >= 2 AND f.bad_behaviour_score <= 3 
+  THEN 'MISBEHAVIOUR MAVERICKS'
+  WHEN f.bad_behaviour_score >= 1 
+  THEN 'INFRACTION INITIATES'
   WHEN f.bad_behaviour_score = 0 THEN 'BEST BEHAVED'
   END) as bad_behaviour_segment
 FROM first_level_scores f
