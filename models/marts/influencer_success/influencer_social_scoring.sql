@@ -180,7 +180,7 @@ wowzi_ranks AS
   f.task_archiving_ratio_score,
   f.top_posts_score,
   f.top_posts_ratio_score,
-  ((0.2*f.total_campaigns_score) +
+  round(((0.2*f.total_campaigns_score) +
   (0.1*f.total_tasks_score) +
   (0.15*f.job_acceptance_ratio_score) +
   (0.15*f.total_accepted_jobs_score) +
@@ -190,7 +190,7 @@ wowzi_ranks AS
   (0.03*f.task_archiving_ratio_score) +
   (0.02*f.total_tasks_failed_third_verification_score) +
   (0.05*f.top_posts_ratio_score) +
-  (0.02*f.top_posts_score)) as wowzi_rank
+  (0.02*f.top_posts_score)),2) as wowzi_rank
 FROM final_scores f),
 
 wowzi_segments AS
@@ -226,15 +226,15 @@ wowzi_segments AS
   w.top_posts_score,
   w.top_posts_ratio_score,
   w.wowzi_rank,
-  (CASE WHEN w.wowzi_rank = 10 THEN 'Ultimate Super Creator'
+  (CASE WHEN w.wowzi_rank = 10 THEN 'Wowzi Veteran'
   WHEN w.wowzi_rank >= 7 AND w.wowzi_rank < 10 THEN 'Super Creator'
-  WHEN w.wowzi_rank >= 5 AND w.wowzi_rank < 7 THEN 'Proficient'
-  WHEN w.wowzi_rank >= 4.5 AND w.wowzi_rank < 5 THEN 'Emergiing'
-  WHEN w.wowzi_rank >= 4 AND w.wowzi_rank < 4.5 THEN 'Junior'
+  WHEN w.wowzi_rank >= 5 AND w.wowzi_rank < 7 THEN 'Proficient Creator'
+  WHEN w.wowzi_rank >= 4.5 AND w.wowzi_rank < 5 THEN 'Emerging Creator'
+  WHEN w.wowzi_rank >= 4 AND w.wowzi_rank < 4.5 THEN 'Junior Creator'
   WHEN w.wowzi_rank >= 3 AND w.wowzi_rank < 4 THEN 'Apprentice II'
   WHEN w.wowzi_rank >= 2.5 AND w.wowzi_rank < 3 THEN 'Apprentice I'
-  WHEN w.wowzi_rank >= 2 AND w.wowzi_rank < 2.5 THEN 'Rookie'
-  WHEN w.wowzi_rank >= 1 AND w.wowzi_rank < 2 THEN 'Novice'
+  WHEN w.wowzi_rank >= 2 AND w.wowzi_rank < 2.5 THEN 'Sophomore'
+  WHEN w.wowzi_rank >= 1 AND w.wowzi_rank < 2 THEN 'Freshman'
   END) AS creator_segment
 FROM wowzi_ranks w)
 
@@ -269,9 +269,10 @@ SELECT
   ws.task_archiving_ratio_score,
   ws.top_posts_score,
   ws.top_posts_ratio_score,
-  ws.wowzi_rank,
-  (CASE WHEN i.offered_jobs = 0 THEN 'Un-Engaged Neophyte'
-  WHEN i.offered_jobs > 0 AND i.total_campaigns = 0 THEN 'No Jobs Accepted'
+  (CASE WHEN ws.wowzi_rank IS NULL THEN 0
+  ELSE ws.wowzi_rank END) AS wowzi_rank,
+  (CASE WHEN i.offered_jobs = 0 THEN 'Newbie'
+  WHEN i.offered_jobs > 0 AND i.total_campaigns = 0 THEN 'Non Participant'
   ELSE ws.creator_segment END) AS creator_segment
 FROM influencer_stats i 
 LEFT JOIN wowzi_segments ws ON i.influencer_id = ws.influencer_id
