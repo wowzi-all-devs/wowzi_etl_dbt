@@ -27,6 +27,17 @@ LEFT JOIN {{ ref('influencer_task_facts') }} tf ON cf.campaign_id = tf.campaign_
   WHERE canceled IS NULL
   GROUP by tf.influencer_id),
 
+total_tasks_approved_first_verification AS
+(SELECT 
+  tf.influencer_id, 
+  (CASE WHEN count(DISTINCT tf.task_id) IS NULL THEN 0
+  ELSE count(DISTINCT tf.task_id) END) AS total_tasks_approved_first_verification
+FROM {{ ref('campaign_facts') }} cf 
+LEFT JOIN {{ ref('influencer_task_facts') }} tf ON cf.campaign_id = tf.campaign_id
+AND tf.first_verification_status IN ('APPROVED')
+  WHERE canceled IS NULL
+  GROUP BY tf.influencer_id ),
+
 total_tasks_failed_first_verification AS
 (SELECT 
   tf.influencer_id, 
@@ -79,6 +90,9 @@ i.last_campaign_date,
 i.campaign_recency_days,
 (CASE WHEN tt.total_tasks IS NULL THEN 0 
 ELSE tt.total_tasks END) AS total_tasks,
+(CASE WHEN taf.total_tasks_approved_first_verification IS NULL THEN 0
+ELSE taf.total_tasks_approved_first_verification
+END) AS total_tasks_approved_first_verification,
 (CASE WHEN ttf.total_tasks_failed_first_verification IS NULL THEN 0
 ELSE ttf.total_tasks_failed_first_verification END) AS total_tasks_failed_first_verification,
 (CASE WHEN ttf.total_tasks_failed_first_verification = 0 THEN 0
@@ -96,6 +110,7 @@ WHEN tp.top_posts IS NULL THEN 0
 ELSE (tp.top_posts/tt.total_tasks)*10 END) AS top_posts_ratio
 FROM influencer_stats i 
 LEFT JOIN total_tasks tt ON i.influencer_id = tt.influencer_id
+LEFT JOIN total_tasks_approved_first_verification taf ON i.influencer_id = taf.influencer_id
 LEFT JOIN total_tasks_failed_first_verification ttf ON i.influencer_id = ttf.influencer_id
 LEFT JOIN total_tasks_failed_third_verification ttf2 ON i.influencer_id = ttf2.influencer_id
 LEFT JOIN total_top_posts tp ON i.influencer_id = tp.influencer_id
@@ -103,14 +118,15 @@ LEFT JOIN total_top_posts tp ON i.influencer_id = tp.influencer_id
 
 max_counters AS 
 (SELECT 
-  max(total_campaigns) as max_no_of_campaigns,
-  max(total_accepted) as max_no_of_accepted_jobs,
-  max(total_expired) as max_no_of_expired_jobs,
-  max(campaign_recency_days) as max_campaign_recency_days,
-  max(total_tasks) as max_total_tasks,
-  max(total_tasks_failed_first_verification) as max_total_tasks_failed_first_verification,
-  max(total_tasks_failed_third_verification) as max_total_tasks_failed_third_verification,
-  max(top_posts) as max_top_posts
+  max(total_campaigns) AS max_no_of_campaigns,
+  max(total_accepted) AS max_no_of_accepted_jobs,
+  max(total_expired) AS max_no_of_expired_jobs,
+  max(campaign_recency_days) AS max_campaign_recency_days,
+  max(total_tasks) AS max_total_tasks,
+  max(total_tasks_approved_first_verification) AS max_total_tasks_approved_first_verification,
+  max(total_tasks_failed_first_verification) AS max_total_tasks_failed_first_verification,
+  max(total_tasks_failed_third_verification) AS max_total_tasks_failed_third_verification,
+  max(top_posts) AS max_top_posts
 FROM all_creator_metrics),
 
 final_scores AS
@@ -126,8 +142,9 @@ final_scores AS
   a.last_campaign_date,
   a.campaign_recency_days,
   a.total_tasks,
-  a.total_tasks_failed_first_verification,
+  a.total_tasks_approved_first_verification,
   a.task_approval_ratio,
+  a.total_tasks_failed_first_verification,
   a.total_tasks_failed_third_verification,
   a.task_archiving_ratio,
   a.top_posts,
@@ -139,6 +156,7 @@ final_scores AS
   10 - a.job_expiry_ratio AS job_expiry_ratio_score,
   10 - ((10.0/m.max_campaign_recency_days)*a.campaign_recency_days) AS campaign_recency_score,
   (10.0/m.max_total_tasks)*a.total_tasks AS total_tasks_score,
+  ((10.0/m.max_total_tasks_approved_first_verification)*a.total_tasks_approved_first_verification) AS total_tasks_approved_first_verification_score,
   a.task_approval_ratio AS task_approval_ratio_score,
   10 - ((10.0/m.max_total_tasks_failed_first_verification)*a.total_tasks_failed_first_verification) AS total_tasks_failed_first_verification_score,
   10 - ((10.0/m.max_total_tasks_failed_third_verification)*a.total_tasks_failed_third_verification) AS total_tasks_failed_third_verification_score,
@@ -161,8 +179,9 @@ wowzi_ranks AS
   f.last_campaign_date,
   f.campaign_recency_days,
   f.total_tasks,
-  f.total_tasks_failed_first_verification,
+  f.total_tasks_approved_first_verification,
   f.task_approval_ratio,
+  f.total_tasks_failed_first_verification,
   f.total_tasks_failed_third_verification,
   f.task_archiving_ratio,
   f.top_posts,
@@ -174,23 +193,26 @@ wowzi_ranks AS
   f.job_expiry_ratio_score,
   f.campaign_recency_score,
   f.total_tasks_score,
+  f.total_tasks_approved_first_verification_score,
   f.task_approval_ratio_score,
   f.total_tasks_failed_first_verification_score,
   f.total_tasks_failed_third_verification_score,
   f.task_archiving_ratio_score,
   f.top_posts_score,
   f.top_posts_ratio_score,
-  round(((0.2*f.total_campaigns_score) +
-  (0.1*f.total_tasks_score) +
-  (0.15*f.job_acceptance_ratio_score) +
+  round((
+  (0.2*f.total_campaigns_score) +
+  (0.15*f.total_tasks_score) +
+  (0.03*f.job_acceptance_ratio_score) +
   (0.15*f.total_accepted_jobs_score) +
-  (0.1*f.campaign_recency_score) +
-  (0.1*f.task_approval_ratio_score) +
-  (0.08*f.total_tasks_failed_first_verification_score) +
-  (0.03*f.task_archiving_ratio_score) +
-  (0.02*f.total_tasks_failed_third_verification_score) +
-  (0.05*f.top_posts_ratio_score) +
-  (0.02*f.top_posts_score)),2) as wowzi_rank
+  (0.01*f.campaign_recency_score) +
+  (0.3*f.total_tasks_approved_first_verification_score) +
+  (0.05*f.task_approval_ratio_score) +
+  (0.05*f.total_tasks_failed_first_verification_score) +
+  (0.01*f.task_archiving_ratio_score) +
+  (0.01*f.total_tasks_failed_third_verification_score) +
+  (0.01*f.top_posts_ratio_score) +
+  (0.01*f.top_posts_score)),2) as wowzi_rank
 FROM final_scores f),
 
 wowzi_segments AS
@@ -206,8 +228,9 @@ wowzi_segments AS
   w.last_campaign_date,
   w.campaign_recency_days,
   w.total_tasks,
-  w.total_tasks_failed_first_verification,
+  w.total_tasks_approved_first_verification,
   w.task_approval_ratio,
+  w.total_tasks_failed_first_verification,
   w.total_tasks_failed_third_verification,
   w.task_archiving_ratio,
   w.top_posts,
@@ -219,6 +242,7 @@ wowzi_segments AS
   w.job_expiry_ratio_score,
   w.campaign_recency_score,
   w.total_tasks_score,
+  w.total_tasks_approved_first_verification_score,
   w.task_approval_ratio_score,
   w.total_tasks_failed_first_verification_score,
   w.total_tasks_failed_third_verification_score,
@@ -234,7 +258,7 @@ wowzi_segments AS
   WHEN w.wowzi_rank >= 3 AND w.wowzi_rank < 4 THEN 'Apprentice II'
   WHEN w.wowzi_rank >= 2.5 AND w.wowzi_rank < 3 THEN 'Apprentice I'
   WHEN w.wowzi_rank >= 2 AND w.wowzi_rank < 2.5 THEN 'Sophomore'
-  WHEN w.wowzi_rank >= 1 AND w.wowzi_rank < 2 THEN 'Freshman'
+  WHEN w.wowzi_rank >= 0 AND w.wowzi_rank < 2 THEN 'Freshman'
   END) AS creator_segment
 FROM wowzi_ranks w)
 
@@ -250,8 +274,9 @@ SELECT
   ws.last_campaign_date,
   ws.campaign_recency_days,
   ws.total_tasks,
-  ws.total_tasks_failed_first_verification,
+  ws.total_tasks_approved_first_verification,
   ws.task_approval_ratio,
+  ws.total_tasks_failed_first_verification,
   ws.total_tasks_failed_third_verification,
   ws.task_archiving_ratio,
   ws.top_posts,
@@ -263,6 +288,7 @@ SELECT
   ws.job_expiry_ratio_score,
   ws.campaign_recency_score,
   ws.total_tasks_score,
+  ws.total_tasks_approved_first_verification_score,
   ws.task_approval_ratio_score,
   ws.total_tasks_failed_first_verification_score,
   ws.total_tasks_failed_third_verification_score,
