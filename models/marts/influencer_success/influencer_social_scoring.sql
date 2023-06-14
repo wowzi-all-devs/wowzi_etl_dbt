@@ -250,15 +250,15 @@ wowzi_segments AS
   w.top_posts_score,
   w.top_posts_ratio_score,
   w.wowzi_rank,
-  (CASE WHEN w.wowzi_rank = 10 THEN 'Wowzi Veteran'
+  (CASE WHEN w.wowzi_rank = 10 THEN 'Veteran Creator'
   WHEN w.wowzi_rank >= 7 AND w.wowzi_rank < 10 THEN 'Super Creator'
   WHEN w.wowzi_rank >= 5 AND w.wowzi_rank < 7 THEN 'Proficient Creator'
   WHEN w.wowzi_rank >= 4.5 AND w.wowzi_rank < 5 THEN 'Emerging Creator'
-  WHEN w.wowzi_rank >= 4 AND w.wowzi_rank < 4.5 THEN 'Junior Creator'
-  WHEN w.wowzi_rank >= 3 AND w.wowzi_rank < 4 THEN 'Apprentice II'
-  WHEN w.wowzi_rank >= 2.5 AND w.wowzi_rank < 3 THEN 'Apprentice I'
-  WHEN w.wowzi_rank >= 2 AND w.wowzi_rank < 2.5 THEN 'Sophomore'
-  WHEN w.wowzi_rank >= 0 AND w.wowzi_rank < 2 THEN 'Freshman'
+  WHEN w.wowzi_rank >= 4 AND w.wowzi_rank < 4.5 THEN 'Intermediate Creator'
+  WHEN w.wowzi_rank >= 3 AND w.wowzi_rank < 4 THEN 'Junior Creator'
+  WHEN w.wowzi_rank >= 2.5 AND w.wowzi_rank < 3 THEN 'Apprentice Creator'
+  WHEN w.wowzi_rank >= 2 AND w.wowzi_rank < 2.5 THEN 'Sophomore Creator'
+  WHEN w.wowzi_rank >= 0 AND w.wowzi_rank < 2 THEN 'Freshman Creator'
   END) AS creator_segment
 FROM wowzi_ranks w)
 
@@ -297,8 +297,8 @@ SELECT
   ws.top_posts_ratio_score,
   (CASE WHEN ws.wowzi_rank IS NULL THEN 0
   ELSE ws.wowzi_rank END) AS wowzi_rank,
-  (CASE WHEN i.offered_jobs = 0 THEN 'Newbie'
-  WHEN i.offered_jobs > 0 AND i.total_campaigns = 0 THEN 'Non Participant'
+  (CASE WHEN i.offered_jobs = 0 THEN 'Newbie Creator'
+  WHEN i.offered_jobs > 0 AND i.total_campaigns = 0 THEN 'Beginner Creator'
   ELSE ws.creator_segment END) AS creator_segment
 FROM influencer_stats i 
 LEFT JOIN wowzi_segments ws ON i.influencer_id = ws.influencer_id
