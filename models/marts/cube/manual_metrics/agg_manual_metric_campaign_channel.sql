@@ -9,7 +9,7 @@ select
     sum(likes) as total_likes,
     sum(comments) as total_comments,
     (sum(views)+sum(shares)+sum(likes)+sum(comments)) as total_engagement,
-    sum(followers_count) as potential_reach,
+    sum(followers_count) as total_follower_count,
     max(updated_at) as updated_at
 
 from {{ ref('stg__manual_metrics') }}  group by 1, 2
