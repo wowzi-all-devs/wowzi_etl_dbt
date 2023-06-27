@@ -12,7 +12,7 @@ WITH payouts AS (
   HAVING SUM(amount) >=24000
 )
 SELECT
-  {{ dbt_utils.surrogate_key(['payouts.influencer_id', 'payouts.month', 'payouts.payment_status']) }} as primary_key,
+  {{ dbt_utils.generate_surrogate_key(['payouts.influencer_id', 'payouts.month', 'payouts.payment_status']) }} as primary_key,
   payouts.*,
   CONCAT(first_name, " ", last_name) AS name,
   email,
