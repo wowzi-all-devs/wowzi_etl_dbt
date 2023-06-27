@@ -26,7 +26,7 @@ joined_tables AS (
   LEFT JOIN bo USING(backofficer_id)
 )
 SELECT
-  {{ dbt_utils.surrogate_key(['top_post_selected_time', 'backofficer_id']) }} as primary_key, 
+  {{ dbt_utils.generate_surrogate_key(['top_post_selected_time', 'backofficer_id']) }} as primary_key,
   top_post_selected_time,
   backofficer_id,
   backofficer_name,

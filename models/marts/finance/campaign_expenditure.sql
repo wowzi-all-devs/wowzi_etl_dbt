@@ -1,6 +1,7 @@
+SELECT * FROM(
 SELECT
-    campaign_name,
     campaign_id,
+    campaign_name,
     campaign_start_date,
     campaign_end_date,
     campaign_bonus_amount,
@@ -13,5 +14,8 @@ SELECT
     merchant_name,
     company_name,
     currency,
-    canceled
+    canceled,
+    row_number() over(partition by campaign_id order by campaign_id) as row_number
+
 FROM {{ source('twitter_api', 'campaign_expenditure') }}
+) where row_number=1

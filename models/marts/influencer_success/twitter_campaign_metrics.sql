@@ -34,7 +34,7 @@ order by
     processed_at desc
 )
 SELECT 
-    {{ dbt_utils.surrogate_key(['influencer_id', 'campaign_id', 'task_id']) }} as primary_key,
+    {{ dbt_utils.generate_surrogate_key(['influencer_id', 'campaign_id', 'task_id']) }} as primary_key,
     *
 FROM
     metrics_expenditure_joined
