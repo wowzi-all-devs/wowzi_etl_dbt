@@ -1,4 +1,4 @@
-{{ config(tags=["cube"]) }}
+{{ config(tags=["manual_metrics"]) }}
 with metrics as (
 select
     distinct
