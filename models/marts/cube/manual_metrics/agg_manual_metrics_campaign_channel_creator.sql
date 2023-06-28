@@ -2,16 +2,18 @@
 
 select
     campaign_id,
-    channel,
-    influencer_id,
     task_id,
+    influencer_id,
+    influencer_name,
+    channel,
     submission_link,
-    views as total_views,
-    shares as total_shares,
-    likes as total_likes,
-    comments as total_comments,
-    (views + shares + likes + comments) as total_engagement,
-    followers_count as follower_count,
+    likes,
+    comments,
+    views,
+    shares,
+    (views + shares + likes + comments) as engagement,
+    followers_count,
+    influencer_type,
     updated_at
 
 from {{ ref('stg__manual_metrics') }}
