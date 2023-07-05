@@ -20,7 +20,7 @@ active_influencers AS (
 ),
 influencer_social_media_channels AS (
   SELECT
-    {{ dbt_utils.surrogate_key(['inf.influencer_id', 'cd.channel']) }} as primary_key,
+    {{ dbt_utils.generate_surrogate_key(['inf.influencer_id', 'cd.channel']) }} as primary_key,
     inf.influencer_id,
     date_account_created,
     first_name,

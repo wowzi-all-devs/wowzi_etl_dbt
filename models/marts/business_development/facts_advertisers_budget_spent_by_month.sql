@@ -15,7 +15,7 @@ WITH advertisers_grouped as (
 ),
 advertisers_with_name as (
   SELECT
-    {{ dbt_utils.surrogate_key(['merchant_id', 'campaign_start_month', 'currency']) }} as primary_key,
+    {{ dbt_utils.generate_surrogate_key(['merchant_id', 'campaign_start_month', 'currency']) }} as primary_key,
     advertisers_grouped.merchant_id,
     adv.company_name,
     adv.country as country,
