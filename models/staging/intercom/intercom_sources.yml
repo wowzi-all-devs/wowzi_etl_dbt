@@ -3,7 +3,7 @@ version: 2
 sources:
     - name: staging
       #For bigquery:
-      database: wowzi-data-dev-env
+#      database: wowzi-data-dev-env
       schema: wowzi_airbyte_intercom
       tables:
         - name: admins
