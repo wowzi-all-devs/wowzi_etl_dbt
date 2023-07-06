@@ -33,7 +33,7 @@ sources:
 
     - name: rates
       #For bigquery:
-      database: wowzi-data-dev-env
+#      database: wowzi-data-dev-env
       schema: fx_rates
       tables:
         - name: dim_currency_rates
