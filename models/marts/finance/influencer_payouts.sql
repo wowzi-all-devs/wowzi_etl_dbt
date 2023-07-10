@@ -41,7 +41,7 @@ SELECT
 FROM {{ ref('postgres_stg__influencer_transfers') }} inf_transfers
    LEFT JOIN {{ ref('influencer_facts') }} inf USING (influencer_id)
    LEFT JOIN {{ ref('int_bank_details') }} bd USING (influencer_id)
-   LEFT JOIN {{ ref('postgres_stg__influencer_tasks') }} inf_tasks ON inf_tasks.task_id = inf_transfers.task_id
+   INNER JOIN {{ ref('postgres_stg__influencer_tasks') }} inf_tasks ON inf_tasks.task_id = inf_transfers.task_id
    LEFT JOIN {{ ref('postgres_stg__campaigns') }} campaigns ON campaigns.campaign_id=inf_tasks.campaign_id
    LEFT join {{ ref('postgres_stg__merchants') }} adv on adv.advertiser_id=campaigns.merchant_id
    LEFT join {{ ref('postgres_stg__companies') }} companies on companies.company_id = campaigns.company_id
