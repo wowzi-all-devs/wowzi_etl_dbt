@@ -30,6 +30,7 @@ sources:
         - name: merchants
         - name: subcategories
         - name: influencer_taxes_info
+        - name: influencer_hidden_tags
 
     - name: rates
       #For bigquery:
