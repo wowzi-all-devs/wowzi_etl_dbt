@@ -1,5 +1,6 @@
 SELECT
   cluster_id,
+  cluster_name,
   COUNT(DISTINCT campaign_id) AS total_campaigns,
   SUM(campaign_budget) AS total_campaign_budget,
   SUM(amount_spent) AS total_spend,
@@ -13,5 +14,6 @@ LEFT JOIN
   {{ ref('postgres_stg__cluster_companies')}} cc
 ON
   cc.company_id=xm.company_id
+left join {{ ref('postgres_stg__clusters')}} cl using(cluster_id)
 GROUP BY
-  1
+  1,2

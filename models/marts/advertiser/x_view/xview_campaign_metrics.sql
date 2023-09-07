@@ -16,14 +16,7 @@ WITH
     {{ ref('campaign_facts') }}cf
   ON
     cf.campaign_id=mmc.campaign_id
-  left JOIN
-    {{ ref('postgres_stg__cluster_companies')}} cc
-  ON
-    cc.company_id=cf.company_id
-  left join
-  {{ ref('postgres_stg__clusters')}} cl  
-  ON
-    cl.cluster_id=cc.cluster_id
+
    left join {{ref('postgres_stg__companies')}} c on c.company_id=cf.company_id
    left join {{ ref('influencer_task_facts')}} it on it.campaign_id=cf.campaign_id
    where third_verification_status="APPROVED"  
