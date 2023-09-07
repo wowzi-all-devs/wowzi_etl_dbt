@@ -30,6 +30,9 @@ sources:
         - name: merchants
         - name: subcategories
         - name: influencer_taxes_info
+        - name: clusters
+        - name: cluster_country
+        - name: cluster_company
 
     - name: rates
       #For bigquery:

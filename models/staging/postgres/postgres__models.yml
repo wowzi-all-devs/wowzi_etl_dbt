@@ -679,3 +679,6 @@ models:
       - name: country
       - name: created_at
       - name: updated_at
+  - name: posgres_stg__clusters
+  - name: postgres_stg__cluster_countries
+  - name: postgres_stg__cluster_companies
