@@ -1,3 +1,5 @@
+{{ config(tags=["cube"]) }}
+
 SELECT
   cluster_id,
   cluster_name,

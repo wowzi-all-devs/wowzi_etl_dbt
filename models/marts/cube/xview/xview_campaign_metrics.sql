@@ -1,3 +1,5 @@
+{{ config(tags=["cube"]) }}
+
 WITH
   base_x_view AS (
   SELECT
@@ -13,7 +15,7 @@ WITH
   FROM
     {{ref('agg_manual_metric_campaign_channel')}} mmc
   left  JOIN
-    {{ ref('campaign_facts') }}cf
+    {{ ref('postgres_stg__campaigns') }}cf
   ON
     cf.campaign_id=mmc.campaign_id
 
