@@ -1,5 +1,6 @@
 with advertisers as (
     SELECT
+        distinct
         advertiser_id,
         company_id,
         date_account_created,
@@ -17,7 +18,7 @@ with advertisers as (
         avatar,
         -- FROM `bi-staging-1-309112.dims.merchants`
         FROM {{ ref('postgres_stg__merchants') }}  merchants    
-        left join {{ref('postgres_stg__company_merchants')}} company_merchants on merchants.advertiser_id=company_merchants.merchant_id
+        inner join {{ref('postgres_stg__company_merchants')}} company_merchants using(advertiser_id)
 
 ),
 companies as (
@@ -108,7 +109,7 @@ budgets as (
     where pre_live_check_status = "APPROVED"
     group by 1
 )
-select *
+select distinct *
 from advertisers
     left join companies using(company_id)
     left join advertiser_job_acceptance using(advertiser_id)
