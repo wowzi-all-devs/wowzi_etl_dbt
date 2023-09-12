@@ -16,7 +16,9 @@ with advertisers as (
         dob_date,
         avatar,
         -- FROM `bi-staging-1-309112.dims.merchants`
-        FROM {{ ref('postgres_stg__merchants') }}
+        FROM {{ ref('postgres_stg__merchants') }}  merchants    
+        left join {{ref('postgres_stg__company_merchants')}} company_merchants on merchants.advertiser_id=company_merchants.merchant_id
+
 ),
 companies as (
     SELECT company_id,

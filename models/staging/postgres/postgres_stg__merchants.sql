@@ -10,7 +10,6 @@ renamed as (
 
     select
         id as advertiser_id,
-        company_id,
         city,
         code,
         role,
