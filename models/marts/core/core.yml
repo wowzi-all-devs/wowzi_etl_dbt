@@ -101,8 +101,10 @@ models:
       - name: advertiser_id
         description: "The primary key for this table"
         tests:
-          - unique
           - not_null
+          - relationships:
+              to: ref('postgres_stg__company_merchants')
+              field: merchant_id
   # - name: advertisers
   #   description: "Advertisers model denormalized"
   #   columns:

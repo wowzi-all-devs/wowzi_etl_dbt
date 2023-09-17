@@ -17,6 +17,8 @@ with advertisers as (
         avatar,
         -- FROM `bi-staging-1-309112.dims.merchants`
         FROM {{ ref('postgres_stg__merchants') }}
+        inner join {{ref('postgres_stg__company_merchants')}} company_merchants on company_merchants.merchant_id = advertiser_id
+
 ),
 companies as (
     SELECT company_id,

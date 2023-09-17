@@ -293,7 +293,7 @@ models:
         description: ""
         tests:
           - accepted_values:
-              values: ['AGENCY', 'BRAND']
+              values: ['AGENCY', 'BRAND', 'COMPANY']
       - name: email
         description: "Email company"
       - name: phone
