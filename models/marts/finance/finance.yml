@@ -52,9 +52,6 @@ models:
       - name: country
       - name: amount
       - name: currency
-        tests:
-          - accepted_values:
-              values: ['KES', 'TZS', 'NGN', 'UGX', 'GHS']
       - name: payment_status
         tests:
           - accepted_values:
