@@ -9,7 +9,6 @@ WITH payouts AS (
   FROM 
     {{ ref('postgres_stg__influencer_transfers') }}
   GROUP BY 1, 2, 3
-  HAVING SUM(amount) >=24000
 )
 SELECT
   {{ dbt_utils.generate_surrogate_key(['payouts.influencer_id', 'payouts.month', 'payouts.payment_status']) }} as primary_key,

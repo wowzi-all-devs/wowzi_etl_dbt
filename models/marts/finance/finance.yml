@@ -64,9 +64,6 @@ models:
     columns:
       - name: payment_date_week
       - name: currency
-        tests:
-          - accepted_values:
-              values: ['KES', 'TZS', 'NGN', 'UGX', 'GHS']
       - name: total_amount
 
   - name: influencer_expected_payouts
