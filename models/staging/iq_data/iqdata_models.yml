@@ -1,0 +1,135 @@
+version: 2
+
+models:
+  - name: creator_audience_ages
+    description: "IQ Data - Wowzi creator audience age distribution "
+    columns:
+      - name: influencer_id
+        description: "Wowzi Creator Account ID"
+
+      - name: channel
+        description: "Social Media Channel"
+
+      - name: audience_ages
+        description: "Audience Age Groups"
+
+      - name: audience_ages_weight
+        description: " Audience Age Group Weighting"
+
+  - name: creator_audience_genders
+    description: "IQ Data - Wowzi creator audience gender distribution"
+    columns:
+      - name: influencer_id
+        description: "Wowzi Creator Account ID"
+
+      - name: channel
+        description: "Social Media Channel"
+
+      - name: audience_gender
+        description: "Profile Audience Gender"
+
+      - name: audience_gender_weight
+        description: "Profile Audience Gender Weighting"
+
+  - name: creator_audience_interests
+    description: "IQ Data - Wowzi creator audience interests"
+    columns:
+      - name: influencer_id
+        description: "Wowzi Creator Account ID"
+
+      - name: channel
+        description: "Social Media Channel"
+
+      - name: audience_interests
+        description: ""
+
+      - name: audience_interests_affinity
+        description: ""
+
+  - name: creator_audience_languages
+    description: ""
+    columns:
+      - name: influencer_id
+        description: "Wowzi Creator Account ID"
+
+      - name: channel
+        description: "Social Media Channel"
+
+      - name: audience_language
+        description: "Audience Languages"
+
+      - name: audience_language_weight
+        description: "Language Weighting"
+
+  - name: creator_profile
+    description: "IQ Data - Wowzi creator profile data"
+    columns:
+      - name: influencer_id
+        description: " Wowzi Creator Account ID"
+
+      - name: report_id
+        description: "IQ Data report ID"
+
+      - name: report_created_at
+        description: "Datetime when the report was created"
+
+      - name: report_updated_at
+        description: "Datetime when the report was updated"
+
+      - name: username
+        description: "Social media username"
+
+      - name: channel
+        description: "Social Media Channel"
+
+      - name: profile_url
+        description: "Profile URL"
+
+      - name: age_group
+        description: "Creator age group"
+
+      - name: followers_count
+        description: "Creator Profile Follower Count as of when the report was updated"
+
+      - name: engagement_rate
+        description: "Creator profile engagement as %"
+
+      - name: total_profile_engagment
+        description: "Total number of engagements of the profile on all posts"
+
+      - name: country
+        description: "Creator Profile Country"
+
+      - name: city
+        description: "Creatir profile City"
+
+  - name: creator_audience_countries
+    description: "IQ Data - Wowzi creator audience countries"
+    columns:
+      - name: influencer_id
+        description: "Wowzi Creator Account ID"
+
+      - name: channel
+        description: "Social Media Channel"
+
+      - name: audience_country_name
+        description: ""
+
+      - name: audience_country_weight
+        description: ""
+
+  - name: creator_audience_cities
+    description: "IQ Data - Wowzi creator audience countries"
+    columns:
+      - name: influencer_id
+        description: "Wowzi Creator Account ID"
+
+      - name: channel
+        description: "Social Media Channel"
+
+      - name: audience_city_name
+        description: ""
+
+      - name: audience_city_weight
+        description: ""
+

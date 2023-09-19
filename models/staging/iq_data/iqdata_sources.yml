@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+    - name: iq_data
+      #For bigquery:
+#      database: wowzi-data-dev-env
+      schema: dbt_caleb
+      tables:
+        - name: instagram_iq_data_profiles
+        - name: instagram_iq_data_profiles_2
