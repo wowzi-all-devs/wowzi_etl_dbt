@@ -9,12 +9,16 @@ SELECT
   COUNT(
     DISTINCT campaign_id
   ) AS total_campaigns,
-  SUM(campaign_budget) AS total_campaign_budget,
-  SUM(amount_spent) AS total_spend,
+  SUM(campaign_budget) AS total_budget,
+  SUM(amount_spent) AS amount_spent,
   SUM(total_influencers) AS total_influencers,
-  SUM(total_engagement) AS total_engagements,
-  SUM(potential_reach) AS total_potential_reach,
-  ROUND(AVG(cost_per_engagement), 0) AS avg_cpe
+  SUM(total_engagement) AS total_engagement,
+  SUM(potential_reach) AS potential_reach,
+  ROUND(AVG(cost_per_engagement), 0) AS cost_per_engagement,
+  sum(dollar_amount_spent) as dollar_amount_spent,
+  sum(dollar_campaign_budget) as dollar_total_budget,
+  ROUND(AVG(dollar_cost_per_engagement),0) as dollar_cost_per_engagement
+
 FROM
   {{ ref('xview_campaign_metrics') }}
   xm

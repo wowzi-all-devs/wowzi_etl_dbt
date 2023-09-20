@@ -69,7 +69,7 @@ SELECT
   ROUND(
     final_x_view.cost_per_engagement / currency_rate,
     2
-  ) AS dollar_cpe
+  ) AS dollar_cost_per_engagement
 FROM
   final_x_view
   LEFT JOIN {{ ref('int_currency_rates') }} cr
