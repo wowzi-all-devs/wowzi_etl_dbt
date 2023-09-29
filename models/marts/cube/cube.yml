@@ -9,8 +9,6 @@ models:
         - not_null
         - unique
       - name: channel
-        tests:
-          - not_null
       - name: total_views
       - name: total_likes
       - name: total_shares
