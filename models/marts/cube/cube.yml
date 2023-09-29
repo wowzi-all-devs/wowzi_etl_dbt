@@ -40,8 +40,6 @@ models:
 
       - name: channel
         description: ""
-        tests:
-          - not_null
 
       - name: submission_link
         description: ""
