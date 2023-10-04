@@ -33,7 +33,7 @@ SELECT
     twitter_data.processed_at
 FROM
     {{ ref('twitter_campaign_data') }} twitter_data
-LEFT JOIN {{ ref('dim_influencers') }} influencers on twitter_data.influencer_id = influencers.influencer_id
+LEFT JOIN {{ ref('postgres_stg__influencers') }} influencers on twitter_data.influencer_id = influencers.influencer_id
 LEFT JOIN {{ ref('postgres_stg__influencer_tasks') }} tasks on twitter_data.task_id = tasks.task_id
 WHERE
-    twitter_data.status=200 and twitter_data.error='None'
+   twitter_data.error='None' and twitter_data.tweet_text is not null and twitter_data.username is not null
