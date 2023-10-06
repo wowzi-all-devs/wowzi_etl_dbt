@@ -24,7 +24,7 @@ payments_due AS (
   WHERE
     first_verification_status="APPROVED"
     AND DATE(first_verification_feedback_time, 'Africa/Nairobi') > DATE_SUB(CURRENT_DATE('Africa/Nairobi'), INTERVAL 2 week)
-    and canceled_timestamp is not null 
+    and canceled_timestamp is null
   ORDER BY
     first_verification_feedback_time DESC
 ),
