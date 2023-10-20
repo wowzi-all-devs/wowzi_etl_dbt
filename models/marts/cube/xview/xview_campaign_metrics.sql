@@ -1,6 +1,4 @@
-{{ config(
-  tags = ["cube"]
-) }}
+{{ config(tags=["cube"]) }}
 
 WITH
   base_x_view AS (

@@ -1,6 +1,4 @@
-{{ config(
-  tags = ["cube"]
-) }}
+{{ config(tags=["cube"]) }}
 
 SELECT
   cluster_id,

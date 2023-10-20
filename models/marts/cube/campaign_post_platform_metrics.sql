@@ -1,3 +1,5 @@
+{{ config(tags=["cube"]) }}
+
 SELECT
   tweets.task_id,
   upper(channel) as channel,
@@ -6,13 +8,11 @@ SELECT
   submission_link,
   likes,
   NULL AS views,
-  NULL AS comments,
-  NULL AS shares,
-  retweet_count,
-  quote_count,
-  reply_count,
+  retweet_count as shares,
+  reply_count as comments,
+  quote_count as quotes,
   impressions,
-  DATETIME(processed_at) AS processed_at
+  TIMESTAMP_TRUNC(processed_at, SECOND) AS updated_at
 FROM
   {{ref('tweets_insights')}} tweets
 INNER JOIN (
@@ -35,12 +35,10 @@ SELECT
   submission_link,
   likes,
   views,
-  comments,
   shares,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  updated_at AS processed_at
+  comments,
+  NULL as quotes,
+  NULL as impressions,
+  TIMESTAMP(updated_at) AS updated_at
 FROM
   {{ ref('stg__manual_metrics') }}

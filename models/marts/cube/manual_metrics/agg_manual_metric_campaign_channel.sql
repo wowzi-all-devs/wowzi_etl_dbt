@@ -1,4 +1,4 @@
-{{ config(tags=["manual_metrics"]) }}
+{{ config(tags=["cube","manual_metrics"]) }}
 
 select
     campaign_id,
