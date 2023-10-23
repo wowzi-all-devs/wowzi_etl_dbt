@@ -130,6 +130,12 @@ models:
       - name: influencer_id
         tests:
           - not_null
+      - name: influencer_name
+        tests:
+          - not_null
+      - name: influencer_followers
+        tests:
+          - not_null
       - name: submission_link
         tests:
           - not_null

@@ -5,6 +5,7 @@ SELECT
     twitter_data.influencer_id,
     influencers.first_name,
     influencers.last_name,
+    concat(influencers.first_name, " ", influencers.last_name) as influencer_name,
     twitter_data.task_id,
     tasks.submission_status,
     tasks.first_verification_status,
