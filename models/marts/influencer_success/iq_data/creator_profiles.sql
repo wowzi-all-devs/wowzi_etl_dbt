@@ -12,7 +12,7 @@ SELECT
     user_profile_age_group AS age_group,
     user_profile_followers AS followers_count,
     user_profile_engagement_rate AS engagement_rate,
-    user_profile_engagements AS total_profile_engagment,
+    user_profile_engagements AS total_profile_engagement,
     user_profile_geo_country_name AS country,
     user_profile_geo_city_name AS city
 FROM
