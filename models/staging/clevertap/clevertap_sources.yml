@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+    - name: staging
+      #For bigquery:
+      database: bi-staging-1-309112
+      schema: clevertap_exports
+      tables:
+        - name: App Installed
+        - name: App Uninstalled
+        - name: App Launched
+        - name: LoginMethod
+        - name: LoginWithApple
+        - name: LoginWithFacebook
+        - name: LoginWithGoogle
