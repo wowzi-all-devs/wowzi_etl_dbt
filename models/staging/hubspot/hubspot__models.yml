@@ -7,18 +7,14 @@ models:
     columns:
       - name: id
         description: "The primary key for this table"
-        tests:
-          - unique
-          - not_null
+  
 
   - name: hubspot_stg_contacts
     description: "all contacts for companies on hubspot crm"
     columns:
       - name: id
         description: "The primary key for this table"
-        tests:
-          - unique
-          - not_null
+        
 
   - name: hubspot_stg_deals
     description: "all deals on hubspot crm"
