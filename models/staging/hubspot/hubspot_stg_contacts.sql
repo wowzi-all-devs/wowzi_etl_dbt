@@ -53,8 +53,8 @@ WITH contacts AS
   cp.hs_all_owner_ids,
   cp.hs_user_ids_of_all_owners,
   c.archived
-FROM `bi-staging-1-309112.wowzi_hubspot.contacts` c
-LEFT JOIN `bi-staging-1-309112.wowzi_hubspot.contacts_properties` cp ON c._airbyte_contacts_hashid =cp._airbyte_contacts_hashid
+FROM {{ source('hubspot_staging', 'contacts') }} c
+LEFT JOIN {{ source('hubspot_staging', 'contacts_properties') }} cp ON c._airbyte_contacts_hashid =cp._airbyte_contacts_hashid
 ) 
 SELECT
   *

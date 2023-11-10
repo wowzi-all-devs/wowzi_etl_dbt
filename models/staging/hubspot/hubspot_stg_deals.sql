@@ -43,8 +43,8 @@ WITH deals AS
   dp.hs_all_owner_ids,
   dp.hs_all_team_ids,
   dp.hubspot_team_id
-FROM `bi-staging-1-309112.wowzi_hubspot.deals` d
-LEFT JOIN `bi-staging-1-309112.wowzi_hubspot.deals_properties` dp ON d._airbyte_deals_hashid = dp._airbyte_deals_hashid
+FROM {{ source('hubspot_staging', 'deals') }} d
+LEFT JOIN {{ source('hubspot_staging', 'deals_properties') }} dp ON d._airbyte_deals_hashid = dp._airbyte_deals_hashid
 )
 
 SELECT 

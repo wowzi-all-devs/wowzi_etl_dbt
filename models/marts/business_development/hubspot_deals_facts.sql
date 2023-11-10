@@ -37,7 +37,7 @@ WITH deals AS
   d.contacts,
   d.hubspot_owner_id,
   d.hubspot_owner_assigneddate
-FROM `bi-staging-1-309112.wowzi_dbt_prod.hubspot_stg_deals` d 
+FROM {{ ref('hubspot_stg_deals') }} d 
 --LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.hubspot_stg_companies` c ON d.companies =c.id
 --LIMIT 1000
 )

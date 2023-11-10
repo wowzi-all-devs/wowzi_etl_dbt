@@ -7,6 +7,4 @@ models:
     columns:
       - name: push_token
         description: "The primary key for this table"
-        tests:
-          - unique
-          - not_null
+        

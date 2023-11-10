@@ -46,8 +46,8 @@ WITH companies AS
   cp.recent_deal_close_date,
   cp.hs_last_logged_call_date
   --cp.*
-FROM `bi-staging-1-309112.wowzi_hubspot.companies` c
-LEFT JOIN `bi-staging-1-309112.wowzi_hubspot.companies_properties` cp ON c._airbyte_companies_hashid = cp._airbyte_companies_hashid
+FROM {{ source('hubspot_staging', 'companies') }}  c
+LEFT JOIN {{ source('hubspot_staging', 'companies_properties') }} cp ON c._airbyte_companies_hashid = cp._airbyte_companies_hashid
 )
 
 SELECT

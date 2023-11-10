@@ -34,7 +34,7 @@ logins AS
   login_type,
   login_session_id,
   row_number() over(partition by date(event_datetime),eventName, profile_id order by profile_id,eventName, event_datetime) as row_num
-FROM `bi-staging-1-309112.wowzi_dbt_prod.clevertap_stg_events` 
+FROM {{ ref('clevertap_stg_events') }}
   where eventName in ('LoginMethod','LoginWithApple', 'LoginWithFacebook', 'LoginWithGoogle')
   and profile_id is not null)
 
