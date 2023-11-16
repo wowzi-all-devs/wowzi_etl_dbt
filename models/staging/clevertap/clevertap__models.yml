@@ -1,0 +1,10 @@
+
+version: 2
+
+models:
+  - name: clevertap_stg_events
+    description: "all clevertap events"
+    columns:
+      - name: push_token
+        description: "The primary key for this table"
+        

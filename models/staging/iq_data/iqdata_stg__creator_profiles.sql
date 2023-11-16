@@ -1,3 +1,6 @@
+{{ config(
+    tags = ["iq_data"]
+) }}
 WITH influencer_profiles AS (
   SELECT
     DISTINCT report_info_report_id,

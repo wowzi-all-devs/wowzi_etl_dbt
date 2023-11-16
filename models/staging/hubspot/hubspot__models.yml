@@ -1,0 +1,24 @@
+
+version: 2
+
+models:
+  - name: hubspot_stg_companies
+    description: "all companies on hubspot crm"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+  
+
+  - name: hubspot_stg_contacts
+    description: "all contacts for companies on hubspot crm"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        
+
+  - name: hubspot_stg_deals
+    description: "all deals on hubspot crm"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        

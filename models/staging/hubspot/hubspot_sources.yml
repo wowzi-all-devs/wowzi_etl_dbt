@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+    - name: hubspot_staging
+      #For bigquery:
+      database: bi-staging-1-309112
+      schema: wowzi_hubspot
+      tables:
+        - name: deals
+        - name: deals_properties
+        - name: contacts
+        - name: contacts_properties
+        - name: companies
+        - name: companies_properties
