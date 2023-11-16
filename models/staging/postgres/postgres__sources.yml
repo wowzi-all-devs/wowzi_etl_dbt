@@ -31,6 +31,9 @@ sources:
         - name: subcategories
         - name: influencer_taxes_info
         - name: influencer_hidden_tags
+        - name: clusters
+        - name: cluster_country
+        - name: cluster_company
 
     - name: rates
       #For bigquery:

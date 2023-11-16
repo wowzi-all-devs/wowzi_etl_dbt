@@ -104,7 +104,7 @@ models:
           - not_null
           - relationships:
               to: ref('postgres_stg__company_merchants')
-              field: merchant_id
+              field: advertiser_id
   # - name: advertisers
   #   description: "Advertisers model denormalized"
   #   columns:

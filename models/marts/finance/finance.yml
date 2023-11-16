@@ -52,6 +52,9 @@ models:
       - name: country
       - name: amount
       - name: currency
+        tests:
+          - accepted_values:
+              values: ['KES', 'KE', 'TZS', 'UGX',  'USD', 'GHS', 'NGN', 'ZAR', 'MZN', 'AOA', 'ZMW', 'XAF', 'XOF', 'RWF', 'CDF', 'MGA', 'MUR', 'ETB', 'MWK', 'EGP', 'MAD', 'DZD', 'TND', 'BWP', 'NAD', 'ZWL']
       - name: payment_status
         tests:
           - accepted_values:
@@ -64,11 +67,13 @@ models:
     columns:
       - name: payment_date_week
       - name: currency
+        tests:
+          - accepted_values:
+              values: ['KES', 'KE', 'TZS', 'UGX',  'USD', 'GHS', 'NGN', 'ZAR', 'MZN', 'AOA', 'ZMW', 'XAF', 'XOF', 'RWF', 'CDF', 'MGA', 'MUR', 'ETB', 'MWK', 'EGP', 'MAD', 'DZD', 'TND', 'BWP', 'NAD', 'ZWL']
       - name: total_amount
 
   - name: influencer_expected_payouts
-    description: "A list of payouts expected to be made to creators based on first verification post approval in a 2 
-    week time window"
+    description: "A list of payouts expected to be made to creators based on first verification post approval in a 2 week time window"
     columns:
       - name: influencer_id
         tests:
