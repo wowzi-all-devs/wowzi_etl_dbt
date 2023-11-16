@@ -1,6 +1,22 @@
 {{ config(tags=["cube"]) }}
 
 WITH
+  metrics_by_campaign_by_channel AS (
+    select
+      campaign_id,
+      channel,
+      count(distinct influencer_id) as total_influencers,
+      sum(views) as total_views,
+      sum(shares) as total_shares,
+      sum(likes) as total_likes,
+      sum(comments) as total_comments,
+      (sum(views)+sum(shares)+sum(likes)+sum(comments)) as total_engagement,
+      sum(influencer_followers) as influencer_followers,
+      max(updated_at) as updated_at
+
+    from {{ ref('campaign_post_platform_metrics') }}
+    group by 1, 2
+  ),
   base_x_view AS (
   SELECT
     cf.company_id,
@@ -18,11 +34,11 @@ WITH
     cf.currency,
     SUM(payment_amount_list) AS amount_spent,
     MAX( cf.budget ) AS campaign_budget,
-    SUM(total_follower_count) AS potential_reach,
+    SUM(influencer_followers) AS potential_reach,
     SUM(total_engagement) AS total_engagement,
     SUM(total_influencers) AS total_influencers,
   FROM
-    {{ ref('agg_manual_metric_campaign_channel') }} mmc
+    metrics_by_campaign_by_channel mmc
   LEFT JOIN
     {{ ref('postgres_stg__campaigns') }} cf
   ON
@@ -49,58 +65,12 @@ WITH
     4,
     5,
     6),
-  twitter_campaigns AS (
-  SELECT
-    cf.company_id,
-    C.company_name,
-    td.campaign_id,
-    it.country,
-    (
-    SELECT
-      country
-    FROM
-        {{ ref('postgres_stg__cluster_countries')}} clc
-    WHERE
-      clc.cluster_id = cc.cluster_id
-      AND clc.country = it.country ) AS cluster_country,
-    cf.currency,
-    SUM(payment_amount_list) AS amount_spent,
-    MAX( cf.budget ) AS campaign_budget,
-    SUM(td.followers_count) AS potential_reach,
-    SUM(reply_count+likes+retweet_count+quote_count) AS total_engagement,
-    count(distinct td.influencer_id) AS total_influencers
-  FROM
-    {{ref('tweets_insights')}} td
-  LEFT JOIN
-    {{ ref('postgres_stg__campaigns') }} cf
-    on td.campaign_id=cf.campaign_id
-  LEFT JOIN
-    {{ ref('influencer_task_facts') }} it
-  ON
-    it.task_id=td.task_id
-  LEFT JOIN
-    {{ ref('postgres_stg__companies') }} C on C.company_id=cf.company_id
-  LEFT JOIN
-    {{ref('postgres_stg__cluster_companies') }} cc
-  ON
-    cf.company_id = cc.company_id
-  GROUP BY
-    1,
-    2,
-    3,
-    4,
-    5,
-    6),
-
-  intermediate_x_view as (
-    select * from base_x_view union distinct select * from twitter_campaigns
-  ),
   final_x_view AS (
   SELECT
-    intermediate_x_view.*,
+    base_x_view.*,
     ROUND((amount_spent / total_engagement), 2) AS cost_per_engagement
   FROM
-    intermediate_x_view ),
+    base_x_view ),
 dollar_x_view as(
 SELECT
   final_x_view.*,
