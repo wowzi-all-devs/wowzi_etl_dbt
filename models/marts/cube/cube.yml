@@ -1,72 +1,6 @@
 version: 2
 
 models:
-  - name: agg_manual_metrics_campaign_channels
-    description: "Per campaign data for manual metrics"
-    columns:
-      - name: campaign_id
-        tests:
-        - not_null
-        - unique
-      - name: channel
-      - name: total_views
-      - name: total_likes
-      - name: total_shares
-      - name: total_comments
-      - name: total_engagement
-      - name: total_follower_count
-      - name: updated_at
-        tests:
-          - not_null
-  - name: agg_manual_metrics_campaign_channel_creator
-    description: "Task Level Manual Metrics"
-    columns:
-      - name: campaign_id
-        description: ""
-        tests:
-          - not_null
-
-      - name: task_id
-        description: ""
-        tests:
-          - not_null
-          - unique
-
-      - name: influencer_id
-        description: ""
-
-      - name: influencer_name
-        description: ""
-
-      - name: channel
-        description: ""
-
-      - name: submission_link
-        description: ""
-
-      - name: likes
-        description: "A count of how many likes a post has received"
-
-      - name: comments
-        description: "A count of how many comments have been made about a post or video"
-
-      - name: views
-        description: "A count of how many times a post or video has been viewed"
-
-      - name: shares
-        description: "A count of how many times a post has been shared"
-
-      - name: engagement
-        description: "Aggregation of likes comments and shares"
-
-      - name: followers_count
-        description: ""
-
-      - name: influencer_type
-        description: "The category an influencer is in based on social media follower count"
-
-      - name: updated_at
-        description: "Date and time when the row was updated"
 
   - name: tweets_insights
     description: "Twitter posts processed without errors"
@@ -111,40 +45,6 @@ models:
       - name: stage
       - name: status
       - name: processed_at
-    
-  - name: tweets_last_update
-    description: "Latest data grouped by task id"
-    columns: 
-      - name: campaign_id
-      - name: influencer_id
-      - name: first_name
-      - name: last_name
-      - name: task_id
-      - name: submission_status
-      - name: first_verification_status
-      - name: second_verification_status
-      - name: third_verification_status
-      - name: tweet_id
-      - name: tweet_text
-      - name: username
-      - name: submission_link
-      - name: channel
-      - name: created_at
-      - name: error
-      - name: followers_count
-      - name: hashtags
-      - name: likes
-      - name: location
-      - name: possibly_sensitive
-      - name: profile_location
-      - name: quote_count
-      - name: reply_count
-      - name: retweet_count
-      - name: impressions
-      - name: source
-      - name: stage
-      - name: status
-      - name: processed_at
 
   - name: tweets_insights_by_task_by_day
     description: "Unique daily tweets aggregating likes, comments, retweets and impressions by campaign by day"
@@ -157,8 +57,44 @@ models:
       - name: comments
       - name: retweets
       - name: impressions
-
-  - name: dbt_last_run
-    description: "Last time models were updated"
+      
+  - name: campaign_post_platform_metrics
+    description: "Campaign posts metrics for all the social media channels"
     columns:
-      - name: last_update
+      - name: task_id
+        tests:
+            - not_null
+      - name: channel
+        tests:
+            - not_null
+      - name: campaign_id
+        tests:
+          - not_null
+      - name: influencer_id
+        tests:
+          - not_null
+      - name: influencer_name
+        tests:
+          - not_null
+      - name: influencer_followers
+        tests:
+          - not_null
+      - name: submission_link
+        tests:
+          - not_null
+      - name: likes
+        tests:
+          - not_null
+      - name: views
+      - name: shares
+        description: "Times the post was shared on social media. Retweets in Twitter."
+        tests:
+          - not_null
+      - name: comments
+        description: "Times the post was commented on social media. Replies in Twitter."
+        tests:
+            - not_null
+      - name: quotes
+      - name: impressions
+      - name: updated_at
+

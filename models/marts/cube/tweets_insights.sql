@@ -5,6 +5,7 @@ SELECT
     twitter_data.influencer_id,
     influencers.first_name,
     influencers.last_name,
+    concat(influencers.first_name, " ", influencers.last_name) as influencer_name,
     twitter_data.task_id,
     tasks.submission_status,
     tasks.first_verification_status,
@@ -36,4 +37,4 @@ FROM
 LEFT JOIN {{ ref('postgres_stg__influencers') }} influencers on twitter_data.influencer_id = influencers.influencer_id
 LEFT JOIN {{ ref('postgres_stg__influencer_tasks') }} tasks on twitter_data.task_id = tasks.task_id
 WHERE
-   twitter_data.error='' and twitter_data.tweet_text is not null and twitter_data.username is not null
+    twitter_data.error='' and twitter_data.tweet_text is not null and twitter_data.username is not null
