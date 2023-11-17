@@ -34,7 +34,7 @@ SELECT
   metrics_and_followers.campaign_id,
   metrics_and_followers.task_id,
   metrics_and_followers.influencer_id,
-  concat(inf.first_name, " ", inf.last_name) as influencer_name,
+  concat(COALESCE(inf.first_name, ''), " ", COALESCE(inf.last_name, '')) as influencer_name,
   metrics_and_followers.channel,
   metrics_and_followers.submission_link,
   metrics_and_followers.likes,
