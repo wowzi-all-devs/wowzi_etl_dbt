@@ -56,7 +56,7 @@ premium_inf_with_content_quality AS
     premium_tag
 FROM premium_by_payout pp 
     WHERE premium_tag = 'YES'
-    AND influencer_id in 
+    AND influencer_id IN 
     (SELECT 
     influencer_id
     FROM {{ ref('postgres_stg__influencer_hidden_tags') }} 
@@ -93,23 +93,23 @@ FROM {{ ref('influencer_task_facts') }}
 all_premium_creators AS
 (SELECT 
     slp.influencer_id,
-    slp.channel as social_media_channel,
+    slp.channel AS social_media_channel,
     (CASE WHEN slp.channel = 'FACEBOOK' THEN f.influencer_type_FACEBOOK
     WHEN slp.channel = 'INSTAGRAM' THEN f.influencer_type_INSTAGRAM
     WHEN slp.channel = 'TWITTER' THEN f.influencer_type_TWITTER
     WHEN slp.channel = 'TIKTOK' THEN f.influencer_type_TIKTOK
     WHEN slp.channel = 'LINKEDIN' THEN f.influencer_type_LINKEDIN
-    END) as influencer_level,
+    END) AS influencer_level,
     (CASE WHEN slp.channel = 'FACEBOOK' THEN f.username_FACEBOOK
     WHEN slp.channel = 'INSTAGRAM' THEN f.username_INSTAGRAM
     WHEN slp.channel = 'TWITTER' THEN f.username_TWITTER
     WHEN slp.channel = 'TIKTOK' THEN f.username_TIKTOK
     WHEN slp.channel = 'LINKEDIN' THEN f.username_LINKEDIN
-    END) as social_media_username,
-    'YES' as premium_tag
+    END) AS social_media_username,
+    'YES' AS premium_tag
 FROM second_level_premiums slp 
 LEFT JOIN {{ ref('influencer_facts') }} f ON slp.influencer_id = f.influencer_id
-union all 
+UNION ALL 
 SELECT 
     influencer_id,
     social_media_channel, 
@@ -117,7 +117,14 @@ SELECT
     social_media_username,
     premium_tag 
 FROM premium_inf_with_content_quality
-    ORDER BY influencer_id)
+UNION ALL 
+SELECT 
+  influencer_id,
+  'INSTAGRAM' AS social_media_channel,
+  influencer_type_INSTAGRAM AS influencer_level,
+  username_INSTAGRAM AS social_media_username,
+  'YES' AS premium_tag
+FROM `bi-staging-1-309112.dbt_patrik_eu.influenceo_first_cohort` )
 
 SELECT 
     DISTINCT
