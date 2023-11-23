@@ -12,6 +12,7 @@ SELECT
     user_profile_avg_shares,
     user_profile_avg_saves,
     user_profile_total_likes,
+    user_profile_avg_reels_plays,
     channel,
     user_profile_url AS profile_url,
     user_profile_age_group AS age_group,
