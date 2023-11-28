@@ -68,7 +68,7 @@ WITH
   final_x_view AS (
   SELECT
     base_x_view.*,
-    ROUND((amount_spent / total_engagement), 2) AS cost_per_engagement
+    if(total_engagement!=0, ROUND((amount_spent / total_engagement), 2), amount_spent) AS cost_per_engagement
   FROM
     base_x_view ),
 dollar_x_view as(
