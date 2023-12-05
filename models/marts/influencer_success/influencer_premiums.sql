@@ -62,16 +62,7 @@ FROM premium_by_payout pp
     FROM {{ ref('postgres_stg__influencer_hidden_tags') }} 
     WHERE hidden_tag IN ('HIGH_CONTENT_QUALITY', 'AVERAGE_CONTENT_QUALITY'))),
 
-campaigns_with_one_creator AS
-(SELECT
-  campaign_id
-FROM
-(SELECT  
-  campaign_id,
-  count(DISTINCT influencer_id) AS no_of_creators
-FROM {{ ref('influencer_task_facts') }}
-  GROUP BY campaign_id) a
-  WHERE no_of_creators = 1),
+
 
 second_level_premiums AS
 (SELECT  
@@ -83,11 +74,15 @@ WHERE campaign_id IN
 (SELECT
   campaign_id
 FROM
-(SELECT  
-  campaign_id,
-  count(DISTINCT influencer_id) AS no_of_creators
-FROM {{ ref('influencer_task_facts') }} 
-  GROUP BY campaign_id) a
+(SELECT 
+  f.campaign_id,
+  count(DISTINCT f.influencer_id) AS no_of_creators
+FROM {{ ref('influencer_task_facts') }} f
+left join {{ ref('campaign_expenditure') }} c on cast(f.campaign_id as string) = cast(c.campaign_id as string)
+where lower(merchant_name) not like '%test%'
+and lower(company_name) not like '%test%'
+and c.budget_spent > 0
+group by campaign_id) a
   WHERE no_of_creators = 1)),
 
 all_premium_creators AS
@@ -134,3 +129,4 @@ SELECT
     social_media_username,
     premium_tag 
 FROM all_premium_creators
+  WHERE social_media_username IS NOT NULL
