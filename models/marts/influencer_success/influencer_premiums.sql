@@ -81,6 +81,7 @@ FROM {{ ref('influencer_task_facts') }} f
 left join {{ ref('campaign_expenditure') }} c on cast(f.campaign_id as string) = cast(c.campaign_id as string)
 where lower(merchant_name) not like '%test%'
 and lower(company_name) not like '%test%'
+and merchant_name <> 'Kev Owner'
 and c.budget_spent > 0
 group by campaign_id) a
   WHERE no_of_creators = 1)),
