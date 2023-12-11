@@ -1,8 +1,8 @@
 {{ config(tags=["cube"]) }}
 
 SELECT
-  cluster_id,
-  cluster_name,
+  cc.cluster_id,
+  cl.cluster_name,
   cluster_country,
   COUNT(
     DISTINCT campaign_id
@@ -24,7 +24,9 @@ FROM
   cc
   ON cc.company_id = xm.company_id
   LEFT JOIN {{ ref('postgres_stg__clusters') }}
-  cl USING(cluster_id)
+  cl 
+  ON cc.cluster_id = cl.cluster_id
+  --USING(cluster_id)
 WHERE
   cluster_country IS NOT NULL
 GROUP BY
