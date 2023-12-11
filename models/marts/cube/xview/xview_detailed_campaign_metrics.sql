@@ -26,7 +26,7 @@ final_view AS
       AND clc.country = it.country ) AS cluster_country,
     (
     SELECT
-      cluster_id
+      clc.cluster_id
     FROM
       {{ ref('postgres_stg__cluster_countries') }} clc
     WHERE
