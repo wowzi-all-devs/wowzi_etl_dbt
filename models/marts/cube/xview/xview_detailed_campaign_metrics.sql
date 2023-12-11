@@ -23,7 +23,15 @@ final_view AS
       {{ ref('postgres_stg__cluster_countries') }} clc
     WHERE
       clc.cluster_id = cc.cluster_id
-      AND clc.country = it.country ) AS cluster_country
+      AND clc.country = it.country ) AS cluster_country,
+    (
+    SELECT
+      cluster_id
+    FROM
+      {{ ref('postgres_stg__cluster_countries') }} clc
+    WHERE
+      clc.cluster_id = cc.cluster_id
+      AND clc.country = it.country ) AS cluster_id
 FROM campaign_metrics mmc
 LEFT JOIN
 {{ ref('postgres_stg__campaigns') }} cf
