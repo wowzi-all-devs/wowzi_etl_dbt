@@ -17,6 +17,7 @@ WITH
     from {{ ref('campaign_post_platform_metrics') }}
     group by 1, 2
   ),
+
   base_x_view AS (
   SELECT
     cf.company_id,
@@ -32,6 +33,7 @@ WITH
       clc.cluster_id = cc.cluster_id
       AND clc.country = it.country ) AS cluster_country,
     cf.currency,
+    cf.start_date as campaign_date,
     SUM(payment_amount_list) AS amount_spent,
     MAX( cf.budget ) AS campaign_budget,
     SUM(influencer_followers) AS potential_reach,
@@ -64,7 +66,9 @@ WITH
     3,
     4,
     5,
-    6),
+    6,
+    7),
+
   final_x_view AS (
   SELECT
     base_x_view.*,
@@ -82,6 +86,7 @@ FROM
 LEFT JOIN
   {{ ref('int_currency_rates') }} cr
 ON
-  cr.currency = final_x_view.currency)
+  cr.currency = final_x_view.currency
+  and date(cr.date) = date(final_x_view.campaign_date))
 
 select * from dollar_x_view
