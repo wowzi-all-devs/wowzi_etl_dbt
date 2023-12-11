@@ -32,14 +32,7 @@ WITH
     WHERE
       clc.cluster_id = cc.cluster_id
       AND clc.country = it.country ) AS cluster_country,
-    (
-    SELECT
-      clc.cluster_id
-    FROM
-      {{ ref('postgres_stg__cluster_countries') }} clc
-    WHERE
-      clc.cluster_id = cc.cluster_id
-      AND clc.country = it.country ) AS cluster_id,
+    cc.cluster_id AS cluster_id,
     cf.currency,
     cf.start_date as campaign_date,
     SUM(payment_amount_list) AS amount_spent,
