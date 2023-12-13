@@ -80,15 +80,23 @@ WITH
 dollar_x_view as(
 SELECT
   final_x_view.*,
-  ROUND( amount_spent / currency_rate, 2 ) AS dollar_amount_spent,
-  ROUND( campaign_budget / currency_rate, 2 ) AS dollar_campaign_budget,
-  ROUND( final_x_view.cost_per_engagement / currency_rate, 2 ) AS dollar_cost_per_engagement
+  (CASE WHEN cr.currency_rate IS NULL THEN ROUND( amount_spent / cr1.currency_rate, 2 )
+  ELSE ROUND( amount_spent / cr.currency_rate, 2 ) END) AS dollar_amount_spent,
+  (CASE WHEN cr.currency_rate IS NULL THEN ROUND( campaign_budget / cr1.currency_rate, 2 )
+  ELSE ROUND( campaign_budget / cr.currency_rate, 2 ) END) AS dollar_campaign_budget,
+  (CASE WHEN cr.currency_rate IS NULL THEN ROUND( final_x_view.cost_per_engagement / cr1.currency_rate, 2 )
+  ELSE ROUND( final_x_view.cost_per_engagement / cr.currency_rate, 2 ) END) AS dollar_cost_per_engagement
 FROM
   final_x_view
 LEFT JOIN
   {{ ref('int_currency_rates') }} cr
 ON
   cr.currency = final_x_view.currency
-  and date(cr.date) = date(final_x_view.campaign_date))
+  and date(cr.date) = date(final_x_view.campaign_date)
+LEFT JOIN
+  {{ ref('int_currency_rates') }} cr1
+ON
+  cr1.currency = final_x_view.currency
+  and date(cr1.date) = date_add(date(final_x_view.campaign_date), interval -1 day))
 
 select * from dollar_x_view
