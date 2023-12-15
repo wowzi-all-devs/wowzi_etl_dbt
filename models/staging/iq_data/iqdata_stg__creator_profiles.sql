@@ -22,7 +22,11 @@ WITH influencer_profiles AS (
     null as user_profile_avg_shares,
     null as user_profile_avg_saves,
     null as user_profile_total_likes,
-    null as user_profile_avg_reels_plays,
+    user_profile_avg_reels_plays,
+    /*null as user_profile_avg_shares,
+    null as user_profile_avg_saves,
+    null as user_profile_total_likes,
+    null as user_profile_avg_reels_plays,*/
     audience_followers_data_audience_credibility,
     audience_followers_data_audience_genders,
     audience_followers_data_audience_ages,
