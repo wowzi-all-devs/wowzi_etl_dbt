@@ -18,6 +18,7 @@ final_view AS
     it.country,
     (
     SELECT
+      distinct
       country
     FROM
       {{ ref('postgres_stg__cluster_countries') }} clc
