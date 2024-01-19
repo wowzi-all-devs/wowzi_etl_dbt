@@ -1,3 +1,8 @@
+{{ config(
+    materialized = 'view',
+    tags=["finance"]
+) }}
+
 SELECT * FROM(
 SELECT
     campaign_id,
