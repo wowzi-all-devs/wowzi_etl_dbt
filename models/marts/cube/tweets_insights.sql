@@ -1,4 +1,7 @@
-{{ config(tags=["cube"]) }}
+{{ config(
+    materialized = 'view',
+    tags=["cube"]
+) }}
 
 SELECT
     twitter_data.campaign_id,

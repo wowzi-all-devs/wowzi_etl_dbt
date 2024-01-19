@@ -1,3 +1,10 @@
+{{ config(
+    materialized = 'materialized_view',
+    on_configuration_change = 'apply',
+    enable_refresh = True,
+    refresh_interval_minutes = 30,
+    )
+}}
 SELECT
     task_id,
     influencer_id,

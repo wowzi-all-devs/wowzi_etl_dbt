@@ -1,5 +1,7 @@
-{{ config(tags=["cube"]) }}
-
+{{ config(
+    materialized = 'view',
+    tags=["cube"]
+) }}
 SELECT
   tweets.task_id,
   upper(channel) as channel,

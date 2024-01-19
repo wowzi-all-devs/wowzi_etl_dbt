@@ -1,5 +1,7 @@
-{{ config(tags=["cube"]) }}
-
+{{ config(
+    materialized = 'view',
+    tags=["cube"]
+) }}
 WITH unique_tasks_by_day as (
   SELECT 
     task_id as task_id_1, DATE(processed_at), max(processed_at) as last_update
