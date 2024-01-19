@@ -1,10 +1,12 @@
 {{ config(
-    materialized = 'materialized_view',
-    on_configuration_change = 'apply',
-    enable_refresh = True,
-    refresh_interval_minutes = 30,
-    )
-}}
+    materialized='table',
+    partition_by={
+      "field": "processed_at",
+      "data_type": "timestamp",
+      "granularity": "day"
+    },
+    cluster_by = ["campaign_id", "influencer_id"]
+)}}
 SELECT
     task_id,
     influencer_id,
