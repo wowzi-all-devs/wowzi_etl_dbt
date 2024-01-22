@@ -1,4 +1,7 @@
-{{ config(tags=["cube"]) }}
+{{ config(
+    materialized = 'view',
+    tags=["cube"]
+) }}
 
 SELECT
   cc.cluster_id,

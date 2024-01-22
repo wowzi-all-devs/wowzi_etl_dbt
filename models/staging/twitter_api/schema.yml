@@ -43,4 +43,4 @@ sources:
       schema: dbt_caleb
       tables:
         - name: campaign_expenditure
-        - name: twitter_campaign_data_redux
+        - name: raw_twitter__campaign_data

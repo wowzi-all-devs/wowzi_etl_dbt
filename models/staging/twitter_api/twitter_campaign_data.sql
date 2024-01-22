@@ -1,11 +1,15 @@
 {{ config(
-    materialized='table',
+    materialized='incremental',
     partition_by={
       "field": "processed_at",
       "data_type": "timestamp",
       "granularity": "day"
     },
-    cluster_by = ["campaign_id", "influencer_id"]
+    cluster_by = ["campaign_id", "influencer_id"],
+    on_schema_change = "sync_all_columns",
+    incremental_strategy = "merge",
+    incremental_predicates = [
+        "DBT_INTERNAL_DEST.processed_at > timestamp_add(current_timestamp(), interval -4 hour)"],
 )}}
 SELECT
     task_id,
@@ -13,7 +17,6 @@ SELECT
     campaign_id,
     tweet_id,
     channel,
-    tweet_text,
     error,
     followers_count,
     hashtags,
@@ -27,9 +30,10 @@ SELECT
     reply_count,
     retweet_count,
     impressions,
-    source,
-    stage,
-    status,
     submission_link,
     username
-FROM {{ source('twitter_api', 'twitter_campaign_data_redux') }}
+FROM {{ source('twitter_api', 'raw_twitter__campaign_data') }}
+ where  (error='' or error='None') and username is not null
+{% if is_incremental() %}
+    and processed_at >=(select max(processed_at) from {{ this }})
+{% endif %}

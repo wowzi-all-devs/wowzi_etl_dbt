@@ -1,4 +1,7 @@
-{{ config(tags=["cube"]) }}
+{{ config(
+    materialized = 'view',
+    tags=["cube"])
+}}
 
 WITH
   campaign_metrics AS (
