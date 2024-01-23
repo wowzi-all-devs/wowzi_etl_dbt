@@ -26,10 +26,10 @@ SELECT
     created_at,
     processed_at,
     profile_location,
-    quote_count,
-    reply_count,
-    retweet_count,
-    impressions,
+    ifnull(quote_count,0) as quote_count,
+    ifnull(reply_count,0) as reply_count,
+    ifnull(retweet_count,0) as retweet_count,
+    ifnull(impressions,0) as impressions,
     submission_link,
     username
 FROM {{ source('twitter_api', 'raw_twitter__campaign_data') }}
