@@ -9,13 +9,17 @@ WITH max_starters AS
 FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_task_facts` ),
 
 inf_id_setup AS 
-(SELECT 
-  distinct
+(select
   influencer,
   country,
   row_number() over(order by country,influencer) as id
+from
+(SELECT 
+  distinct
+  influencer,
+  country
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-where influencer is not null
+where influencer is not null)
 order by country,influencer),
 
 final_influencer_ids as
@@ -66,7 +70,16 @@ final_job_tasks_ids as
     m.task_id_start + i.id as task_id,
     m.company_id_start as company_id
 from job_tasks_id_setup i 
-left join max_starters m on m.job_id_start = m.job_id_start)
+left join max_starters m on m.job_id_start = m.job_id_start),
+
+first_dates as 
+(SELECT 
+  country,
+  influencer,
+  min(payment_date) as first_date
+FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
+where influencer is not null
+group by country,influencer)
 
 select 
   p.payment_date,
@@ -79,6 +92,7 @@ select
   p.temp_camp_name,
   p.social_media_platform,
   f.influencer_id,
+  fd.first_date as inf_date_account_created,
   p.influencer,
   cast(p.age as int) as age,
   p.gender,
@@ -99,4 +113,6 @@ left join final_influencer_ids f on p.influencer = f.influencer
 left join final_job_tasks_ids j on p.country = j.country 
 and p.campaign_name = j.campaign_name
 and p.influencer = j.influencer
+left join first_dates fd on p.country = fd.country
+and p.influencer = fd.influencer
 where p.influencer is not null
