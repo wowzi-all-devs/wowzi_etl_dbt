@@ -90,7 +90,7 @@ select
   c.campaign_id,
   p.campaign_name,
   p.temp_camp_name,
-  initcap(p.social_media_platform) social_media_platform,
+  upper(p.social_media_platform) social_media_platform,
   f.influencer_id,
   fd.first_date as inf_date_account_created,
   p.influencer,
