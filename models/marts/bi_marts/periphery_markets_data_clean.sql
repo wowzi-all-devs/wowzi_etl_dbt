@@ -90,12 +90,19 @@ select
   c.campaign_id,
   p.campaign_name,
   p.temp_camp_name,
-  p.social_media_platform,
+  initcap(p.social_media_platform) social_media_platform,
   f.influencer_id,
   fd.first_date as inf_date_account_created,
   p.influencer,
-  cast(p.age as int) as age,
-  p.gender,
+  case when p.age is null then 26
+  else cast(p.age as int) end age,
+  case when p.age is null then '26-35'
+  when cast(p.age as int) >= 18 and cast(p.age as int) <= 25 then '18-25'
+  when cast(p.age as int) >= 26 and cast(p.age as int) <= 35 then '26-35'
+  when cast(p.age as int) >= 36 and cast(p.age as int) <= 45 then '36-45'
+  else '>45' end as inf_age_range,
+  case when p.gender is null then 'Male'
+  else p.gender end gender,
   p.influencer_level,
   j.company_id,
   j.job_id,

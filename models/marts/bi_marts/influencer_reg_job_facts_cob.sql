@@ -1,6 +1,7 @@
 WITH inf_details as 
 (select 
   safe_cast(influencer_id as string) influencer_id_a, 
+  d.age_range inf_age_range,
   initcap(d.first_name) first_name, 
   initcap(d.last_name) last_name,
   d.email, 
@@ -20,6 +21,7 @@ on
 union all 
 SELECT 
      safe_cast(p.influencer_id as string) influencer_id_a, 
+     p.inf_age_range,
     initcap(p.influencer) first_name, 
     null last_name,
     null as email, 
@@ -38,6 +40,7 @@ FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` p),
 inf_details_ranked as
 (select 
   influencer_id_a, 
+  inf_age_range,
   first_name, 
   last_name,
   email, 
@@ -54,6 +57,49 @@ inf_details_ranked as
   dense_rank () over (order by extract(year from date_account_created) asc, extract(month from date_account_created)asc ) acc_cre_rnk,
   datasource
 from inf_details),
+
+influencer_occupations as 
+(
+SELECT
+  distinct
+  safe_cast(isb.influencer_id as int) influencer_id,
+  s.parent_category_id,
+  c.enum_value as parent_category,
+  isb.subcategory_id,
+  s.enum_value
+FROM `bi-staging-1-309112.wowzi_airbyte.influencer_subcategories` isb
+left join `bi-staging-1-309112.wowzi_airbyte.subcategories`s on isb.subcategory_id = s.id
+left join `bi-staging-1-309112.wowzi_airbyte.categories` c on s.parent_category_id = c.id
+where c.enum_value = 'PROFESSION'
+and isb.subcategory_type = 'OCCUPATION'
+order by isb.influencer_id 
+),
+
+inf_details_ranked2 as 
+(select
+  i.influencer_id_a, 
+  i.inf_age_range,
+  i.first_name, 
+  i.last_name,
+  i.email, 
+  i.gender,
+  i.smileidentity_status, 
+  i.age, 
+  i.job_eligibility,
+  i.date_account_created,
+  i.country,
+  i.acc_cre_mon_yr,
+  i.acc_cre_mon,
+  i.acc_cre_yr,
+  i.acc_cre_rnk,
+  i.datasource,
+  o.parent_category_id,
+  initcap(o.parent_category) parent_category,
+  o.subcategory_id,
+  initcap(o.enum_value) enum_value
+from inf_details_ranked i 
+left join influencer_occupations o 
+on i.influencer_id_a = cast(o.influencer_id as string)),
 
 tasks_details as
 (select
@@ -160,6 +206,12 @@ and
 select
   case when (a.influencer_id_a is not null) then influencer_id_a
   else e.influencer_id end as influencer_id,
+  a.inf_age_range,
+  a.parent_category_id,
+  a.parent_category,
+  a.subcategory_id,
+  case when a.enum_value is null then 'Not Set'
+  else a.enum_value end inf_profession,
   a.first_name, a.last_name,
   a.email,a.gender,
   a.smileidentity_status, a.age, a.job_eligibility,
@@ -177,7 +229,10 @@ select
   e.offer_creation_time_job_offer_date,
   e.submission_channel,
   e.submission_link_date_task_submission,
-  a.country, e.budget_spent, e.company_id,
+  case when a.country is null then 'Country Not Set'
+  else a.country end country, 
+  e.budget_spent, 
+  e.company_id,
   e.currency_rate_task_created,
   e.payout,
   case when e.amount_usd > 0 then e.amount_usd
@@ -197,6 +252,6 @@ select
   extract(year from offer_creation_time_job_offer_date) job_offer_yr,
   dense_rank () over (order by extract(month from offer_creation_time_job_offer_date) desc) job_offer_mon_rnk,
   datasource
-  from inf_details_ranked a
+  from inf_details_ranked2 a
   full join final_table e
     on a.influencer_id_a = e.influencer_id
