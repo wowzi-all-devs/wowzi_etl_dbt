@@ -26,7 +26,7 @@ WITH job_details AS
   null amount_lcy,
   null as amount_usd,
   null as payment_date,
-  'Patform' as datasource
+  'Platform' as datasource
 from `bi-staging-1-309112.wowzi_dbt_prod.job_facts` j
 left join `bi-staging-1-309112.wowzi_dbt_prod.influencer_facts` a on j.influencer_id = a.influencer_id
 left join `bi-staging-1-309112.wowzi_dbt_prod.country_key` c on (a.country = c.Key)
