@@ -88,6 +88,8 @@ task_details AS
     (case when a.task_id is null then b.task_id
     else a.task_id end) as task_id,
     a.tasks_assigned,
+    b.payment_amount_list,
+    e.currency campaign_currency,
     (case when a.channel is null then b.channel
     else a.channel end) as channel,
     (case when date(b.task_creation_time) is null then a.payment_date
@@ -111,7 +113,8 @@ from job_details a
 left join bi-staging-1-309112.wowzi_dbt_prod.influencer_task_facts b on (a.job_id = b.job_id)
 left join bi-staging-1-309112.wowzi_dbt_prod.companies c on (b.company_id = c.id)
 left join `bi-staging-1-309112.wowzi_dbt_prod.influencer_payouts` d on (b.task_id = d.task_id)
-and lower(d.payment_status) in ('successful', 'manual', 'new', 'completed')),
+and lower(d.payment_status) in ('successful', 'manual', 'new', 'completed')
+left join `bi-staging-1-309112.wowzi_dbt_prod.campaign_expenditure` e on (cast(a.campaign_id as string) = cast(e.campaign_id as string))),
 
 first_jobs as
 (
@@ -174,6 +177,11 @@ table1 as
     days_since_last_campaign,
     task_id,
     no_of_tasks,
+    payment_amount_list,
+    campaign_currency,
+    i.currency_rate,
+    case when payment_amount_list > 0 then payment_amount_list/i.currency_rate
+    else 0 end payment_amount_list_usd,
     (case when channel is null then 'Channel Not Set'
     else channel end) as channel,
     task_creation_date,
@@ -201,15 +209,57 @@ table1 as
     amount_paid_to_active_l3m,
     mon_yr,
     dense_rank () over (order by extract(year from job_offer_date) asc, extract(month from job_offer_date)asc) mon_yr_rnk
-from tasks_with_refugee_status)
+from tasks_with_refugee_status a 
+left join `bi-staging-1-309112.wowzi_dbt_prod.int_currency_rates` i 
+on (date(a.task_creation_date) = date(i.date))
+and (lower(a.campaign_currency)=lower(i.currency)))
 
 select
-a.*,
-case when (influencer_level is null) or (influencer_level = 'None') then 'Uncategorized' else influencer_level
-end as influencer_level_new,
- b.company_id, initcap(b.company_name) company_name,initcap(c.role) role, initcap(c.company_role) company_role,
-/*distinct influencers month on month*/
-row_number() over(partition by a.influencer_id, a.mon_yr order by a.task_id desc) distinct_inf
+    a.job_id,
+    a.campaign_id,
+    a.influencer_id,
+    a.gender,
+    a.dob,
+    a.inf_age,
+    a.age_groups,
+    a.country,
+    a.refugee_flag,
+    a.created,
+    a.job_offer_date,
+    a.creation_to_job_days,
+    a.inf_last_campaign_date,
+    a.days_since_last_campaign,
+    a.task_id,
+    a.no_of_tasks,
+    case when a.datasource = 'Periphery Sheet' then a.amount_usd
+    else a.payment_amount_list_usd end job_value_usd,
+    --a.payment_amount_list,
+    --a.campaign_currency,
+    --a.currency_rate,
+    a.channel,
+    a.task_creation_date,
+    a.completed_tasks,
+    a.industry,
+    a.Influencer_level,
+    a.invitation_status,
+    a.datasource,
+    a.payment_date,
+    a.amount_usd,
+    a.active_l3m,
+    a.active_l3m_completed_tasks,
+    a.amount_paid_to_active_l3m,
+    a.mon_yr,
+    a.mon_yr_rnk,
+    case 
+      when (influencer_level is null) or (influencer_level = 'None') 
+      then 'Uncategorized' else influencer_level
+    end as influencer_level_new,
+    b.company_id, 
+    initcap(b.company_name) company_name,
+    initcap(c.role) role, 
+    initcap(c.company_role) company_role,
+    /*distinct influencers month on month*/
+  row_number() over(partition by a.influencer_id, a.mon_yr order by a.task_id desc) distinct_inf
 from table1 a
 left join `bi-staging-1-309112.wowzi_dbt_prod.campaign_facts` b
 on a.campaign_id = b.campaign_id
