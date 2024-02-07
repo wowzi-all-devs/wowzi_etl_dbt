@@ -123,7 +123,8 @@ tasks_details as
     initcap(c.channel) submission_channel, submission_link,
     date(c.submission_link_add_time) submission_link_date,
     null as currency,
-    null as amount_usd
+    null as amount_usd,
+    null as periphery_payment_status
 from bi-staging-1-309112.wowzi_dbt_prod.job_facts a
 left join bi-staging-1-309112.wowzi_dbt_prod.campaign_expenditure b
 on
@@ -159,7 +160,8 @@ select
     null as submission_link,
     date(p.payment_date) submission_link_date,
     p.currency,
-    p.amount_usd
+    p.amount_usd,
+    p.payment_status periphery_payment_status
 from `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` p),
 
 task_payments as 
@@ -242,8 +244,13 @@ select
   e.local_currency, 
   e.currency_rate_date_paid, 
   e.amount_local,
-  case when e.amount_usd > 0 then e.amount_usd
-  else e.amount_local / e.currency_rate_task_created end paid_amount_usd,
+  case 
+    when datasource = 'Periphery Sheet' and e.amount_usd>0 and lower(e.periphery_payment_status) = 'successful'
+    then e.amount_usd
+    when datasource = 'Platform'
+    then e.amount_local / e.currency_rate_task_created 
+    else null 
+  end paid_amount_usd,
   a.acc_cre_mon,
   a.acc_cre_yr,
   a.acc_cre_rnk,

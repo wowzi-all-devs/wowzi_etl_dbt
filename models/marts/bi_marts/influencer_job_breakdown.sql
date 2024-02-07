@@ -26,6 +26,7 @@ WITH job_details AS
   null amount_lcy,
   null as amount_usd,
   null as payment_date,
+  null as periphery_payment_status,
   'Platform' as datasource
 from `bi-staging-1-309112.wowzi_dbt_prod.job_facts` j
 left join `bi-staging-1-309112.wowzi_dbt_prod.influencer_facts` a on j.influencer_id = a.influencer_id
@@ -66,6 +67,7 @@ select
   p.amount_lcy as amount_lcy,
   p.amount_usd as amount_usd,
   p.payment_date,
+  p.payment_status periphery_payment_status,
   'Periphery Sheet' as datasource
 from `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` p
 ),
@@ -90,17 +92,38 @@ task_details AS
     a.tasks_assigned,
     b.payment_amount_list,
     e.currency campaign_currency,
-    (case when a.channel is null then b.channel
-    else a.channel end) as channel,
-    (case when date(b.task_creation_time) is null then a.payment_date
-    else date(b.task_creation_time) end) task_creation_date,
-    case when b.third_verification_status = 'APPROVED' then 1 
-    when b.third_verification_status is null then 1 
-    else 0 end as completed_tasks,
-    case when c.company_industry is null then 'N/A' else initcap(c.company_industry) end as industry,
-    (case when a.amount_usd is null then d.amount_usd
-    else a.amount_usd end) as amount_usd,
+    case 
+      when a.channel is null then b.channel
+      else a.channel 
+    end as channel,
+    case 
+      when date(b.task_creation_time) is null then a.payment_date
+      else date(b.task_creation_time) 
+    end task_creation_date,
+    case 
+      when b.third_verification_status = 'APPROVED' then 1 
+      when b.third_verification_status is null then 1 
+      else 0 
+    end as completed_tasks,
+    case 
+      when c.company_industry is null then 'N/A' 
+      else initcap(c.company_industry) 
+    end as industry,
+    case 
+      when a.datasource = 'Periphery Sheet' then cast(a.amount_usd as numeric)
+      else null
+    end periphery_job_value_usd,
+    case 
+      when a.datasource = 'Platform' then cast(b.payment_amount_list as numeric)
+      else null
+    end platfrom_job_value_lcy,
+    case 
+      when a.datasource = 'Periphery Sheet' and lower(a.periphery_payment_status) = 'successful'
+      then a.amount_usd
+      when a.datasource = 'Platform' then d.amount_usd
+    end amount_usd,
     d.payment_date,
+    a.periphery_payment_status,
     Instagram_influencer_level,
     X_influencer_level,
     Linkedin_influencer_level,
@@ -126,8 +149,9 @@ group by b.influencer_id
 
 task_details_with_first_job_date as
 (
-select b.*, 
-c.first_job_date
+select 
+  b.*, 
+  c.first_job_date
 from task_details  b
 left join first_jobs c
 on b.influencer_id = c.influencer_id
@@ -135,7 +159,9 @@ on b.influencer_id = c.influencer_id
 
 creator_refugee_status as 
 (
-select d.*, r.id_card_type
+select 
+  d.*, 
+  r.id_card_type
 from task_details_with_first_job_date d 
 left join 
 `bi-staging-1-309112.wowzi_airbyte.influencer_smileidentity_data` r 
@@ -146,18 +172,32 @@ and r.id_card_type = 'UG_TRAVEL_DOC'
 tasks_with_refugee_status as
 (select
   e.*,
-  case when e.tasks_assigned is null then 1 
-  else cast(e.tasks_assigned as int) end as no_of_tasks,
-  case when (id_card_type is not null) then 'Refugee' else 'Non-refugee' end  as refugee_flag,
+  case 
+    when e.tasks_assigned is null then 1 
+    else cast(e.tasks_assigned as int) 
+  end no_of_tasks,
+  case 
+    when (id_card_type is not null) then 'Refugee' 
+    else 'Non-refugee' 
+  end refugee_flag,
   concat(FORMAT_DATETIME("%b", DATETIME(date(job_offer_date))),"-", extract(year from date(job_offer_date))) mon_yr,
-  (case when days_since_last_campaign <= 90 then influencer_id else null end) as active_l3m,
+  case 
+    when days_since_last_campaign <= 90 then influencer_id 
+    else null 
+  end active_l3m,
   -- (case when days_since_last_campaign <= 90 then 'active' else 'inactive' end) as active_l3m
-  (case when (days_since_last_campaign <= 90) and (completed_tasks = 1) then influencer_id else null end) as active_l3m_completed_tasks,
-  (case when (days_since_last_campaign <= 90) and (completed_tasks = 1) then amount_usd else null end) as amount_paid_to_active_l3m,
+  case 
+    when (days_since_last_campaign <= 90) and (completed_tasks = 1) then influencer_id 
+    else null 
+  end active_l3m_completed_tasks,
+  case 
+    when (days_since_last_campaign <= 90) and (completed_tasks = 1) then amount_usd 
+    else null 
+  end amount_paid_to_active_l3m,
   date_diff(first_job_date, created, DAY) creation_to_job_days
   -- row_number() over (partition by influencer_id, campaign_id) rnk,/*indicate the start of a diff campaign with 1*/
   -- row_number() over (partition by influencer_id order by job_offer_date) rnk_frst_offer /*indicate the first time an offer was extended*/
-  from creator_refugee_status e ),
+from creator_refugee_status e ),
 
 table1 as
 ( select 
@@ -178,12 +218,18 @@ table1 as
     task_id,
     no_of_tasks,
     payment_amount_list,
+    platfrom_job_value_lcy,
     campaign_currency,
     i.currency_rate,
-    case when payment_amount_list > 0 then payment_amount_list/i.currency_rate
-    else 0 end payment_amount_list_usd,
-    (case when channel is null then 'Channel Not Set'
-    else channel end) as channel,
+    case 
+      when datasource = 'Periphery Sheet' then periphery_job_value_usd
+      when datasource = 'Platform' then platfrom_job_value_lcy/i.currency_rate
+      else 0 
+    end payment_amount_list_usd,
+    case 
+      when channel is null then 'Channel Not Set'
+      else channel 
+    end as channel,
     task_creation_date,
     completed_tasks,
     industry,
@@ -231,8 +277,7 @@ select
     a.days_since_last_campaign,
     a.task_id,
     a.no_of_tasks,
-    case when a.datasource = 'Periphery Sheet' then a.amount_usd
-    else a.payment_amount_list_usd end job_value_usd,
+    payment_amount_list_usd job_value_usd,
     --a.payment_amount_list,
     --a.campaign_currency,
     --a.currency_rate,

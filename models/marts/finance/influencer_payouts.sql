@@ -77,7 +77,10 @@ SELECT
     amount,
     amount_usd,
     currency,
-    payment_status,
+    case when date(payment_date) <= date('2023-11-30') and lower(payment_status) = 'failed'
+    then 'Manual'
+    else payment_status
+    end payment_status,
     bank_name,
     company_name,
     reference,
