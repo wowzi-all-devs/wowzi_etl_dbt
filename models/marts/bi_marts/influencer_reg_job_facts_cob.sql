@@ -215,7 +215,9 @@ select
   case when a.enum_value is null then 'Not Set'
   else a.enum_value end inf_profession,
   a.first_name, a.last_name,
-  a.email,a.gender,
+  a.email,
+  case when a.gender = 'Gender' then 'Gender Not Set'
+  else a.gender end gender,
   a.smileidentity_status, a.age, a.job_eligibility,
   e.campaign_name, e.merchant_id,
   e.company_name,
