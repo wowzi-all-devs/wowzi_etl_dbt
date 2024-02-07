@@ -79,6 +79,15 @@ first_dates as
   min(payment_date) as first_date
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
 where influencer is not null
+group by country,influencer),
+
+last_dates as 
+(SELECT 
+  country,
+  influencer,
+  max(payment_date) as last_date
+FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
+where influencer is not null
 group by country,influencer)
 
 select 
@@ -92,7 +101,9 @@ select
   p.temp_camp_name,
   upper(p.social_media_platform) social_media_platform,
   f.influencer_id,
-  fd.first_date as inf_date_account_created,
+  fd.first_date inf_date_account_created,
+  fd.first_date first_campaign_date,
+  ld.last_date last_campaign_date,
   p.influencer,
   case when p.age is null then 26
   else cast(p.age as int) end age,
@@ -122,4 +133,6 @@ and p.campaign_name = j.campaign_name
 and p.influencer = j.influencer
 left join first_dates fd on p.country = fd.country
 and p.influencer = fd.influencer
+left join last_dates ld on p.country = ld.country
+and p.influencer = ld.influencer
 where p.influencer is not null
