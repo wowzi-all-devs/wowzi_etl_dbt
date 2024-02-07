@@ -285,7 +285,10 @@ select
     a.task_creation_date,
     a.completed_tasks,
     a.industry,
-    a.Influencer_level,
+    case 
+      when a.Influencer_level is null then 'MACRO'
+      else a.Influencer_level
+    end Influencer_level,
     a.invitation_status,
     a.datasource,
     a.payment_date,
