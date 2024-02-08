@@ -4,6 +4,7 @@ WITH inf_details as
   d.age_range inf_age_range,
   initcap(d.first_name) first_name, 
   initcap(d.last_name) last_name,
+  d.mobile_number,
   d.email, 
   initcap(d.gender)gender,
   d.smileidentity_status, 
@@ -26,6 +27,7 @@ SELECT
      p.inf_age_range,
     initcap(p.influencer) first_name, 
     null last_name,
+    null as mobile_number,
     null as email, 
     initcap(p.gender) gender,
     'APPROVED' as smileidentity_status, 
@@ -47,6 +49,9 @@ inf_details_ranked as
   inf_age_range,
   first_name, 
   last_name,
+  mobile_number,
+  left(mobile_number, 4) as dial_code,
+  c.Country clean_country,
   email, 
   case when gender is null then 'Gender Not Set'
   else gender end gender,
@@ -56,13 +61,15 @@ inf_details_ranked as
   date_account_created,
   inf_first_campaign_date,
   inf_last_campaign_date,
-  country,
+  i.country,
   acc_cre_mon_yr,
   acc_cre_mon,
   acc_cre_yr,
   dense_rank () over (order by extract(year from date_account_created) asc, extract(month from date_account_created)asc ) acc_cre_rnk,
   datasource
-from inf_details),
+from inf_details i
+left join bi-staging-1-309112.wowzi_dbt_prod.country_key c 
+on cast(left(i.mobile_number, 4) as string) = cast(c.Dial_code as string)),
 
 influencer_occupations as 
 (
@@ -87,6 +94,8 @@ inf_details_ranked2 as
   i.inf_age_range,
   i.first_name, 
   i.last_name,
+  i.mobile_number,
+  clean_country,
   i.email, 
   i.gender,
   i.smileidentity_status, 
@@ -224,6 +233,7 @@ select
   case when a.enum_value is null then 'Not Set'
   else a.enum_value end inf_profession,
   a.first_name, a.last_name,
+  a.mobile_number,
   a.email,
   case when a.gender = 'Gender' then 'Gender Not Set'
   else a.gender end gender,
@@ -243,7 +253,7 @@ select
   e.offer_creation_time_job_offer_date,
   e.submission_channel,
   e.submission_link_date_task_submission,
-  case when a.country is null then 'Country Not Set'
+  case when a.country is null then clean_country
   else a.country end country, 
   e.budget_spent, 
   e.company_id,
