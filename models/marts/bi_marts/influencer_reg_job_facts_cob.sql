@@ -253,7 +253,8 @@ select
   e.offer_creation_time_job_offer_date,
   e.submission_channel,
   e.submission_link_date_task_submission,
-  case when a.country is null then clean_country
+  case when a.country is null and clean_country is not null then clean_country
+  when a.country is null and clean_country is null then 'Country Not Set'
   else a.country end country, 
   e.budget_spent, 
   e.company_id,
