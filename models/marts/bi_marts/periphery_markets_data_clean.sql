@@ -1,4 +1,3 @@
-
 WITH max_starters AS 
 (SELECT 
   max(job_id) + 1000 as job_id_start,
@@ -16,10 +15,10 @@ inf_id_setup AS
 from
 (SELECT 
   distinct
-  influencer,
+  influencer_name influencer,
   country
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-where influencer is not null)
+where amount_usd > 0)
 order by country,influencer),
 
 final_influencer_ids as
@@ -41,7 +40,7 @@ from
   campaign_name,
   country,
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-where influencer is not null) a
+where amount_usd > 0) a
 order by campaign_name, country),
 
 final_campaign_ids as
@@ -56,10 +55,10 @@ job_tasks_id_setup as
 (SELECT 
   country,
   campaign_name,
-  influencer,
+  influencer_name influencer,
   row_number() over() as id
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-where influencer is not null),
+where amount_usd > 0),
 
 final_job_tasks_ids as
 (Select 
@@ -75,20 +74,20 @@ left join max_starters m on m.job_id_start = m.job_id_start),
 first_dates as 
 (SELECT 
   country,
-  influencer,
+  influencer_name influencer,
   min(payment_date) as first_date
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-where influencer is not null
-group by country,influencer),
+where amount_usd > 0
+group by country,influencer_name),
 
 last_dates as 
 (SELECT 
   country,
-  influencer,
+  influencer_name influencer,
   max(payment_date) as last_date
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-where influencer is not null
-group by country,influencer)
+where amount_usd > 0
+group by country,influencer_name)
 
 select 
   p.payment_date,
@@ -104,7 +103,7 @@ select
   fd.first_date inf_date_account_created,
   fd.first_date first_campaign_date,
   ld.last_date last_campaign_date,
-  p.influencer,
+  p.influencer_name influencer,
   case when p.age is null then 26
   else cast(p.age as int) end age,
   case when p.age is null then '26-35'
@@ -127,12 +126,12 @@ select
   p.payment_status
 from `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` p
 left join final_campaign_ids c on p.campaign_name = c.campaign_name
-left join final_influencer_ids f on p.influencer = f.influencer
+left join final_influencer_ids f on p.influencer_name = f.influencer
 left join final_job_tasks_ids j on p.country = j.country 
 and p.campaign_name = j.campaign_name
-and p.influencer = j.influencer
+and p.influencer_name = j.influencer
 left join first_dates fd on p.country = fd.country
-and p.influencer = fd.influencer
+and p.influencer_name = fd.influencer
 left join last_dates ld on p.country = ld.country
-and p.influencer = ld.influencer
-where p.influencer is not null
+and p.influencer_name = ld.influencer
+where p.amount_usd > 0
