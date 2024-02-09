@@ -221,9 +221,36 @@ dbt_kayode.vw_currency_rate k
 on
 (d.local_currency = k.currency)
 and
-(date(d.task_creation_time) = date(k.dte)))
+(date(d.task_creation_time) = date(k.dte))),
 
-select
+gender_fill as
+(select 
+  b.influencer_id,
+  b.rownum,
+  case when b.rownum < c.num then 'Male'
+  else 'Female'
+  end as gender_fill
+from
+(select
+  influencer_id,
+  row_number() over(order by influencer_id) as rownum
+from
+(SELECT 
+  distinct
+  influencer_id
+FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_reg_job_facts_cob` 
+  where influencer_id is not null
+  and gender = 'Gender Not Set') a 
+  order by influencer_id) b
+  left join 
+  (SELECT 
+  cast(count(distinct influencer_id)*0.7 as int) as num
+FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_reg_job_facts_cob` 
+  where influencer_id is not null
+  and gender = 'Gender Not Set') c on c.num = c.num),
+
+prep_table as
+(select
   case when (a.influencer_id_a is not null) then influencer_id_a
   else e.influencer_id end as influencer_id,
   a.inf_age_range,
@@ -254,7 +281,7 @@ select
   e.submission_channel,
   e.submission_link_date_task_submission,
   case when a.country is null and clean_country is not null then clean_country
-  when a.country is null and clean_country is null then 'Country Not Set'
+  when a.country is null and clean_country is null then 'Kenya'
   else a.country end country, 
   e.budget_spent, 
   e.company_id,
@@ -284,4 +311,61 @@ select
   datasource
   from inf_details_ranked2 a
   full join final_table e
-    on a.influencer_id_a = e.influencer_id
+    on a.influencer_id_a = e.influencer_id)
+
+select 
+  p.influencer_id,
+  inf_age_range,
+  parent_category_id,
+  parent_category,
+  subcategory_id,
+  inf_profession,
+  first_name, 
+  last_name,
+  mobile_number,
+  email,
+  case when gender is null or gender = 'Gender Not Set' then g.gender_fill
+  else gender end gender,
+  smileidentity_status,
+  age, 
+  job_eligibility,
+  campaign_name, 
+  merchant_id,
+  company_name,
+  campaign_id, 
+  job_id,
+  task_id,
+  no_of_tasks,
+  completed_tasks,
+  invitation_status,
+  submission_link,
+  campaign_start_date,
+  date_account_created,
+  days_to_job,
+  offer_creation_time_job_offer_date,
+  submission_channel,
+  submission_link_date_task_submission,
+  country, 
+  budget_spent, 
+  company_id,
+  currency_rate_task_created,
+  payout,
+  expected_payout_usd,
+  paid_task,
+  payment_date,
+  local_currency, 
+  currency_rate_date_paid, 
+  amount_local,
+  paid_amount_usd,
+  acc_cre_mon,
+  acc_cre_yr,
+  acc_cre_rnk,
+  acc_cre_mon_yr,
+  job_offer_mon,
+  job_offer_yr,
+  job_offer_mon_rnk,
+  datasource
+from prep_table p
+left join gender_fill g on cast(p.influencer_id as string) = cast(g.influencer_id as string)
+  where p.influencer_id is not null
+  
