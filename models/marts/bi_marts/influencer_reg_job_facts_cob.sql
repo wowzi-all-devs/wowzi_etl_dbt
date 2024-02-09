@@ -223,32 +223,6 @@ on
 and
 (date(d.task_creation_time) = date(k.dte))),
 
-gender_fill as
-(select 
-  b.influencer_id,
-  b.rownum,
-  case when b.rownum < c.num then 'Male'
-  else 'Female'
-  end as gender_fill
-from
-(select
-  influencer_id,
-  row_number() over(order by influencer_id) as rownum
-from
-(SELECT 
-  distinct
-  influencer_id
-FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_reg_job_facts_cob` 
-  where influencer_id is not null
-  and gender = 'Gender Not Set') a 
-  order by influencer_id) b
-  left join 
-  (SELECT 
-  cast(count(distinct influencer_id)*0.7 as int) as num
-FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_reg_job_facts_cob` 
-  where influencer_id is not null
-  and gender = 'Gender Not Set') c on c.num = c.num),
-
 prep_table as
 (select
   case when (a.influencer_id_a is not null) then influencer_id_a
@@ -311,7 +285,33 @@ prep_table as
   datasource
   from inf_details_ranked2 a
   full join final_table e
-    on a.influencer_id_a = e.influencer_id)
+    on a.influencer_id_a = e.influencer_id),
+
+gender_fill as
+(select 
+  b.influencer_id,
+  b.rownum,
+  case when b.rownum < c.num then 'Male'
+  else 'Female'
+  end as gender_fill
+from
+(select
+  influencer_id,
+  row_number() over(order by influencer_id) as rownum
+from
+(SELECT 
+  distinct
+  influencer_id
+FROM prep_table
+  where influencer_id is not null
+  and gender = 'Gender Not Set') a 
+  order by influencer_id) b
+  left join 
+  (SELECT 
+  cast(count(distinct influencer_id)*0.7 as int) as num
+FROM prep_table
+  where influencer_id is not null
+  and gender = 'Gender Not Set') c on c.num = c.num)
 
 select 
   p.influencer_id,
