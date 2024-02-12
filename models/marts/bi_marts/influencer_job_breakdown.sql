@@ -30,7 +30,7 @@ with job_details as
     t.payment_amount_list amount_lcy,
     e.currency campaign_currency,
     d.amount_usd as amount_usd,
-    null as payment_date,
+    d.payment_date payment_date,
     null as periphery_payment_status,
     null as periphery_job_value_usd,
     cast(t.payment_amount_list as numeric) platfrom_job_value_lcy,
