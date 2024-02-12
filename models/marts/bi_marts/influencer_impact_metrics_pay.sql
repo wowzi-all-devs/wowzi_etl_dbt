@@ -5,7 +5,7 @@ WITH job_breakdwon AS
     FORMAT_DATETIME("%b", DATETIME(date(job_offer_date))) mon,
     extract(year from job_offer_date) yr,
     mon_yr,
-    influencer_level_new,
+    influencer_level,
     amount_usd,
     case
     when 
@@ -22,8 +22,8 @@ WITH job_breakdwon AS
 FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_job_breakdown`)
 
 select 
-influencer_id, mon_no,mon,yr,mon_yr,influencer_level_new,Income_bucket, sum(amount_usd) total_payout,
+influencer_id, mon_no,mon,yr,mon_yr,influencer_level,Income_bucket, sum(amount_usd) total_payout,
 dense_rank () over (order by yr asc, mon_no asc) mon_yr_rnk
 from job_breakdwon
-group by mon_no,mon,yr,mon_yr,influencer_level_new, Income_bucket, influencer_id
+group by mon_no,mon,yr,mon_yr,influencer_level, Income_bucket, influencer_id
 order by mon_yr_rnk
