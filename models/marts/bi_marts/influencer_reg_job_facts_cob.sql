@@ -160,7 +160,33 @@ influencers_with_complete_jobs as
   influencer_id 
 FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_job_breakdown` 
   where influencer_id is not null
-  and job_status in ('Complete', 'Ongoing'))
+  and job_status in ('Complete', 'Ongoing')),
+
+gender_fill as
+(select 
+  b.influencer_id_a,
+  b.rownum,
+  case when b.rownum < c.num then 'Male'
+  else 'Female'
+  end as gender_fill
+from
+(select
+  influencer_id_a,
+  row_number() over(order by influencer_id_a) as rownum
+from
+(SELECT 
+  distinct
+  influencer_id_a
+FROM all_influencer_details
+  where influencer_id_a is not null
+  and gender is null) a 
+  order by influencer_id_a) b
+  left join 
+  (SELECT 
+  cast(count(distinct influencer_id_a)*0.7 as int) as num
+FROM all_influencer_details
+  where influencer_id_a is not null
+  and gender is null) c on c.num = c.num)
 
 select 
   a.influencer_id_a, 
@@ -170,7 +196,9 @@ select
     a.mobile_number,
     a.dial_code,
     a.email, 
-    a.gender,
+    case 
+      when a.gender is null then g.gender_fill
+    else a.gender end gender,
     a.smileidentity_status, 
     a.age, 
     a.job_eligibility,
@@ -195,4 +223,4 @@ select
     end completed_one_job
 from all_influencer_details a
 left join influencers_with_complete_jobs c on cast(a.influencer_id_a as string) = cast(c.influencer_id as string)
-
+left join gender_fill g on cast(a.influencer_id_a as string) = cast(g.influencer_id_a as string)
