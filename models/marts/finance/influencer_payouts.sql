@@ -29,10 +29,12 @@ SELECT
     WHEN lower(inf_tasks.submission_link) IS NULL THEN 'NOT-SUBMITTED'
     end) as social_media_channel,
     inf_transfers.amount,
+    inf_transfers.amount/rates.currency_rate amount_usd,
+    /*
     case 
         when inf_transfers.date_created >= '2020-06-01' then inf_transfers.amount/106.78
         else inf_transfers.amount/rates.currency_rate
-    end amount_usd,
+    end amount_usd,*/
     inf_transfers.status as payment_status,
     date(inf_transfers.date_created) as payment_date,
     inf_transfers.currency as currency,
