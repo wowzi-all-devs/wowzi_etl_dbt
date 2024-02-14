@@ -29,7 +29,14 @@ SELECT
     WHEN lower(inf_tasks.submission_link) IS NULL THEN 'NOT-SUBMITTED'
     end) as social_media_channel,
     inf_transfers.amount,
-    inf_transfers.amount/rates.currency_rate amount_usd,
+    case 
+        when inf_transfers.date_created <= '2020-06-01'
+        then inf_transfers.amount/106.78
+        when rates.currency_rate is not NULL
+        then inf_transfers.amount/rates.currency_rate 
+        when rates.currency_rate is NULL
+        then inf_transfers.amount/rates2.currency_rate
+    end amount_usd,
     /*
     case 
         when inf_transfers.date_created >= '2020-06-01' then inf_transfers.amount/106.78
@@ -50,8 +57,10 @@ FROM {{ ref('postgres_stg__influencer_transfers') }} inf_transfers
    LEFT JOIN {{ ref('postgres_stg__campaigns') }} campaigns ON campaigns.campaign_id=inf_tasks.campaign_id
    LEFT join {{ ref('postgres_stg__merchants') }} adv on adv.advertiser_id=campaigns.merchant_id
    LEFT join {{ ref('postgres_stg__companies') }} companies on companies.company_id = campaigns.company_id
-   LEFT JOIN {{ ref('int_currency_rates') }} rates ON cast(inf_transfers.date_created as date) = cast(rates.date as date)
+   LEFT JOIN {{ ref('int_currency_rates') }} rates ON date(inf_transfers.date_created) = date(rates.date)
    AND upper(inf_transfers.currency) = upper(rates.currency)
+   LEFT JOIN {{ ref('int_currency_rates') }} rates2 ON date(inf_transfers.date_created) = date_sub(date(rates2.date), INTERVAL 2 DAY)
+   AND upper(inf_transfers.currency) = upper(rates2.currency)
 ),
 
 dims_payments as (
@@ -93,4 +102,6 @@ SELECT
 FROM 
     payments)
     
-select * from dims_payments
+select 
+    *
+from dims_payments
