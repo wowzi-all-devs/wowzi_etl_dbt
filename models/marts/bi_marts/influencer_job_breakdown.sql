@@ -307,9 +307,10 @@ select
         then true 
         else false
     end job_in_reg_month
-from creator_refugee_status a)
+from creator_refugee_status a),
 
-select 
+final_output as
+(select 
     a.influencer_id,
     a.company_id,
     a.industry,
@@ -385,4 +386,67 @@ select
 from job_details_with_activity_stats a 
 left join `bi-staging-1-309112.wowzi_dbt_prod.int_currency_rates` i 
 on (date(a.task_creation_date) = date(i.date))
-and (lower(a.campaign_currency)=lower(i.currency))
+and (lower(a.campaign_currency)=lower(i.currency)))
+
+select 
+    a.influencer_id,
+    a.company_id,
+    a.industry,
+    a.campaign_id,
+    a.campaign_end_date,
+    a.job_id,
+    a.job_offer_date,
+    a.task_id,
+    a.task_creation_date,
+    a.tasks_assigned,
+    a.job_status,
+    a.completed_tasks,
+    a.amount_lcy,
+    a.campaign_currency,
+    a.amount_usd,
+    a.payment_date,
+    a.periphery_payment_status,
+    a.periphery_job_value_usd,
+    a.platfrom_job_value_lcy,
+    a.currency_rate,
+    case 
+        when a.amount_usd > 0 then a.amount_usd
+        else a.payment_amount_list_usd
+    end payment_amount_list_usd,
+    a.inf_first_name,
+    a.inf_last_name,
+    a.created,
+    a.first_campaign_date,
+    a.inf_last_campaign_date,
+    a.days_to_job,
+    a.days_since_last_campaign,
+    a.gender,
+    a.dob,
+    a.inf_age,
+    a.age_groups,
+    a.country,
+    a.invitation_status,
+    a.Instagram_influencer_level, 
+    a.Facebook_influencer_level, 
+    a.X_influencer_level, 
+    a.Linkedin_influencer_level, 
+    a.Tiktok_influencer_level,
+    a.channel,
+    a.influencer_level,
+    a.datasource, 
+    a.first_job_date, 
+    a.id_card_type,
+    a.no_of_tasks,
+    a.refugee_flag,
+    a.mon_yr,
+    a.active_l3m,
+    a.active_l3m_completed_tasks,
+    a.amount_paid_to_active_l3m,
+    a.creation_to_job_days,
+    a.job_in_reg_month,
+    a.company_name,
+    a.role, 
+    a.company_role,
+    a.mon_yr_rnk,
+    a.distinct_inf
+from final_output a
