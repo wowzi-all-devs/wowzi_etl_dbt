@@ -198,7 +198,8 @@ select
     a.email, 
     case 
       when a.gender is null then g.gender_fill
-    else a.gender end gender,
+      else a.gender 
+    end gender,
     a.smileidentity_status, 
     a.age, 
     a.job_eligibility,
@@ -209,7 +210,7 @@ select
     case 
       when a.country is null then 'Kenya'
       else a.country 
-    enc country,
+    end country,
     a.clean_country,
     a.acc_cre_mon_yr,
     a.acc_cre_mon,
