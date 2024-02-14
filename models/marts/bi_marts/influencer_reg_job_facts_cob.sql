@@ -206,7 +206,10 @@ select
     a.inf_first_campaign_date,
     a.inf_last_campaign_date,
     a.days_to_job,
-    a.country,
+    case 
+      when a.country is null then 'Kenya'
+      else a.country 
+    enc country,
     a.clean_country,
     a.acc_cre_mon_yr,
     a.acc_cre_mon,
