@@ -198,6 +198,8 @@ select
     a.email, 
     case 
       when a.gender is null then g.gender_fill
+      when lower(a.gender) <> 'male' and lower(a.gender) <> 'female'
+      then 'Male'
       else a.gender 
     end gender,
     a.smileidentity_status, 

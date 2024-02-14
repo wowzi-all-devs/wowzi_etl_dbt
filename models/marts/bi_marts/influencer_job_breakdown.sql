@@ -420,7 +420,11 @@ select
     a.inf_last_campaign_date,
     a.days_to_job,
     a.days_since_last_campaign,
-    a.gender,
+    case 
+        when lower(a.gender) <> 'male' and lower(a.gender) <> 'female'
+        then 'Male'
+        else a.gender
+    end gender,
     a.dob,
     a.inf_age,
     a.age_groups,
