@@ -386,7 +386,26 @@ final_output as
 from job_details_with_activity_stats a 
 left join `bi-staging-1-309112.wowzi_dbt_prod.int_currency_rates` i 
 on (date(a.task_creation_date) = date(i.date))
-and (lower(a.campaign_currency)=lower(i.currency)))
+and (lower(a.campaign_currency)=lower(i.currency))),
+
+all_inf_details as 
+(select 
+  safe_cast(influencer_id as string) influencer_id_a, 
+  d.job_eligibility,
+  'Platform' as datasource
+from bi-staging-1-309112.wowzi_dbt_prod.influencer_facts d
+union all 
+SELECT 
+    safe_cast(p.influencer_id as string) influencer_id_a, 
+    true job_eligibility,
+    'Periphery Sheet' as datasource
+FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` p),
+
+qualified_inf as 
+(select
+    count(distinct influencer_id_a) as qualified_inf
+from all_inf_details
+    where job_eligibility is true)
 
 select 
     a.influencer_id,
@@ -452,5 +471,8 @@ select
     a.role, 
     a.company_role,
     a.mon_yr_rnk,
-    a.distinct_inf
+    a.distinct_inf,
+    b.qualified_inf all_time_qualified_inf
 from final_output a
+left join qualified_inf b on 
+b.qualified_inf = b.qualified_inf
