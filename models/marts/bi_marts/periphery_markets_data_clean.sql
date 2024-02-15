@@ -17,8 +17,7 @@ from
   distinct
   influencer_name influencer,
   country
-FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-where amount_usd > 0)
+FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` )
 order by country,influencer),
 
 final_influencer_ids as
@@ -39,8 +38,7 @@ from
   distinct
   campaign_name,
   country,
-FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-where amount_usd > 0) a
+FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` ) a
 order by campaign_name, country),
 
 final_campaign_ids as
@@ -57,8 +55,7 @@ job_tasks_id_setup as
   campaign_name,
   influencer_name influencer,
   row_number() over() as id
-FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-where amount_usd > 0),
+FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` ),
 
 final_job_tasks_ids as
 (Select 
@@ -77,7 +74,6 @@ first_dates as
   influencer_name influencer,
   min(payment_date) as first_date
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-where amount_usd > 0
 group by country,influencer_name),
 
 last_dates as 
@@ -86,7 +82,6 @@ last_dates as
   influencer_name influencer,
   max(payment_date) as last_date
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-where amount_usd > 0
 group by country,influencer_name)
 
 select 
@@ -126,7 +121,9 @@ select
   p.payment_status
 from `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` p
 left join final_campaign_ids c on p.campaign_name = c.campaign_name
+and p.country = c.country
 left join final_influencer_ids f on p.influencer_name = f.influencer
+and p.country = f.country
 left join final_job_tasks_ids j on p.country = j.country 
 and p.campaign_name = j.campaign_name
 and p.influencer_name = j.influencer
@@ -134,4 +131,3 @@ left join first_dates fd on p.country = fd.country
 and p.influencer_name = fd.influencer
 left join last_dates ld on p.country = ld.country
 and p.influencer_name = ld.influencer
-where p.amount_usd > 0
