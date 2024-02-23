@@ -476,3 +476,4 @@ select
 from final_output a
 left join qualified_inf b on 
 b.qualified_inf = b.qualified_inf
+    where a.influencer_id is not null
