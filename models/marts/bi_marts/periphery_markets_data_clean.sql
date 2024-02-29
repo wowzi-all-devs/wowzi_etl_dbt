@@ -93,7 +93,8 @@ select
   c.campaign_id,
   p.campaign_name,
   p.temp_camp_name,
-  upper(p.social_media_platform) social_media_platform,
+  case when p.social_media_platform is null then 'INSTAGRAM'
+  else upper(p.social_media_platform) end social_media_platform,
   f.influencer_id,
   fd.first_date inf_date_account_created,
   fd.first_date first_campaign_date,
@@ -108,7 +109,8 @@ select
   else '>45' end as inf_age_range,
   case when p.gender is null then 'Male'
   else p.gender end gender,
-  p.influencer_level,
+  case when p.influencer_level is null then 'Macro'
+  else p.influencer_level end influencer_level,
   j.company_id,
   j.job_id,
   j.task_id,
