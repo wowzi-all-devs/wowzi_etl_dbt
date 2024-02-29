@@ -266,7 +266,7 @@ select
     a.age, 
     a.job_eligibility,
     a.date_account_created,
-    case when a.date_account_created >= date_trunc(date_add(a.date_account_created, interval -12 month), month)
+    case when a.date_account_created >= date_trunc(date_add(date(current_date), interval -12 month), month)
     then 1
     else 0 end date_account_created_filter,
     case when a.facebook_inf_level is null then 'NANO'
