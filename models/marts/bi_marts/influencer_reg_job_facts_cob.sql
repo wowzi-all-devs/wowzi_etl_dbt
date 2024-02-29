@@ -16,6 +16,11 @@ WITH inf_details as
   d.influencer_type_TIKTOK tiktok_inf_level,
   d.influencer_type_TWITTER twitter_inf_level,
   d.influencer_type_LINKEDIN linkedin_inf_level,
+  d.channel_status_FACEBOOK facebook_status,
+  d.channel_status_INSTAGRAM instagram_status,
+  d.channel_status_TIKTOK tiktok_status,
+  d.channel_status_TWITTER twitter_status,
+  d.channel_status_LINKEDIN linkedin_status,
   d.first_campaign_date inf_first_campaign_date,
   date(d.last_campaign_date) inf_last_campaign_date,
   e.Country country,
@@ -50,6 +55,16 @@ SELECT
     else null end  twitter_inf_level,
     case when p.social_media_platform = 'LINKEDIN' then p.influencer_level
     else null end  linkedin_inf_level,
+    case when p.social_media_platform = 'FACEBOOK' then 'APPROVED'
+    else null end facebook_status,
+    case when p.social_media_platform = 'INSTAGRAM' then 'APPROVED'
+    else null end instagram_status,
+    case when p.social_media_platform = 'TIKTOK' then 'APPROVED'
+    else null end tiktok_status,
+    case when p.social_media_platform = 'TWITTER' then 'APPROVED'
+    else null end twitter_status,
+    case when p.social_media_platform = 'LINKEDIN' then 'APPROVED'
+    else null end linkedin_status,
     p.first_campaign_date inf_first_campaign_date,
     p.last_campaign_date inf_last_campaign_date,
     initcap(p.Country) country,
@@ -78,6 +93,11 @@ inf_details_ranked as
   tiktok_inf_level,
   twitter_inf_level,
   linkedin_inf_level,
+  facebook_status,
+  instagram_status,
+  tiktok_status,
+  twitter_status,
+  linkedin_status,
   inf_first_campaign_date,
   inf_last_campaign_date,
   case 
@@ -131,6 +151,11 @@ inf_details_ranked2 as
     i.tiktok_inf_level,
     i.twitter_inf_level,
     i.linkedin_inf_level,
+    i.facebook_status,
+    i.instagram_status,
+    i.tiktok_status,
+    i.twitter_status,
+    i.linkedin_status,
     i.inf_first_campaign_date,
     i.inf_last_campaign_date,
     DATE_DIFF(date(i.inf_first_campaign_date), date(i.date_account_created), day) as days_to_job,
@@ -168,6 +193,11 @@ all_influencer_details as
     a.tiktok_inf_level,
     a.twitter_inf_level,
     a.linkedin_inf_level,
+    a.facebook_status,
+    a.instagram_status,
+    a.tiktok_status,
+    a.twitter_status,
+    a.linkedin_status,
     a.inf_first_campaign_date,
     a.inf_last_campaign_date,
     a.days_to_job,
@@ -236,11 +266,29 @@ select
     a.age, 
     a.job_eligibility,
     a.date_account_created,
-    a.facebook_inf_level,
-    a.instagram_inf_level,
-    a.tiktok_inf_level,
-    a.twitter_inf_level,
-    a.linkedin_inf_level,
+    case when a.date_account_created >= date_trunc(date_add(a.date_account_created, interval -12 month), month)
+    then 1
+    else 0 end date_account_created_filter,
+    case when a.facebook_inf_level is null then 'NANO'
+    when a.facebook_inf_level = 'NONE' then 'NANO'
+    else a.facebook_inf_level end facebook_inf_level,
+    case when a.instagram_inf_level is null then 'NANO'
+    when a.instagram_inf_level = 'NONE' then 'NANO'
+    else a.instagram_inf_level end instagram_inf_level,
+    case when a.tiktok_inf_level is null then 'NANO'
+    when a.tiktok_inf_level = 'NONE' then 'NANO'
+    else a.tiktok_inf_level end tiktok_inf_level,
+    case when a.twitter_inf_level is null then 'NANO'
+    when a.twitter_inf_level = 'NONE' then 'NANO'
+    else a.twitter_inf_level end twitter_inf_level,
+    case when a.linkedin_inf_level is null then 'NANO'
+    when a.linkedin_inf_level = 'NONE' then 'NANO'
+    else a.linkedin_inf_level end linkedin_inf_level,
+    a.facebook_status,
+    a.instagram_status,
+    a.tiktok_status,
+    a.twitter_status,
+    a.linkedin_status,
     a.inf_first_campaign_date,
     a.inf_last_campaign_date,
     a.days_to_job,
