@@ -92,7 +92,7 @@ select
   p.brand,
   c.campaign_id,
   p.campaign_name,
-  p.temp_camp_name,
+  null temp_camp_name,
   case when p.social_media_platform is null then 'INSTAGRAM'
   else upper(p.social_media_platform) end social_media_platform,
   f.influencer_id,
