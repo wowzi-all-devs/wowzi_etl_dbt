@@ -10,9 +10,11 @@ With campaign_payments as
     a.datasource,
     a.country,
     a.amount,
-    a.amount_usd
-FROM `bi-staging-1-309112.wowzi_dbt_prod.cocacola_markets_payouts` a
-    where a.payment_status = 'Successful'),
+    a.amount_usd payable_amount_usd,
+    case when a.payment_status = 'Successful' then a.amount_usd
+    else null 
+    end amount_usd
+FROM `bi-staging-1-309112.wowzi_dbt_prod.cocacola_markets_payouts` a),
 
 wallet_amount as 
 (SELECT 
@@ -32,6 +34,7 @@ aggregate_campaign_payments as
     c.datasource,
     c.country,
     sum(c.amount) amount,
+    sum(c.payable_amount_usd) payable_amount_usd,
     sum(c.amount_usd) amount_usd,
     w.amount_usd wallet_amount,
     row_number() over(order by month,  country ) rnk
@@ -54,6 +57,7 @@ aggregate_campaign_payments_with_wallet_bal as
     c.datasource,
     c.country,
     c.amount,
+    c.payable_amount_usd,
     c.amount_usd,
     --c.wallet_amount,
     c.rnk,
@@ -72,6 +76,7 @@ final_table as
     datasource,
     country,
     amount,
+    payable_amount_usd,
     amount_usd,
     rnk,
     wallet_amt,
@@ -92,6 +97,7 @@ select
     country,
     amount,
     rnk,
+    payable_amount_usd,
     wallet_amt,
     amount_usd,
     balance,
