@@ -16,6 +16,7 @@ final_view AS
 (SELECT 
     cf.company_id,
     C.company_name,
+    mmc.channel,
     mmc.campaign_id,
     mmc.influencer_id,
     it.country,

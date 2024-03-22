@@ -25,6 +25,7 @@ WITH
   SELECT
     cf.company_id,
     C.company_name,
+    mmc.channel,
     mmc.campaign_id,
     it.country,
     (
@@ -73,7 +74,8 @@ WITH
     5,
     6,
     7,
-    8),
+    8,
+    9),
 
   final_x_view AS (
   SELECT
