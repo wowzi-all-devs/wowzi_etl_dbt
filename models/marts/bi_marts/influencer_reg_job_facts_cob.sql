@@ -296,7 +296,11 @@ select
       when a.country is null then 'Kenya'
       else a.country 
     end country,
-    a.clean_country,
+    case 
+      when a.clean_country is null and a.country is not null 
+      then a.country
+      else a.clean_country
+    end clean_country,
     a.acc_cre_mon_yr,
     a.acc_cre_mon,
     a.acc_cre_yr,
