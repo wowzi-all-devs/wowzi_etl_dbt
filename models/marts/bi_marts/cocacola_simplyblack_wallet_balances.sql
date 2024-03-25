@@ -16,6 +16,7 @@ With campaign_payments as
     end amount_usd
 FROM `bi-staging-1-309112.wowzi_dbt_prod.cocacola_markets_payouts` a
     where a.campaign_name is not null
+    and a.payment_date is not null
     and a.amount_usd > 0),
 
 wallet_amount as 
