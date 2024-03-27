@@ -16,6 +16,7 @@ SELECT
   reply_count as comments,
   quote_count as quotes,
   impressions,
+  reach_percentage,
   TIMESTAMP_TRUNC(processed_at, SECOND) AS updated_at
 FROM
   {{ref('tweets_insights')}} tweets
@@ -45,6 +46,7 @@ SELECT
   comments,
   NULL as quotes,
   NULL as impressions,
+  NULL as reach_percentage,
   TIMESTAMP(updated_at) AS updated_at
 FROM
   {{ ref('stg__manual_metrics') }}

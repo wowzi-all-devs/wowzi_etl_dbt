@@ -29,6 +29,7 @@ SELECT
     ifnull(twitter_data.reply_count,0) as reply_count,
     ifnull(twitter_data.retweet_count,0) as retweet_count,
     if(twitter_data.impressions IS NOT NULL, twitter_data.impressions, 0) as impressions,
+    safe_divide(twitter_data.impressions, followers_count) * 100 as reach_percentage,
     twitter_data.processed_at
 FROM
     {{ ref('twitter_campaign_data') }} twitter_data
