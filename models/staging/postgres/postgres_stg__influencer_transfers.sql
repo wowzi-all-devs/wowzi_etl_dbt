@@ -6,7 +6,7 @@ SELECT
     account_number,
     bank_code,
     fullname,
-    date(date_created) as date_created,
+    date(creation_time) as date_created,
     currency,
     amount,
     fee,
