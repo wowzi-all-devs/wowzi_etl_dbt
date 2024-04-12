@@ -38,10 +38,12 @@ renamed as (
         email_notifications_payment_done,
         email_notifications_campaign_outcome,
         email_notifications_campaign_started,
-        email_notifications_influencers_matched
+        email_notifications_influencers_matched,
+        row_number() over(partition by id order by updated_at) as duplicate_rows
+
 
     from source
 
 )
 
-select * from renamed
+select * from renamed where duplicate_rows=1
