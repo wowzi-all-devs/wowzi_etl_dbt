@@ -44,6 +44,7 @@ SELECT
     end amount_usd,*/
     inf_transfers.status as payment_status,
     date(inf_transfers.date_created) as payment_date,
+    inf_transfers.updated_at,
     inf_transfers.currency as currency,
     inf.country,
     bd.bank_name as bank_name,
@@ -87,6 +88,7 @@ SELECT
     THEN influencer_type_INSTAGRAM
     END) as task_influencer_type,
     payment_date,
+    updated_at,
     country,
     amount,
     amount_usd,

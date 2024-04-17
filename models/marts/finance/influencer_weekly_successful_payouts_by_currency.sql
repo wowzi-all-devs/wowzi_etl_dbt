@@ -2,7 +2,7 @@
 
 WITH successful_payments as (
     SELECT
-        payment_date,
+        updated_at,
         currency,
         amount,
         payment_status
@@ -13,7 +13,7 @@ WITH successful_payments as (
 ),
 successful_payments_by_week_by_currency as ( 
     SELECT
-        date_trunc(date(payment_date), WEEK) AS payment_date_week,
+        date_trunc(date(updated_at), WEEK) AS payment_date_week,
         currency,
         sum(amount) AS total_amount
     FROM 

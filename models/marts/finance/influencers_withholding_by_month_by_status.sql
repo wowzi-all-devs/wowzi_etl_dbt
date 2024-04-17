@@ -3,7 +3,7 @@
 WITH payouts AS (
   SELECT 
     influencer_id,
-    FORMAT_DATE("%Y-%m-01", creation_time) AS month,
+    FORMAT_DATE("%Y-%m-01", updated_at) AS month,
     status as payment_status,
     SUM(amount) as total_amount
   FROM 
@@ -18,7 +18,7 @@ SELECT
   mobile_number
 FROM 
   {{ ref('postgres_stg__influencers') }}
-RIGHT JOIN 
+right JOIN
   payouts USING (influencer_id)
 WHERE 
   country="KE"

@@ -18,5 +18,7 @@ SELECT
     requires_approval,
     is_approved,
     bank_name,
-    creation_time
+    creation_time,
+    updated_at
+
 FROM {{ source('staging', 'influencer_transfers') }}
