@@ -1,3 +1,5 @@
+
+
 WITH max_starters AS 
 (SELECT 
   max(job_id) + 1000 as job_id_start,
@@ -85,6 +87,7 @@ FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data`
 group by country,influencer_name)
 
 select 
+  p.campaign_date,
   p.payment_date,
   p.country,
   p.agency,
