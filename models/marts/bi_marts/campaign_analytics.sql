@@ -99,9 +99,10 @@ SELECT
     false as  has_manual_metrics,
     'periphery' as datasource
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` pc
-)
+),
 
-SELECT 
+combined_analytics AS 
+(SELECT 
     a.campaign_id, 
     a.campaign_name,
     a.company_id, 
@@ -150,3 +151,31 @@ SELECT
     b.has_manual_metrics,
     b.datasource
 FROM periphery_campaigns b 
+)
+
+SELECT 
+    campaign_id, 
+    campaign_name,
+    company_id, 
+    company_name,
+    campaign_creation_date,
+    start_date, 
+    concat(FORMAT_DATETIME("%b", DATETIME(date(start_date))),"-", extract(year from date(start_date))) mon_yr,
+    dense_rank () over (order by extract(year from start_date) asc, extract(month from start_date)asc ) mon_yr_rnk,
+    end_date,
+    currency, 
+    budget, 
+    budget_spent,
+    creator_type, 
+    creator_id,
+    creator_name,
+    creator_email,
+    canceled, 
+    total_tasks, 
+    quality_verified_tasks, 
+    time_verified_tasks,
+    advertiser_id, 
+    country,
+    has_manual_metrics,
+    datasource
+FROM combined_analytics
