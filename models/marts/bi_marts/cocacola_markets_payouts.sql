@@ -90,7 +90,7 @@ all_payments as
     amount,
     amount_usd,
     currency,
-    case when lower(payment_status) in ('successful', 'Manual', 'New', 'Completed')
+    case when lower(payment_status) in ('successful', 'manual', 'new', 'completed')
     then 'Successful'
     else 'Pending'
     end payment_status,
