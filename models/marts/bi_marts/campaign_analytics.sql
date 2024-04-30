@@ -18,12 +18,14 @@ SELECT
     else NULL
     END) AS creator_email,
     canceled, total_tasks, quality_verified_tasks, time_verified_tasks,
-    cf.advertiser_id, cf.country
+    cf.advertiser_id, c.Country country
 FROM `bi-staging-1-309112.wowzi_dbt_prod.campaign_facts` cf 
 LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.back_officers` bo
 ON cf.creator_type = bo.role AND cf.creator_id = bo.backofficer_id
 LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.dim_advertisers` a
 ON cf.creator_id = a.advertiser_id
+LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.country_key` c 
+ON lower(cf.country) = lower(c.Key)
   where lower(cf.company_name) not like '%demo%'
   and lower(cf.company_name) not like '%test%'
   and lower(cf.campaign_name) not like '%test%'
