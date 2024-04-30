@@ -31,7 +31,18 @@ ON cf.creator_id = a.advertiser_id
   and a.first_name||' '||last_name <> 'Eddie Adinah'
 ),
 
-manual_metrics AS 
+campaigns_requiring_manual_metrics AS 
+(
+  SELECT  
+    distinct 
+    campaign_id,
+    true requires_manual_metrics
+  FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_task_facts` 
+    where lower(channel) <> 'twitter'
+
+),
+
+campaigns_with_manual_metrics AS 
 (
 SELECT  
   campaign_id,
@@ -40,6 +51,13 @@ FROM `bi-staging-1-309112.wowzi_dbt_prod.agg_manual_metric_campaign_channel`
   group by campaign_id
   having sum(total_views) > 0
 ),
+
+twitter_metrics AS 
+(SELECT 
+  distinct
+  campaign_id,
+  true has_twitter_metrics
+FROM `bi-staging-1-309112.wowzi_dbt_prod.twitter_campaign_metrics`),
 
 platform_campaigns_b AS 
 (
@@ -54,7 +72,7 @@ SELECT
     pa.currency, 
     pa.budget, 
     pa.budget_spent,
-    pa.creator_type, 
+    INITCAP(pa.creator_type) creator_type, 
     pa.creator_id,
     pa.creator_name,
     pa.creator_email,
@@ -64,13 +82,23 @@ SELECT
     pa.time_verified_tasks,
     pa.advertiser_id, 
     pa.country,
+    (CASE WHEN cm.requires_manual_metrics is null then false
+    ELSE cm.requires_manual_metrics 
+    END) AS requires_manual_metrics,
     (CASE WHEN mm.manual_metrics is null then false
     ELSE mm.manual_metrics 
     END) AS has_manual_metrics,
-    'platform' as datasource
+    (CASE WHEN tm.has_twitter_metrics is null then false
+    ELSE tm.has_twitter_metrics 
+    END) AS has_twitter_metrics,
+    'Platform' as datasource
 FROM platform_campaigns_a pa 
-LEFT JOIN manual_metrics mm 
+LEFT JOIN campaigns_requiring_manual_metrics cm 
+ON pa.campaign_id = cm.campaign_id
+LEFT JOIN campaigns_with_manual_metrics mm 
 ON pa.campaign_id = mm.campaign_id
+LEFT JOIN twitter_metrics tm 
+ON pa.campaign_id = tm.campaign_id
 ),
 
 periphery_campaigns AS 
@@ -96,8 +124,10 @@ SELECT
     null time_verified_tasks,
     null advertiser_id, 
     pc.country,
-    false as  has_manual_metrics,
-    'periphery' as datasource
+    false requires_manual_metrics,
+    false has_manual_metrics,
+    false has_twitter_metrics,
+    'Periphery' as datasource
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` pc
 ),
 
@@ -123,7 +153,9 @@ combined_analytics AS
     a.time_verified_tasks,
     a.advertiser_id, 
     a.country,
+    a.requires_manual_metrics,
     a.has_manual_metrics,
+    a.has_twitter_metrics,
     a.datasource
 FROM platform_campaigns_b a
 UNION ALL 
@@ -148,7 +180,9 @@ SELECT
     b.time_verified_tasks,
     b.advertiser_id, 
     b.country,
+    b.requires_manual_metrics,
     b.has_manual_metrics,
+    b.has_twitter_metrics,
     b.datasource
 FROM periphery_campaigns b 
 )
@@ -176,6 +210,8 @@ SELECT
     time_verified_tasks,
     advertiser_id, 
     country,
+    requires_manual_metrics,
     has_manual_metrics,
+    has_twitter_metrics,
     datasource
 FROM combined_analytics
