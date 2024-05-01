@@ -1,3 +1,5 @@
+WITH creator_audience_ages AS 
+(
 SELECT 
     distinct
     user_profile_user_id,
@@ -41,3 +43,14 @@ LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.influencer_facts` f
 ON lower(c.user_profile_username) = lower(f.username_INSTAGRAM)
 LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.influencer_facts` f2
 ON lower(c.user_profile_username) = lower(f2.username_TIKTOK)
+)
+
+SELECT 
+    user_profile_user_id,
+    user_profile_type,
+    user_profile_username,
+    influencer_id,
+    audience_age_group,
+    audience_male_percentage,
+    audience_female_percentage
+FROm creator_audience_ages
