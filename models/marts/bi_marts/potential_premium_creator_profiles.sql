@@ -14,6 +14,21 @@ SELECT
         ELSE NULL 
     END) AS influencer_id,
     (CASE 
+        WHEN c.user_profile_type = 'instagram' then f.first_name||' '||f.last_name
+        WHEN c.user_profile_type = 'tiktok' then f2.first_name||' '||f2.last_name
+        ELSE NULL 
+    END) AS inf_full_name,
+    (CASE 
+        WHEN c.user_profile_type = 'instagram' then f.age_range
+        WHEN c.user_profile_type = 'tiktok' then f2.age_range
+        ELSE NULL 
+    END) AS inf_age_range,
+    (CASE 
+        WHEN c.user_profile_type = 'instagram' then f.gender
+        WHEN c.user_profile_type = 'tiktok' then f2.gender
+        ELSE NULL 
+    END) AS inf_gender,
+    (CASE 
         WHEN c.user_profile_type = 'instagram' then f.date_account_created
         WHEN c.user_profile_type = 'tiktok' then f2.date_account_created
         ELSE NULL
@@ -25,9 +40,14 @@ SELECT
     END) AS smileidentity_status,
     (CASE 
         WHEN c.user_profile_type = 'instagram' then f.channel_status_INSTAGRAM
-        WHEN c.user_profile_type = 'tiktok' then f2.channel_status_INSTAGRAM
+        WHEN c.user_profile_type = 'tiktok' then f2.channel_status_TIKTOK
         ELSE NULL 
     END) AS channel_status,
+    (CASE 
+        WHEN c.user_profile_type = 'instagram' then f.job_eligibility
+        WHEN c.user_profile_type = 'tiktok' then f2.job_eligibility
+        ELSE NULL 
+    END) AS job_eligibility,
     (CASE 
         WHEN c.user_profile_type = 'instagram' then f.total_campaigns
         WHEN c.user_profile_type = 'tiktok' then f2.total_campaigns
@@ -83,14 +103,24 @@ SELECT
     date_account_created date_wowzi_acc_created,
     smileidentity_status,
     channel_status channel_approval_status,
+    job_eligibility,
     total_campaigns,
     user_profile_url,
-    user_profile_fullname,
+    (CASE 
+        WHEN influencer_id IS NULL THEN user_profile_fullname
+        ELSE inf_full_name
+    END) user_profile_fullname,
     user_profile_is_verified,
     user_profile_is_business,
     user_profile_account_type,
-    user_profile_gender,
-    user_profile_age_group,
+    (CASE 
+        WHEN influencer_id IS NULL THEN inf_gender
+        ELSE user_profile_gender
+    END) user_profile_gender,
+    (CASE 
+        WHEN influencer_id IS NULL THEN inf_age_range
+        ELSE user_profile_age_group
+    END) user_profile_age_group,
     user_profile_language_code,
     user_profile_language_name,
     user_profile_followers,
