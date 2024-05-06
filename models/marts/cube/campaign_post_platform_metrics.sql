@@ -34,11 +34,11 @@ ON
 UNION DISTINCT
 SELECT
   task_id,
-  upper(channel) as channel,
+  ifnull(upper(channel),"") as channel,
   campaign_id,
   influencer_id,
   influencer_name,
-  followers_count as influencer_followers,
+  ifnull(followers_count,0)as influencer_followers,
   submission_link,
   likes,
   views,
