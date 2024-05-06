@@ -33,7 +33,7 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('dim_advertisers')
+              to: ref('postgres_stg__merchants')
               field: advertiser_id
       - name: campaign_id
         tests:
