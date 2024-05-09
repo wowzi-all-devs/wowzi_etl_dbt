@@ -58,7 +58,7 @@ models:
       - name: payment_status
         tests:
           - accepted_values:
-              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out', 'COMPLETED']
+              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out', 'COMPLETED','WAITING_FOR_PAYMENT']
       - name: bank_name
       - name: company_name
 
