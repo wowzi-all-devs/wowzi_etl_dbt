@@ -61,6 +61,21 @@ twitter_metrics AS
   true has_twitter_metrics
 FROM `bi-staging-1-309112.wowzi_dbt_prod.twitter_campaign_metrics`),
 
+content_approval AS 
+(
+select
+  distinct
+  campaign_id,
+  true has_content_pre_approval
+from
+(SELECT  
+  distinct 
+  cp.job_id,
+  f.campaign_id
+FROM `bi-staging-1-309112.dbt_caleb.ms-content-preapproval` cp 
+LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.influencer_task_facts` f 
+ON cast(cp.job_id as string) = cast(f.job_id as string))),
+
 platform_campaigns_b AS 
 (
 SELECT 
@@ -93,6 +108,9 @@ SELECT
     (CASE WHEN tm.has_twitter_metrics is null then false
     ELSE tm.has_twitter_metrics 
     END) AS has_twitter_metrics,
+    (CASE WHEN cp.has_content_pre_approval is null then false
+    ELSE cp.has_content_pre_approval 
+    END) AS has_content_pre_approval,
     'Platform' as datasource
 FROM platform_campaigns_a pa 
 LEFT JOIN campaigns_requiring_manual_metrics cm 
@@ -101,6 +119,8 @@ LEFT JOIN campaigns_with_manual_metrics mm
 ON pa.campaign_id = mm.campaign_id
 LEFT JOIN twitter_metrics tm 
 ON pa.campaign_id = tm.campaign_id
+LEFT JOIN content_approval cp 
+ON pa.campaign_id = cp.campaign_id
 ),
 
 periphery_campaigns AS 
@@ -129,6 +149,7 @@ SELECT
     false requires_manual_metrics,
     false has_manual_metrics,
     false has_twitter_metrics,
+    false has_content_pre_approval,
     'Periphery' as datasource
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` pc
 ),
@@ -158,6 +179,7 @@ combined_analytics AS
     a.requires_manual_metrics,
     a.has_manual_metrics,
     a.has_twitter_metrics,
+    a.has_content_pre_approval,
     a.datasource
 FROM platform_campaigns_b a
 UNION ALL 
@@ -185,6 +207,7 @@ SELECT
     b.requires_manual_metrics,
     b.has_manual_metrics,
     b.has_twitter_metrics,
+    b.has_content_pre_approval,
     b.datasource
 FROM periphery_campaigns b 
 )
@@ -215,5 +238,6 @@ SELECT
     requires_manual_metrics,
     has_manual_metrics,
     has_twitter_metrics,
+    has_content_pre_approval,
     datasource
 FROM combined_analytics
