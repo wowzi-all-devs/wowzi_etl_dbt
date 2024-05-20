@@ -28,6 +28,7 @@ SELECT
   c.bonus_type,
   c.creator_type,
   c.creator_id,
+  c.advertiser_skip_pre_approval,
   c.canceled,
   c.canceled_timestamp,
   ce.influencers_invited_count,

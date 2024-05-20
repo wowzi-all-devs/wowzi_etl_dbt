@@ -63,18 +63,16 @@ FROM `bi-staging-1-309112.wowzi_dbt_prod.twitter_campaign_metrics`),
 
 content_approval AS 
 (
-select
-  distinct
+select 
   campaign_id,
-  true has_content_pre_approval
-from
-(SELECT  
+  case when advertiser_skip_pre_approval is true then false 
+  else true end has_content_pre_approval
+FROM 
+(SELECT 
   distinct 
-  cp.job_id,
-  f.campaign_id
-FROM `bi-staging-1-309112.dbt_caleb.ms-content-preapproval` cp 
-LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.influencer_task_facts` f 
-ON cast(cp.job_id as string) = cast(f.job_id as string))),
+  campaign_id,
+  advertiser_skip_pre_approval
+FROM `bi-staging-1-309112.wowzi_dbt_prod.campaign_facts` )),
 
 platform_campaigns_b AS 
 (
