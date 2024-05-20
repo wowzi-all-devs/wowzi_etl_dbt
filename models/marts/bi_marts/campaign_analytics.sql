@@ -7,7 +7,7 @@ SELECT
     cf.company_name,
     campaign_creation_date,
     start_date, end_date,
-    currency, budget, budget_spent,
+    cf.currency, budget, budget_spent,
     creator_type, creator_id,
     (CASE WHEN creator_type = 'MERCHANT' then a.first_name||' '||last_name
     WHEN creator_type = 'BACK_OFFICER' then bo.backofficer_name
@@ -18,7 +18,10 @@ SELECT
     else NULL
     END) AS creator_email,
     canceled, total_tasks, quality_verified_tasks, time_verified_tasks,
-    cf.advertiser_id, c.Country country
+    cf.advertiser_id, 
+    CASE WHEN c.Country is null then c1.Country
+    ELSE c.Country
+    END country
 FROM `bi-staging-1-309112.wowzi_dbt_prod.campaign_facts` cf 
 LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.back_officers` bo
 ON cf.creator_type = bo.role AND cf.creator_id = bo.backofficer_id
@@ -26,6 +29,8 @@ LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.dim_advertisers` a
 ON cf.creator_id = a.advertiser_id
 LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.country_key` c 
 ON lower(cf.country) = lower(c.Key)
+LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.country_key` c1 
+ON lower(cf.currency) = lower(c1.Currency)
   where lower(cf.company_name) not like '%demo%'
   and lower(cf.company_name) not like '%test%'
   and lower(cf.campaign_name) not like '%test%'
