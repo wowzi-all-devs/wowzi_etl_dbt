@@ -20,6 +20,7 @@ select
     pre_live_check_comment,
     pre_live_check_internal_comment,
     pre_live_check_timestamp,
+    advertiser_skip_pre_approval,
     monday_from,		
     monday_to,
     tuesday_from,
