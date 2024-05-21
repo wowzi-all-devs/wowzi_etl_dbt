@@ -16,7 +16,7 @@ WITH platform_payments AS
   INITCAP(c.country) country,
   amount,
   amount_usd,
-  currency,
+  p.currency,
   payment_status,
   bank_name,
   company_name,
