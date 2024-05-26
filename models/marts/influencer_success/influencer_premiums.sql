@@ -120,7 +120,7 @@ SELECT
   influencer_type_INSTAGRAM AS influencer_level,
   username_INSTAGRAM AS social_media_username,
   'YES' AS premium_tag
-FROM `bi-staging-1-309112.dbt_patrik_eu.influenceo_first_cohort` )
+FROM `bi-staging-1-309112.wowzi_dbt_prod.influenceo_first_cohort` )
 
 SELECT 
     DISTINCT
