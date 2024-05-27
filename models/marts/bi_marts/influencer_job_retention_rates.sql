@@ -46,7 +46,7 @@ left join cohort_items b on a.influencer_id =b.influencer_id
 
 select 
     a.cohort_month,
-    concat( FORMAT_DATETIME("%b", a.cohort_month ),"-", extract(year from a.cohort_month) ) cohort_mon_yr,
+    concat( FORMAT_DATETIME("%b", a.cohort_month ),"-", extract(year from a.cohort_month) ) ||' '||'('||b.num_influencers||')' cohort_mon_yr,
     FORMAT_DATETIME("%b", DATETIME(date(a.cohort_month))) cohort_mon,
     extract(year from a.cohort_month) cohort_yr,
     dense_rank () over (order by extract(year from a.cohort_month) asc, extract(month from a.cohort_month)asc ) cohort_yr_rnk,
