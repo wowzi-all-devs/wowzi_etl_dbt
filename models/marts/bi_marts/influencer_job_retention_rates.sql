@@ -52,6 +52,7 @@ select
     dense_rank () over (order by extract(year from a.cohort_month) asc, extract(month from a.cohort_month)asc ) cohort_yr_rnk,
     b.num_influencers total_inf,
     a.month_number,
+    a.num_influenccers active_inf,
     cast(a.num_influenccers as numeric)/b.num_influencers retention_rate
 from retention_table a
 left join cohort_size b on a.cohort_month = b.cohort_month
