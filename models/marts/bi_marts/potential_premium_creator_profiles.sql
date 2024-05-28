@@ -74,6 +74,15 @@ SELECT
     END) AS influencer_type,
     user_profile_posts_count,
     user_profile_engagements,
+    user_profile_engagement_rate,
+    (CASE 
+        WHEN user_profile_engagement_rate < 1 THEN '<1'
+        WHEN user_profile_engagement_rate >= 1  AND user_profile_engagement_rate < 5 THEN '>=1 <5'
+        WHEN user_profile_engagement_rate >= 5  AND user_profile_engagement_rate < 10 THEN '>=5 <10'
+        WHEN user_profile_engagement_rate >= 10  AND user_profile_engagement_rate < 20 THEN '>=10 <20'
+        WHEN user_profile_engagement_rate >= 20  AND user_profile_engagement_rate < 50 THEN '>=20 <50'
+        WHEN user_profile_engagement_rate >= 50 THEN '>=50'
+    END) engagement_rate_bucket,
     user_profile_avg_likes,
     user_profile_avg_comments,
     user_profile_avg_views,
@@ -127,6 +136,8 @@ SELECT
     influencer_type,
     user_profile_posts_count,
     user_profile_engagements,
+    user_profile_engagement_rate,
+    engagement_rate_bucket,
     user_profile_avg_likes,
     user_profile_avg_comments,
     user_profile_avg_views,
