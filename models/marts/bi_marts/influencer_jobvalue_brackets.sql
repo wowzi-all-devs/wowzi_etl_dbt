@@ -6,6 +6,7 @@ WITH job_breakdwon AS
     FORMAT_DATETIME("%b", DATETIME(date(job_offer_date))) mon,
     extract(year from job_offer_date) yr,
     mon_yr,
+    dense_rank () over (order by extract(year from job_offer_date) asc, extract(month from job_offer_date)asc ) mon_yr_rnk,
     influencer_level,
     amount_usd,
     case
@@ -34,6 +35,7 @@ select
     mon,
     yr,
     mon_yr,
+    mon_yr_rnk,
     influencer_level,
     amount_usd,
     Income_bucket,
