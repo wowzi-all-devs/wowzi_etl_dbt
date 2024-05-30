@@ -7,7 +7,7 @@ with job_details as
       else initcap(co.company_industry) 
     end as industry,
     t.campaign_id,
-    e.campaign_end_date,
+    campaign_end_date,
     t.job_id,
     date(j.offer_creation_time) as job_offer_date,
     t.task_id,
@@ -78,9 +78,9 @@ select
     p.campaign_id,
     null campaign_end_date,
     p.job_id,
-    p.payment_date as job_offer_date,
+    date(p.payment_date) as job_offer_date,
     p.task_id,
-    p.payment_date task_creation_date,
+    date(p.payment_date) task_creation_date,
     case
         when p.tasks_assigned is null then 1
         else p.tasks_assigned
@@ -97,7 +97,7 @@ select
       then p.amount_usd
       else null
     end amount_usd,
-    p.payment_date,
+    date(p.payment_date) payment_date,
     p.payment_status periphery_payment_status,
     cast(p.amount_usd as numeric) periphery_job_value_usd,
     null platfrom_job_value_lcy,
