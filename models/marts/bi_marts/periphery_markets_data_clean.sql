@@ -1,5 +1,3 @@
-
-
 WITH max_starters AS 
 (SELECT 
   max(job_id) + 1000 as job_id_start,
@@ -84,8 +82,10 @@ last_dates as
   influencer_name influencer,
   max(payment_date) as last_date
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` 
-group by country,influencer_name)
+group by country,influencer_name),
 
+final_output AS
+(
 select 
   p.campaign_date,
   p.payment_date,
@@ -121,8 +121,8 @@ select
   p.payment_mode,
   p.bank,
   p.currency,
-  p.amount_lcy,
-  p.amount_usd,
+  COALESCE(p.amount_lcy, 0.0) amount_lcy,
+  COALESCE(p.amount_usd, 0.0) amount_usd,
   p.payment_status
 from `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data` p
 left join final_campaign_ids c on p.campaign_name = c.campaign_name
@@ -136,3 +136,62 @@ left join first_dates fd on p.country = fd.country
 and p.influencer_name = fd.influencer
 left join last_dates ld on p.country = ld.country
 and p.influencer_name = ld.influencer
+)
+
+SELECT
+  campaign_date,
+  payment_date,
+  country,
+  agency,
+  client,
+  brand,
+  campaign_id,
+  campaign_name,
+  temp_camp_name,
+  social_media_platform,
+  influencer_id,
+  inf_date_account_created,
+  first_campaign_date,
+  last_campaign_date,
+  influencer,
+  age,
+  inf_age_range,
+  gender,
+  influencer_level,
+  company_id,
+  job_id,
+  task_id,
+  tasks_assigned,
+  payment_mode,
+  bank,
+  currency,
+  amount_lcy,
+  (CASE 
+    WHEN amount_usd = 0 and lower(country) = 'angola'
+    THEN amount_lcy*0.0012
+    WHEN amount_usd = 0 and lower(country) = 'botswana'
+    THEN amount_lcy*0.073
+    WHEN amount_usd = 0 and lower(country) = 'ethiopia'
+    THEN amount_lcy*0.017
+    WHEN amount_usd = 0 and lower(country) = 'kenya'
+    THEN amount_lcy*0.0077
+    WHEN amount_usd = 0 and lower(country) = 'mauritius'
+    THEN amount_lcy*0.022
+    WHEN amount_usd = 0 and lower(country) = 'mozambique'
+    THEN amount_lcy*0.016
+    WHEN amount_usd = 0 and lower(country) = 'namibia'
+    THEN amount_lcy*0.054
+    WHEN amount_usd = 0 and lower(country) = 'south africa'
+    THEN amount_lcy*0.054
+    WHEN amount_usd = 0 and lower(country) = 'tanzania'
+    THEN amount_lcy*0.00038
+    WHEN amount_usd = 0 and lower(country) = 'tanzania'
+    THEN amount_lcy*0.00026
+    WHEN amount_usd = 0 and lower(country) = 'zambia'
+    THEN amount_lcy*0.037
+    WHEN amount_usd = 0 and lower(country) = 'zimbabwe'
+    THEN amount_lcy*1
+    ELSE amount_usd
+  END) amount_usd,
+  payment_status
+FROM final_output

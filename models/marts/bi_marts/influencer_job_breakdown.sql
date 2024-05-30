@@ -1,5 +1,6 @@
 with job_details as
-(SELECT 
+(
+SELECT 
     t.influencer_id,
     t.company_id,
     case 
@@ -27,9 +28,9 @@ with job_details as
         then 1
         else 0
     end completed_tasks,
-    t.payment_amount_list amount_lcy,
+    COALESCE(CAST(t.payment_amount_list AS FLOAT64), 0.0) amount_lcy,
     e.currency campaign_currency,
-    d.amount_usd as amount_usd,
+    COALESCE(CAST(d.amount_usd AS FLOAT64), 0.0) amount_usd,
     d.payment_date payment_date,
     null as periphery_payment_status,
     null as periphery_job_value_usd,
@@ -78,9 +79,9 @@ select
     p.campaign_id,
     null campaign_end_date,
     p.job_id,
-    date(p.payment_date) as job_offer_date,
+    date(p.campaign_date) as job_offer_date,
     p.task_id,
-    date(p.payment_date) task_creation_date,
+    date(p.campaign_date) task_creation_date,
     case
         when p.tasks_assigned is null then 1
         else p.tasks_assigned
@@ -127,7 +128,8 @@ select
     p.social_media_platform channel,
     p.influencer_level,
     'Periphery Sheet' as datasource
-from `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` p),
+from `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` p
+),
 
 first_jobs as
 (
@@ -331,11 +333,12 @@ final_output as
     a.periphery_job_value_usd,
     a.platfrom_job_value_lcy,
     i.currency_rate,
-    case 
+    COALESCE(
+        (case 
         when datasource = 'Periphery Sheet' then periphery_job_value_usd
         when datasource = 'Platform' then platfrom_job_value_lcy/i.currency_rate
         else 0 
-    end payment_amount_list_usd,
+        end), 0.0) payment_amount_list_usd,
     a.inf_first_name,
     a.inf_last_name,
     a.created,
@@ -430,6 +433,30 @@ select
     a.currency_rate,
     case 
         when a.amount_usd > 0 then a.amount_usd
+        WHEN a.payment_amount_list_usd = 0 AND lower(country) = 'angola'
+        AND a.datasource = 'Platform' THEN a.platfrom_job_value_lcy*0.0012
+        WHEN a.payment_amount_list_usd = 0 and lower(country) = 'botswana'
+        AND a.datasource = 'Platform' THEN  a.platfrom_job_value_lcy*0.073
+        WHEN a.payment_amount_list_usd = 0 and lower(country) = 'ethiopia'
+        AND a.datasource = 'Platform' THEN  a.platfrom_job_value_lcy*0.017
+        WHEN a.payment_amount_list_usd = 0 and lower(country) = 'kenya'
+        AND a.datasource = 'Platform' THEN  a.platfrom_job_value_lcy*0.0077
+        WHEN a.payment_amount_list_usd = 0 and lower(country) = 'mauritius'
+        AND a.datasource = 'Platform' THEN  a.platfrom_job_value_lcy*0.022
+        WHEN a.payment_amount_list_usd = 0 and lower(country) = 'mozambique'
+        AND a.datasource = 'Platform' THEN  a.platfrom_job_value_lcy*0.016
+        WHEN a.payment_amount_list_usd = 0 and lower(country) = 'namibia'
+        AND a.datasource = 'Platform' THEN  a.platfrom_job_value_lcy*0.054
+        WHEN a.payment_amount_list_usd = 0 and lower(country) = 'south africa'
+        AND a.datasource = 'Platform' THEN  a.platfrom_job_value_lcy*0.054
+        WHEN a.payment_amount_list_usd = 0 and lower(country) = 'tanzania'
+        AND a.datasource = 'Platform' THEN  a.platfrom_job_value_lcy*0.00038
+        WHEN a.payment_amount_list_usd = 0 and lower(country) = 'tanzania'
+        AND a.datasource = 'Platform' THEN  a.platfrom_job_value_lcy*0.00026
+        WHEN a.payment_amount_list_usd = 0 and lower(country) = 'zambia'
+        AND a.datasource = 'Platform' THEN  a.platfrom_job_value_lcy*0.037
+        WHEN a.payment_amount_list_usd = 0 and lower(country) = 'zimbabwe'
+        AND a.datasource = 'Platform' THEN  a.platfrom_job_value_lcy*1
         else a.payment_amount_list_usd
     end payment_amount_list_usd,
     a.inf_first_name,
