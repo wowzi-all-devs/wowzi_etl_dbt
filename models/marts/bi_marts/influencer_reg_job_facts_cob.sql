@@ -44,7 +44,7 @@ SELECT
     'APPROVED' as smileidentity_status, 
     p.age, 
     true as job_eligibility,
-    p.inf_date_account_created date_account_created,
+    date(p.inf_date_account_created) date_account_created,
     case when p.social_media_platform = 'FACEBOOK' then p.influencer_level
     else null end facebook_inf_level,
     case when p.social_media_platform = 'INSTAGRAM' then p.influencer_level
@@ -65,12 +65,12 @@ SELECT
     else null end twitter_status,
     case when p.social_media_platform = 'LINKEDIN' then 'APPROVED'
     else null end linkedin_status,
-    p.first_campaign_date inf_first_campaign_date,
-    p.last_campaign_date inf_last_campaign_date,
+    date(p.first_campaign_date) inf_first_campaign_date,
+    date(p.last_campaign_date) inf_last_campaign_date,
     initcap(p.Country) country,
-    concat( FORMAT_DATETIME("%b", p.inf_date_account_created ),"-", extract(year from p.inf_date_account_created) ) acc_cre_mon_yr,
+    concat( FORMAT_DATETIME("%b", date(p.inf_date_account_created) ),"-", extract(year from date(p.inf_date_account_created)) ) acc_cre_mon_yr,
     FORMAT_DATETIME("%b", DATETIME(date(p.inf_date_account_created))) acc_cre_mon,
-    extract(year from p.inf_date_account_created) acc_cre_yr,
+    extract(year from date(p.inf_date_account_created)) acc_cre_yr,
     'Periphery Sheet' as datasource
 FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` p),
 
