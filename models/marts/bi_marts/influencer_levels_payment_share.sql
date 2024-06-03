@@ -21,6 +21,18 @@ table2 as (
  group by mon_no,mon,yr,mon_yr,influencer_level)
 
  select
- mon_no,mon,yr,mon_yr,influencer_level, tot, sum(tot) over(partition by mon_yr) payout_window, (tot / sum(tot) over(partition by mon_yr)) share_of_total, dense_rank () over (order by yr asc, mon_no asc) mon_yr_rnk
+   mon_no,
+   mon,
+   yr,
+   mon_yr,
+   influencer_level, 
+   tot, 
+   sum(tot) over(partition by mon_yr) payout_window, 
+   CASE 
+      WHEN sum(tot) = 0 THEN 0
+      WHEN sum(tot) IS NULL THEN 0
+      ELSE (tot / sum(tot) over(partition by mon_yr)) 
+   END share_of_total, 
+   dense_rank () over (order by yr asc, mon_no asc) mon_yr_rnk
  from table2
- group by mon_no,mon,yr,mon_yr,influencer_level, tot
+   GROUP BY mon_no,mon,yr,mon_yr,influencer_level, tot

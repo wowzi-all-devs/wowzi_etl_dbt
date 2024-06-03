@@ -98,51 +98,57 @@ ON lower(c.user_profile_username) = lower(f2.username_TIKTOK)
 )
 
 SELECT 
-    report_info_report_id,
-    report_info_created,
-    report_info_profile_updated,
-    user_profile_user_id,
-    user_profile_type,
-    user_profile_username,
-    influencer_id,
+    p.report_info_report_id,
+    p.report_info_created,
+    p.report_info_profile_updated,
+    p.user_profile_user_id,
+    p.user_profile_type,
+    p.user_profile_username,
+    p.influencer_id,
     (CASE 
-        WHEN influencer_id IS NULL THEN false
+        WHEN p.influencer_id IS NULL THEN false
         ELSE true
     END) is_on_platform,
-    date_account_created date_wowzi_acc_created,
-    smileidentity_status,
-    channel_status channel_approval_status,
-    job_eligibility,
-    total_campaigns,
-    user_profile_url,
+    p.date_account_created date_wowzi_acc_created,
+    p.smileidentity_status,
+    p.channel_status channel_approval_status,
+    p.job_eligibility,
+    p.total_campaigns,
+    p.user_profile_url,
     (CASE 
-        WHEN influencer_id IS NULL THEN user_profile_fullname
-        ELSE inf_full_name
+        WHEN p.influencer_id IS NULL THEN p.user_profile_fullname
+        ELSE p.inf_full_name
     END) user_profile_fullname,
-    user_profile_is_verified,
-    user_profile_is_business,
-    user_profile_account_type,
+    p.user_profile_is_verified,
+    p.user_profile_is_business,
+    p.user_profile_account_type,
     (CASE 
-        WHEN influencer_id IS NULL THEN inf_gender
-        ELSE user_profile_gender
+        WHEN p.influencer_id IS NULL THEN p.inf_gender
+        ELSE p.user_profile_gender
     END) user_profile_gender,
     (CASE 
-        WHEN influencer_id IS NULL THEN inf_age_range
-        ELSE user_profile_age_group
+        WHEN p.influencer_id IS NULL THEN p.inf_age_range
+        ELSE p.user_profile_age_group
     END) user_profile_age_group,
-    user_profile_language_code,
-    user_profile_language_name,
-    user_profile_followers,
-    influencer_type,
-    user_profile_posts_count,
-    user_profile_engagements,
-    user_profile_engagement_rate,
-    engagement_rate_bucket,
-    user_profile_avg_likes,
-    user_profile_avg_comments,
-    user_profile_avg_views,
-    user_profile_avg_reels_plays,
-    user_profile_avg_shares,
-    user_profile_avg_saves,
-    user_profile_total_likes
-FROM creator_profile
+    p.user_profile_language_code,
+    p.user_profile_language_name,
+    p.user_profile_followers,
+    p.influencer_type,
+    p.user_profile_posts_count,
+    p.user_profile_engagements,
+    p.user_profile_engagement_rate,
+    p.engagement_rate_bucket,
+    p.user_profile_avg_likes,
+    p.user_profile_avg_comments,
+    p.user_profile_avg_views,
+    p.user_profile_avg_reels_plays,
+    p.user_profile_avg_shares,
+    p.user_profile_avg_saves,
+    p.user_profile_total_likes,
+    ir.ranking_score instagram_rank,
+    tr.ranking_score tiktok_rank
+FROM creator_profile p
+LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.creator_xgboost_ranks_instagram` ir 
+ON p.user_profile_username = ir.user_profile_username AND LOWER(user_profile_type) = 'instagram'
+LEFT JOIN  `bi-staging-1-309112.wowzi_dbt_prod.creator_xgboost_ranks_tiktok` tr
+ON p.user_profile_username = ir.user_profile_username AND LOWER(user_profile_type) = 'tiktok'
