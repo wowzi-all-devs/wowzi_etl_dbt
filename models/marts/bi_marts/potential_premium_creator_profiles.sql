@@ -149,6 +149,6 @@ SELECT
     tr.ranking_score tiktok_rank
 FROM creator_profile p
 LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.creator_xgboost_ranks_instagram` ir 
-ON p.user_profile_username = ir.user_profile_username AND LOWER(user_profile_type) = 'instagram'
+ON p.user_profile_user_id = ir.user_profile_user_id AND LOWER(user_profile_type) = 'instagram'
 LEFT JOIN  `bi-staging-1-309112.wowzi_dbt_prod.creator_xgboost_ranks_tiktok` tr
-ON p.user_profile_username = ir.user_profile_username AND LOWER(user_profile_type) = 'tiktok'
+ON p.user_profile_user_id = ir.user_profile_user_id AND LOWER(user_profile_type) = 'tiktok'
