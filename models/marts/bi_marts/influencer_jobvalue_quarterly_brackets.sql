@@ -2,11 +2,12 @@ WITH job_breakdwon AS
 (SELECT 
     influencer_id,
     country,
-    extract(month from job_offer_date) mon_no,
-    FORMAT_DATETIME("%b", DATETIME(date(job_offer_date))) mon,
     extract(year from job_offer_date) yr,
-    mon_yr,
-    dense_rank () over (order by extract(year from job_offer_date) asc, extract(month from job_offer_date)asc ) mon_yr_rnk,
+    CONCAT(
+    CAST(EXTRACT(YEAR FROM date(job_offer_date)) AS STRING),
+    ' Q', EXTRACT(QUARTER FROM date(job_offer_date))) AS quarter,
+    extract(quarter from job_offer_date) quarter_no,
+    dense_rank () over (order by extract(year from job_offer_date) asc, extract(quarter from job_offer_date)asc ) qtr_yr_rnk,
     influencer_level,
     amount_usd,
     payment_amount_list_usd,
@@ -14,36 +15,27 @@ WITH job_breakdwon AS
 FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_job_breakdown`
 where lower(job_status) in ('complete', 'ongoing')),
 
-aggregates AS
-(
-select 
+quarter_aggregates AS
+(select 
     influencer_id,
     country,
-    mon_no,
-    mon,
     yr,
-    mon_yr,
-    mon_yr_rnk,
+    quarter,
+    quarter_no,
+    qtr_yr_rnk,
     sum(amount_usd) amount_usd,
     sum(payment_amount_list_usd) payment_amount_list_usd
 from job_breakdwon
-    group by influencer_id,
-    country,
-    mon_no,
-    mon,
-    yr,
-    mon_yr,
-    mon_yr_rnk
+    group by influencer_id, country, yr, quarter, quarter_no, qtr_yr_rnk
 )
 
-select 
+SELECT
     influencer_id,
     country,
-    mon_no,
-    mon,
     yr,
-    mon_yr,
-    mon_yr_rnk,
+    quarter,
+    quarter_no,
+    qtr_yr_rnk,
     amount_usd,
     payment_amount_list_usd,
     case
@@ -61,4 +53,4 @@ select
     round(payment_amount_list_usd,0) >= 10000 then 'More than $10000' 
     else 'Uncategorized' 
     end as Income_bucket
-from job_breakdwon
+FROM quarter_aggregates
