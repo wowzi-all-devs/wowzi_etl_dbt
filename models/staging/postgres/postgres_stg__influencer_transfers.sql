@@ -19,6 +19,7 @@ SELECT
     is_approved,
     bank_name,
     creation_time,
+    payment_eligible_at,
     updated_at
 
 FROM {{ source('staging', 'influencer_transfers') }}
