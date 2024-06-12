@@ -3,27 +3,32 @@
 WITH
 payments_due AS (
   SELECT
-    influencer_id,
+    task.influencer_id,
     first_name || ' ' || last_name as influencer_name,
     first_verification_status,
     second_verification_status,
+    third_verification_status,
     mobile_number,
     task.campaign_id,
     task.task_id,
     datetime(first_verification_feedback_time,"Africa/Nairobi") first_verification_datetime,
-    DATE_ADD(datetime(first_verification_feedback_time,"Africa/Nairobi"), INTERVAL 120 hour) payment_date,
+    datetime(transfers.payment_eligible_at) as actual_payment_date,
+    date_diff(date(payment_eligible_at),date(third_verification_feedback_time), day) as days_since_third_verfication,
     payment_amount_list,
     country,
-    bank_name,
+    bank_details.bank_name,
     bank_account_number,
+    transfers.status,
     cmp.currency AS currency
+
   FROM {{ ref('postgres_stg__influencer_tasks') }} task
-  LEFT JOIN {{ ref('postgres_stg__influencers') }} USING (influencer_id)
-  LEFT JOIN {{ ref('int_bank_details') }} USING (influencer_id)
+  left join {{ ref('postgres_stg__influencer_transfers') }} transfers on task.task_id=transfers.task_id
+  LEFT JOIN {{ ref('postgres_stg__influencers') }} influencers on task.influencer_id=influencers.influencer_id
+  LEFT JOIN {{ ref('int_bank_details') }} bank_details on task.influencer_id=bank_details.influencer_id
   LEFT JOIN {{ ref('postgres_stg__campaigns') }} cmp ON task.campaign_id=cmp.campaign_id
+
   WHERE
-    first_verification_status="APPROVED"
-    AND DATE(first_verification_feedback_time, 'Africa/Nairobi') > DATE_SUB(CURRENT_DATE('Africa/Nairobi'), INTERVAL 2 week)
+    third_verification_status="APPROVED" and lower(transfers.status) in ('waiting_for_payment','failed')
     and canceled_timestamp is null
   ORDER BY
     first_verification_feedback_time DESC
@@ -31,33 +36,15 @@ payments_due AS (
 weekdays AS (
   SELECT
       distinct*,
-      FORMAT_DATE('%a',payments_due.payment_date) AS weekday_name_abbreviated,
+      FORMAT_DATE('%a',payments_due.actual_payment_date) AS actual_payment_date_weekday_name,
   FROM payments_due
 )
+
 SELECT
-*,
-CASE
-    WHEN LOWER(payment_status)  not in ('successful','manual') and date(payment_dates) < current_date() THEN "Late"
-    WHEN payment_status is null then "Pending Payment"
-    WHEN lower(payment_status) in ('successful','manual') then 'Payment Done'
-END as payment_fulfillment
-FROM  (
-        SELECT
-          weekdays.*,
-          CASE
-            WHEN weekday_name_abbreviated IN('Fri', 'Sat', 'Sun') THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(MONDAY)), INTERVAL 1 WEEK)
-            WHEN weekday_name_abbreviated IN('Tue','Wed') THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(ThURSDAY)), INTERVAL 1 WEEK)
-            WHEN weekday_name_abbreviated IN('Thu') AND EXTRACT(hour FROM payment_date)<17 THEN DATE_TRUNC(payment_date, WEEK(THURSDAY))
-            WHEN weekday_name_abbreviated IN('Thu') AND EXTRACT(hour FROM payment_date)>=17 THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(MONDAY)), INTERVAL 1 WEEK)
-            WHEN weekday_name_abbreviated IN('Mon') AND EXTRACT(hour FROM payment_date)<17 THEN DATE_TRUNC(payment_date, WEEK(MONDAY))
-            WHEN weekday_name_abbreviated IN('Mon') AND EXTRACT(hour FROM payment_date)>=17 THEN DATE_ADD(DATE_TRUNC(payment_date, WEEK(THURSDAY)), INTERVAL 1 WEEK)
-          END
-          AS payment_dates,
-          CASE 
-            WHEN lower(weekdays.bank_name)='mpesa' or lower(weekdays.bank_name)='airtel kenya' THEN 'Mobile Money' ELSE 'Bank' 
-          END
-          AS payment_method,
-          it.status as payment_status
-        FROM weekdays
-        LEFT JOIN {{ ref('postgres_stg__influencer_transfers') }} it using(task_id)
-      )
+  weekdays.*,
+  CASE
+    WHEN actual_payment_date_weekday_name IN('Mon','Tue','Wed','Fri', 'Sat', 'Sun') THEN DATE_ADD(DATE_TRUNC(actual_payment_date, WEEK(THURSDAY)), INTERVAL 1 WEEK)
+    WHEN actual_payment_date_weekday_name IN('Thu') AND EXTRACT(hour FROM actual_payment_date)>=17 THEN DATE_ADD(DATE_TRUNC(actual_payment_date, WEEK(THURSDAY)), INTERVAL 1 WEEK)
+  END
+  AS expected_payment_date,
+FROM weekdays order by expected_payment_date desc
