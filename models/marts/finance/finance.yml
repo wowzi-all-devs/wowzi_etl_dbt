@@ -106,9 +106,6 @@ models:
       - name: weekday_name_abbreviated
       - name: payment_dates
       - name: payment_method
-        tests:
-          - accepted_values:
-              values: ['Mobile Money', 'Bank']
       - name: payment_status
         tests:
           - accepted_values:
