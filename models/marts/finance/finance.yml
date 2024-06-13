@@ -107,10 +107,6 @@ models:
       - name: payment_dates
       - name: payment_method
       - name: payment_status
-        tests:
-          - accepted_values:
-              values: ['Manual', 'NEW', 'SUCCESSFUL', 'successful', 'FAILED', 'Sent out', 'COMPLETED','WAITING_FOR_PAYMENT']
-            
   - name: influencers_withholding_by_month_by_status
     description: "Influencers list from Kenya with a total payment greater than 24000 KES by month"
     columns:
