@@ -144,6 +144,8 @@ SELECT
   cfs.merchant_id, 
   cfs.merchant_name,
   cfs.company_name,
+  a.email,
+  a.phone,
   cfs.first_campaign_start_date,
   cfs.latest_campaign_start_date,
   cfs.R AS days_since_last_campaign,
@@ -200,3 +202,5 @@ SELECT
     THEN 'Less than $25,000'
     END) as budget_spend_brackets
 FROM campaign_final_scores cfs
+left join `bi-staging-1-309112.wowzi_dbt_prod.dim_advertisers` a 
+on cfs.merchant_id = a.Advertiser_id
