@@ -49,6 +49,23 @@ FROM {{ ref('postgres_stg__influencer_transfers') }} inf_transfers
    LEFT join {{ ref('postgres_stg__companies') }} companies on companies.company_id = campaigns.company_id
 ),
 
+latest_rates AS
+(
+select 
+  a.date,
+  a.currency,
+  b.currency_rate
+from
+(SELECT 
+  max(date) date,
+  currency
+FROM {{ ref('int_currency_rates') }} 
+where base = 'USD'
+group by currency) a
+left join {{ ref('int_currency_rates') }} b 
+on a.date = b.date and a.currency = b.currency
+),
+
 payments_with_usd AS
 (
 SELECT 
@@ -76,8 +93,9 @@ SELECT
         then p.amount/106.78
         when rates.currency_rate is not NULL
         then p.amount/rates.currency_rate 
-        when rates.currency_rate is NULL
+        when rates.currency_rate is NULL and rates2.currency_rate is not null
         then p.amount/rates2.currency_rate
+        else p.amount/rates3.currency_rate
     end amount_usd,
     p.payment_status,
     p.payment_date,
@@ -91,8 +109,9 @@ SELECT
 FROM payments p 
 LEFT JOIN {{ ref('int_currency_rates') }} rates ON date(p.payment_date) = date(rates.date)
 AND upper(p.currency) = upper(rates.currency)
-LEFT JOIN {{ ref('int_currency_rates') }} rates2 ON date(p.payment_date) = date_sub(date(rates2.date), INTERVAL 2 DAY)
+LEFT JOIN {{ ref('int_currency_rates') }} rates2 ON date(p.payment_date) = date_sub(date(rates2.date), INTERVAL 3 DAY)
 AND upper(p.currency) = upper(rates2.currency)
+LEFT JOIN latest_rates rates3 ON upper(p.currency) = upper(rates3.currency)
 ),
 
 dims_payments as (
