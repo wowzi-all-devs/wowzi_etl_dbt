@@ -1,6 +1,7 @@
 {{ config(tags=["finance"]) }}
 
-WITH payments AS (
+WITH payments AS 
+(
 SELECT      
     inf_transfers.id as transfer_id,
     inf_transfers.influencer_id,
@@ -29,21 +30,9 @@ SELECT
     WHEN lower(inf_tasks.submission_link) IS NULL THEN 'NOT-SUBMITTED'
     end) as social_media_channel,
     inf_transfers.amount,
-    case 
-        when inf_transfers.date_created <= '2020-06-01'
-        then inf_transfers.amount/106.78
-        when rates.currency_rate is not NULL
-        then inf_transfers.amount/rates.currency_rate 
-        when rates.currency_rate is NULL
-        then inf_transfers.amount/rates2.currency_rate
-    end amount_usd,
-    /*
-    case 
-        when inf_transfers.date_created >= '2020-06-01' then inf_transfers.amount/106.78
-        else inf_transfers.amount/rates.currency_rate
-    end amount_usd,*/
     inf_transfers.status as payment_status,
-    date(inf_transfers.date_created) as payment_date,
+    case when inf_transfers.date_created is null then date(inf_transfers.updated_at)
+    else date(inf_transfers.date_created) end as payment_date,
     inf_transfers.updated_at,
     inf_transfers.currency as currency,
     inf.country,
@@ -58,10 +47,52 @@ FROM {{ ref('postgres_stg__influencer_transfers') }} inf_transfers
    LEFT JOIN {{ ref('postgres_stg__campaigns') }} campaigns ON campaigns.campaign_id=inf_tasks.campaign_id
    LEFT join {{ ref('postgres_stg__merchants') }} adv on adv.advertiser_id=campaigns.merchant_id
    LEFT join {{ ref('postgres_stg__companies') }} companies on companies.company_id = campaigns.company_id
-   LEFT JOIN {{ ref('int_currency_rates') }} rates ON date(inf_transfers.date_created) = date(rates.date)
-   AND upper(inf_transfers.currency) = upper(rates.currency)
-   LEFT JOIN {{ ref('int_currency_rates') }} rates2 ON date(inf_transfers.date_created) = date_sub(date(rates2.date), INTERVAL 2 DAY)
-   AND upper(inf_transfers.currency) = upper(rates2.currency)
+),
+
+payments_with_usd AS
+(
+SELECT 
+    p.transfer_id,
+    p.influencer_id,
+    p.influencer_name,
+    p.mobile_number,
+    p.gender,
+    p.influencer_type_TWITTER,
+    p.influencer_type_FACEBOOK,
+    p.influencer_type_LINKEDIN,
+    p.influencer_type_TIKTOK,
+    p.influencer_type_INSTAGRAM,
+    p.campaign_id,
+    p.company_name,
+    p.advertiser_id,
+    p.advertiser_fname,
+    p.advertiser_lname,
+    p.campaign_name,
+    p.task_id,
+    p.social_media_channel,
+    p.amount,
+    case 
+        when p.payment_date <= '2020-06-01'
+        then p.amount/106.78
+        when rates.currency_rate is not NULL
+        then p.amount/rates.currency_rate 
+        when rates.currency_rate is NULL
+        then p.amount/rates2.currency_rate
+    end amount_usd,
+    p.payment_status,
+    p.payment_date,
+    p.updated_at,
+    p.currency,
+    p.country,
+    p.bank_name,
+    p.bank_account_number,
+    p.narration,
+    p.reference
+FROM payments p 
+LEFT JOIN {{ ref('int_currency_rates') }} rates ON date(p.payment_date) = date(rates.date)
+AND upper(p.currency) = upper(rates.currency)
+LEFT JOIN {{ ref('int_currency_rates') }} rates2 ON date(p.payment_date) = date_sub(date(rates2.date), INTERVAL 2 DAY)
+AND upper(p.currency) = upper(rates2.currency)
 ),
 
 dims_payments as (
@@ -102,7 +133,7 @@ SELECT
     reference,
     narration
 FROM 
-    payments)
+    payments_with_usd)
     
 select 
     *
