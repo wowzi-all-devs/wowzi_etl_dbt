@@ -146,9 +146,9 @@ SELECT
     p.user_profile_avg_saves,
     p.user_profile_total_likes,
     ir.ranking_score instagram_rank,
-    tr.ranking_score tiktok_rank
+    tkr.ranking_score tiktok_rank
 FROM creator_profile p
 LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.creator_xgboost_ranks_instagram` ir 
 ON p.user_profile_user_id = ir.user_profile_user_id AND LOWER(user_profile_type) = 'instagram'
-LEFT JOIN  `bi-staging-1-309112.wowzi_dbt_prod.creator_xgboost_ranks_tiktok` tr
-ON p.user_profile_user_id = ir.user_profile_user_id AND LOWER(user_profile_type) = 'tiktok'
+LEFT JOIN  `bi-staging-1-309112.wowzi_dbt_prod.creator_xgboost_ranks_tiktok` tkr
+ON p.user_profile_user_id = tkr.user_profile_user_id AND LOWER(user_profile_type) = 'tiktok'
