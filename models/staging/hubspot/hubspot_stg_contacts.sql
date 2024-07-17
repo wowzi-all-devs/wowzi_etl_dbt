@@ -54,7 +54,7 @@ WITH contacts AS
   cp.hs_user_ids_of_all_owners,
   c.archived
 FROM {{ source('hubspot_staging', 'contacts') }} c
-LEFT JOIN {{ source('hubspot_staging', 'contacts_properties') }} cp ON c._airbyte_contacts_hashid =cp._airbyte_contacts_hashid
+LEFT JOIN {{ source('hubspot_staging', 'contacts_properties') }} cp ON c._airbyte_raw_id =cp._airbyte_contacts_hashid
 ) 
 SELECT
   *

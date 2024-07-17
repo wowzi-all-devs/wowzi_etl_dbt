@@ -44,7 +44,7 @@ WITH deals AS
   dp.hs_all_team_ids,
   dp.hubspot_team_id
 FROM {{ source('hubspot_staging', 'deals') }} d
-LEFT JOIN {{ source('hubspot_staging', 'deals_properties') }} dp ON d._airbyte_deals_hashid = dp._airbyte_deals_hashid
+LEFT JOIN {{ source('hubspot_staging', 'deals_properties') }} dp ON d._airbyte_raw_id = dp._airbyte_deals_hashid
 )
 
 SELECT 
