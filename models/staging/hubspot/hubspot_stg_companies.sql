@@ -47,7 +47,7 @@ WITH companies AS
   cp.hs_last_logged_call_date
   --cp.*
 FROM {{ source('hubspot_staging', 'companies') }}  c
-LEFT JOIN {{ source('hubspot_staging', 'companies_properties') }} cp ON c._airbyte_companies_hashid = cp._airbyte_companies_hashid
+LEFT JOIN {{ source('hubspot_staging', 'companies_properties') }} cp ON c._airbyte_raw_id = cp._airbyte_companies_hashid
 )
 
 SELECT
