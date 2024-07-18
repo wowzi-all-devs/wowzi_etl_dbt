@@ -137,5 +137,5 @@ FROM
   cd
   ON cd.channel = x.channel
   AND LOWER(
-    cd.username
+    replace(trim(cd.username),"@","")
   ) = x.user_profile_username

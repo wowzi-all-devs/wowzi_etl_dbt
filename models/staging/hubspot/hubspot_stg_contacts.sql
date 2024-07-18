@@ -1,60 +1,7 @@
 WITH contacts AS 
-(SELECT 
-  c.id,
-  cp.firstname,
-  cp.lastname,
-  cp.full_name,
-  cp.hs_whatsapp_phone_number,
-  cp.phone,
-  cp.email,
-  cp.jobtitle,
-  cp.gender,
-  cp.hs_is_contact,
-  c.companies,
-  cp.company,
-  cp.company_size,
-  cp.hs_is_unworked,
-  cp.lifecyclestage,
-  cp.hs_lifecyclestage_lead_date,
-  cp.hs_first_outreach_date,
-  cp.hs_sa_first_engagement_date,
-  cp.hs_last_sales_activity_date,
-  cp.hs_date_exited_lead,
-  cp.hs_date_entered_customer,
-  cp.hs_time_in_lead,
-  cp.hs_lead_status,
-  cp.hs_date_entered_lead,
-  cp.hs_sa_first_engagement_descr,
-  cp.first_conversion_date,
-  cp.first_deal_created_date,
-  cp.num_associated_deals,
-  cp.num_unique_conversion_events,
-  cp.hs_emailconfirmationstatus,
-  cp.hs_sales_email_last_replied,
-  cp.recent_deal_close_date,
-  cp.closedate,
-  cp.hs_time_in_customer,
-  cp.currentlyinworkflow,
-  cp.hs_lifecyclestage_customer_date,
-  cp.first_conversion_event_name,
-  cp.associatedcompanyid,
-  cp.notes_last_contacted,
-  cp.hs_calculated_phone_number_country_code,
-  cp.ip_country,
-  cp.city,
-  cp.ip_city,
-  cp.state,
-  cp.ip_state_code,
-  c.createdAt,
-  cp.hs_created_by_user_id,
-  cp.hs_updated_by_user_id,
-  cp.hubspot_owner_id,
-  cp.hubspot_owner_assigneddate,
-  cp.hs_all_owner_ids,
-  cp.hs_user_ids_of_all_owners,
-  c.archived
-FROM {{ source('hubspot_staging', 'contacts') }} c
-LEFT JOIN {{ source('hubspot_staging', 'contacts_properties') }} cp ON c._airbyte_raw_id =cp._airbyte_contacts_hashid
+
+(SELECT * 
+  FROM {{ source('hubspot_staging', 'contacts') }}
 ) 
 SELECT
   *
