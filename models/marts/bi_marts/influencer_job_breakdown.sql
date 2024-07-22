@@ -385,6 +385,7 @@ final_output as
     null role, 
     null company_role,
     dense_rank () over (order by extract(year from a.job_offer_date) asc, extract(month from a.job_offer_date)asc) mon_yr_rnk,
+    dense_rank () over (order by extract(year from a.payment_date) asc, extract(month from a.payment_date)asc) payment_monyr_rnk,
     row_number() over(partition by a.influencer_id, a.mon_yr order by a.task_id desc) distinct_inf
 from job_details_with_activity_stats a 
 left join `bi-staging-1-309112.wowzi_dbt_prod.int_currency_rates` i 
@@ -498,6 +499,7 @@ select
     a.role, 
     a.company_role,
     a.mon_yr_rnk,
+    a.payment_monyr_rnk,
     a.distinct_inf,
     b.qualified_inf all_time_qualified_inf
 from final_output a
