@@ -232,7 +232,10 @@ select
     a.influencer_level,
     a.datasource, 
     a.first_job_date, 
-    b.id_card_type
+    case
+        when b.id_card_type is null and a.influencer_id in (138950,122329,123398,   120417) then 'UG_TRAVEL_DOC'
+        else b.id_card_type
+    end id_card_type
 from job_details_with_first_job_date a
 left join 
 `bi-staging-1-309112.wowzi_airbyte.influencer_smileidentity_data` b
