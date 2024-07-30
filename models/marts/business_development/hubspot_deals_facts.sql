@@ -14,7 +14,6 @@ WITH deals AS
   d.deal___country,
   d.num_notes,
   d.notes_last_contacted,
-  d.hs_sales_email_last_replied,
   d.notes_next_activity_date,
   d.hs_is_open_count,
   d.days_to_close,
@@ -36,8 +35,7 @@ WITH deals AS
   d.hubspot_owner_id,
   d.hubspot_owner_assigneddate
 FROM {{ ref('hubspot_stg_deals') }} d 
---LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.hubspot_stg_companies` c ON d.companies =c.id
---LIMIT 1000
+
 )
 
 SELECT 
