@@ -3,6 +3,7 @@ with job_details as
 SELECT 
     t.influencer_id,
     t.company_id,
+    e.company_name,
     case 
       when co.company_industry is null then 'N/A' 
       else initcap(co.company_industry) 
@@ -75,6 +76,7 @@ union all
 select 
     p.influencer_id,
     p.company_id,
+    p.brand company_name,
     'Fmcg' industry,
     p.campaign_id,
     null campaign_end_date,
@@ -146,6 +148,7 @@ select
     a.company_id,
     a.industry,
     a.campaign_id,
+    a.company_name,
     a.campaign_end_date,
     a.job_id,
     a.job_offer_date,
@@ -195,6 +198,7 @@ select
     a.company_id,
     a.industry,
     a.campaign_id,
+    a.company_name,
     a.campaign_end_date,
     a.job_id,
     a.job_offer_date,
@@ -248,6 +252,7 @@ job_details_with_activity_stats as
 select
     a.influencer_id,
     a.company_id,
+    a.company_name,
     a.industry,
     a.campaign_id,
     a.campaign_end_date,
@@ -384,7 +389,7 @@ final_output as
     a.amount_paid_to_active_l3m,
     a.creation_to_job_days,
     a.job_in_reg_month,
-    null company_name,
+    a.company_name,
     null role, 
     null company_role,
     dense_rank () over (order by extract(year from a.job_offer_date) asc, extract(month from a.job_offer_date)asc) mon_yr_rnk,
@@ -509,3 +514,5 @@ from final_output a
 left join qualified_inf b on 
 b.qualified_inf = b.qualified_inf
     where a.influencer_id is not null
+    and a.company_id not in 
+    (9,17744,17364,17394,17395,16035,5555,17940,17615,16451,16084,5747,4794,16032)
