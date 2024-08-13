@@ -49,13 +49,30 @@ SELECT
     inf.total_accepted AS total_accepted_jobs,
     (CASE WHEN inf.total_accepted > 0 then true
         ELSE false END) AS inf_accepted_job,
+    p.amount_usd amount_usd_earned_by_referred_inf,
     ref.referred_by_influencer_id AS ambassador_influencer_id,
     inf2.first_name||' '||inf2.last_name AS ambassador_influencer_name,
+    (CASE WHEN inf2.gender IS NULL THEN 'GENDER NOT SET'
+        ELSE inf2.gender END) AS ambassador_gender,
+    inf2.age_range ambassador_age_range,
+    (CASE WHEN inf2.country IS NULL THEN 'COUNTRY NOT SET'
+        ELSE inf2.country END) AS ambassador_country,
+    inf2.location ambassador_location,
+    inf2.job_eligibility ambassador_job_eligibility,
+    inf2.job_activity ambassador_job_activity,
+    inf2.offered_jobs AS ambassador_total_offered_jobs,
+    (CASE WHEN inf2.offered_jobs > 0 then true
+    ELSE false END) AS ambassador_offered_job,
+    inf2.total_accepted AS ambassador_total_accepted_jobs,
+    (CASE WHEN inf2.total_accepted > 0 then true
+        ELSE false END) AS ambassador_accepted_job,
+    p2.amount_usd amount_usd_earned_by_ambassador,
     ref.creation_time
 FROM {{ ref('postgres_stg__influencer_referral_influencer') }} ref
 LEFT JOIN {{ ref('influencer_facts') }} inf on ref.influencer_id = inf.influencer_id
 LEFT JOIN {{ ref('influencer_facts') }} inf2 on ref.referred_by_influencer_id = inf2.influencer_id
 LEFT JOIN payments p on ref.influencer_id = p.influencer_id
+LEFT JOIN payments p2 on ref.referred_by_influencer_id = p2.influencer_id
 )
 
 SELECT 
@@ -93,7 +110,19 @@ SELECT
     inf_offered_job,
     total_accepted_jobs,
     inf_accepted_job,
+    amount_usd_earned_by_referred_inf,
     ambassador_influencer_id,
     ambassador_influencer_name,
+    ambassador_gender,
+    ambassador_age_range,
+    ambassador_country,
+    ambassador_location,
+    ambassador_job_eligibility,
+    ambassador_job_activity,
+    ambassador_total_offered_jobs,
+    ambassador_offered_job,
+    ambassador_total_accepted_jobs,
+    ambassador_accepted_job,
+    amount_usd_earned_by_ambassador,
     creation_time
 FROM influencer_referrals
