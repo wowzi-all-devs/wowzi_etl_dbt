@@ -4,7 +4,7 @@ WITH
   SELECT
     cast(id as int) AS conversation_id,
     regexp_extract(REPLACE(JSON_VALUE(tags, '$.tags[0].name'), '"', ''), r'^[^:]*') as group_tag,
-    JSON_EXTRACT(tags, '$.tags[0].name') AS tag,
+    cast(JSON_EXTRACT_SCALAR(tags, '$.tags[0].name') as string) AS tag,
     cast(JSON_EXTRACT_SCALAR(teammates, '$.admins[0].id') as int )AS admin_id,
     cast(JSON_EXTRACT_SCALAR(statistics, '$.time_to_admin_reply') as int )AS time_to_admin_reply,
     cast(JSON_EXTRACT_SCALAR(statistics, '$.count_conversation_parts')as int)AS count_conversation_parts,

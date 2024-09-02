@@ -1,22 +1,31 @@
-WITh merchants AS 
-(SELECT  
-  distinct merchant_id, merchant_name, company_name
-FROM `bi-staging-1-309112.wowzi_dbt_prod.campaign_expenditure` 
-  where merchant_id in  
-  (select
-  first_merchant
-from
-(SELECT 
-  company_name, 
-  min(merchant_id) as first_merchant
-FROM `bi-staging-1-309112.wowzi_dbt_prod.campaign_expenditure` 
-  where lower(campaign_name) not like '%test%'
-  and budget_spent > 0
-  and merchant_id <> 7
-  and merchant_id <> 8
-  and lower(company_name) not like '%wowzi%'
-  and company_name <> 'Advertiser Demo Account '
-  group by company_name))),
+WITH company_merchants AS
+(
+  SELECT
+    merchant_id, merchant_name, company_name,
+    row_number() over(partition by company_name order by merchant_id) row_num
+  FROM 
+  (
+    SELECT 
+      distinct
+      merchant_id, merchant_name, company_name,
+    FROM `bi-staging-1-309112.wowzi_dbt_prod.campaign_expenditure` 
+      where lower(campaign_name) not like '%test%'
+      and budget_spent > 0
+      and merchant_id <> 7
+      and merchant_id <> 8
+      and lower(company_name) not like '%wowzi%'
+      and company_name <> 'Advertiser Demo Account '
+  )
+),
+
+merchants AS
+(
+  SELECT 
+    merchant_id, merchant_name, company_name
+  FROM company_merchants
+    where row_num = 1
+    order by company_name, merchant_id
+),
 
 first_campaign AS 
 (SELECT 
@@ -138,9 +147,53 @@ campaign_final_scores AS
   cs.T,
   (10/ms.max_T)*cs.T AS T_S
 FROM campaign_scores cs
-LEFT JOIN max_main_score ms ON ms.max_T = ms.max_T)
+LEFT JOIN max_main_score ms ON ms.max_T = ms.max_T),
+
+campaign_tasks AS 
+(
+SELECT
+  t.campaign_id,
+  date(t.task_creation_time) task_date,
+  e.currency,
+  t.company_id,
+  e.company_name,
+  case 
+        when t.third_verification_status = 'APPROVED' then 'Complete'
+        when t.third_verification_status = 'NOT_VERIFIED'
+        and date(e.campaign_end_date) > date(current_date)
+        then 'Ongoing'
+        else 'Failed' 
+    end job_status,
+    t.payment_amount_list
+FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_task_facts` t
+left join `bi-staging-1-309112.wowzi_dbt_prod.campaign_expenditure` e on (cast(t.campaign_id as string) = cast(e.campaign_id as string))
+),
+
+company_jobvalues AS
+(
+select
+  company_name,
+  sum(payment_amount_list) payment_amount_list,
+  sum(payment_amount_list_usd) payment_amount_list_usd
+from
+(Select 
+  campaign_id,
+  task_date,
+  t.currency,
+  company_id,
+  company_name,
+  payment_amount_list,
+  payment_amount_list/i.currency_rate payment_amount_list_usd,
+from campaign_tasks t 
+left join `bi-staging-1-309112.wowzi_dbt_prod.int_currency_rates` i 
+on (date(t.task_date) = date(i.date))
+and (lower(t.currency)=lower(i.currency))
+where lower(t.job_status) in ('complete', 'ongoing'))
+group by company_name
+)
 
 SELECT 
+  distinct
   cfs.merchant_id, 
   cfs.merchant_name,
   cfs.company_name,
@@ -200,7 +253,9 @@ SELECT
     THEN '$25,000 to $49,999'
     WHEN cfs.M < 25000 
     THEN 'Less than $25,000'
-    END) as budget_spend_brackets
+    END) as budget_spend_brackets,
+    cj.payment_amount_list_usd company_job_value
 FROM campaign_final_scores cfs
 left join `bi-staging-1-309112.wowzi_dbt_prod.dim_advertisers` a 
 on cfs.merchant_id = a.Advertiser_id
+left join company_jobvalues cj on lower(cfs.company_name) = lower(cj.company_name)
