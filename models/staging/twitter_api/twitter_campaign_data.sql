@@ -9,7 +9,7 @@
     on_schema_change = "sync_all_columns",
     incremental_strategy = "merge",
     incremental_predicates = [
-        "DBT_INTERNAL_DEST.processed_at > timestamp_add(current_timestamp(), interval -4 hour)"],
+        "DBT_INTERNAL_DEST.processed_at > timestamp_add(current_timestamp(), interval -1 day)"],
 )}}
 SELECT
     task_id,
