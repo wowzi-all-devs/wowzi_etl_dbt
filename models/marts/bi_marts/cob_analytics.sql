@@ -7,7 +7,8 @@ SELECT
   initcap(d.last_name) last_name, 
   --d.email, 
   --initcap(d.gender)gender, 
-  d.smileidentity_status, 
+  case when lower(d.smileidentity_status) = 'pending' then 'Not Attempted'
+  else initcap(d.smileidentity_status) end smileidentity_status, 
   --d.age, 
   d.job_eligibility,
   d.date_account_created,
