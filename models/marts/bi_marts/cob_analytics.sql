@@ -17,8 +17,14 @@ SELECT
   dense_rank () over (order by extract(year from date_account_created), extract(month from date_account_created) desc) acc_cre_rnk
 from bi-staging-1-309112.wowzi_dbt_prod.influencer_facts d
 left join bi-staging-1-309112.dbt_kayode.country_key e
-on 
-  (d.country = e.Key)
+on (d.country = e.Key)
+where 
+(lower(email) not like '%@getnada.com%'
+AND lower(email) not like '%wowzi%'
+AND lower(email) not like '%@fivermail.com%'
+AND lower(email) not like '%@g.com%'
+AND lower(email) not like '%@example.com%'
+AND lower(email) not like '%@getairmail.com%') OR email IS NULL
 ),
 
 campaign_data AS 
