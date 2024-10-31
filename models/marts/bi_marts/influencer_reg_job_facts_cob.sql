@@ -1,5 +1,6 @@
 WITH inf_details as 
-(select 
+(
+select 
   safe_cast(influencer_id as string) influencer_id_a, 
   d.age_range inf_age_range,
   initcap(d.first_name) first_name, 
@@ -44,6 +45,13 @@ from bi-staging-1-309112.wowzi_dbt_prod.influencer_facts d
 left join bi-staging-1-309112.wowzi_dbt_prod.country_key e
 on
 (d.country = e.Key)
+where 
+(lower(email) not like '%@getnada.com%'
+AND lower(email) not like '%wowzi%'
+AND lower(email) not like '%@fivermail.com%'
+AND lower(email) not like '%@g.com%'
+AND lower(email) not like '%@example.com%'
+AND lower(email) not like '%@getairmail.com%') OR email IS NULL
 union all 
 SELECT 
     safe_cast(p.influencer_id as string) influencer_id_a, 
