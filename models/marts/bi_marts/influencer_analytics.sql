@@ -32,6 +32,13 @@ SELECT
   last_campaign_date
 FROM bi-staging-1-309112.wowzi_dbt_prod.influencer_facts f 
 LEFT join bi-staging-1-309112.wowzi_dbt_prod.country_key c ON f.country = c.Key
+where 
+(lower(email) not like '%@getnada.com%'
+AND lower(email) not like '%wowzi%'
+AND lower(email) not like '%@fivermail.com%'
+AND lower(email) not like '%@g.com%'
+AND lower(email) not like '%@example.com%'
+AND lower(email) not like '%@getairmail.com%') OR email IS NULL
 ),
 
 inf_tasks AS 
