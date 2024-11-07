@@ -1,7 +1,8 @@
-with job_details as
+With platform_jobs AS
 (
 SELECT 
     t.influencer_id,
+    f.email,
     t.company_id,
     e.company_name,
     case 
@@ -72,66 +73,118 @@ left join `bi-staging-1-309112.wowzi_dbt_prod.campaign_expenditure` e on (cast(t
 left join bi-staging-1-309112.wowzi_dbt_prod.companies co on (t.company_id = co.id)
 left join `bi-staging-1-309112.wowzi_dbt_prod.influencer_payouts` d on (t.task_id = d.task_id)
 and lower(d.payment_status) in ('successful', 'manual', 'new', 'completed')
-union all 
-select 
+),
+
+job_details AS
+(
+SELECT 
+    influencer_id,
+    company_id,
+    company_name,
+    industry,
+    campaign_id,
+    campaign_end_date,
+    job_id,
+    job_offer_date,
+    task_id,
+    task_creation_date,
+    tasks_assigned,
+    job_status,
+    completed_tasks,
+    amount_lcy,
+    campaign_currency,
+    amount_usd,
+    payment_date,
+    CAST(periphery_payment_status AS STRING) periphery_payment_status,
+    CAST(periphery_job_value_usd AS NUMERIC) periphery_job_value_usd,
+    platfrom_job_value_lcy,
+    inf_first_name,
+    inf_last_name,
+    created,
+    first_campaign_date,
+    inf_last_campaign_date,
+    days_to_job,
+    days_since_last_campaign,
+    gender,
+    dob,
+    inf_age,
+    age_groups,
+    country,
+    invitation_status,
+    Instagram_influencer_level, 
+    Facebook_influencer_level, 
+    X_influencer_level, 
+    Linkedin_influencer_level, 
+    Tiktok_influencer_level,
+    channel,
+    influencer_level,
+    datasource
+FROM platform_jobs f
+    WHERE (LOWER(f.email) NOT LIKE '%@getnada.com%'
+    AND LOWER(f.email) NOT LIKE '%wowzi%'
+    AND LOWER(f.email) NOT LIKE '%@fivermail.com%'
+    AND LOWER(f.email) NOT LIKE '%@g.com%'
+    AND LOWER(f.email) NOT LIKE '%@example.com%'
+    AND LOWER(f.email) NOT LIKE '%@getairmail.com%') OR f.email IS NULL
+UNION ALL 
+SELECT 
     p.influencer_id,
     p.company_id,
     p.brand company_name,
     'Fmcg' industry,
     p.campaign_id,
-    null campaign_end_date,
+    NULL campaign_end_date,
     p.job_id,
-    date(p.campaign_date) as job_offer_date,
+   DATE(p.campaign_date) AS job_offer_date,
     p.task_id,
-    date(p.campaign_date) task_creation_date,
-    case
-        when p.tasks_assigned is null then 1
-        else p.tasks_assigned
-    end tasks_assigned,
-    case 
-        when lower(p.payment_status) = 'successful' then 'Complete'
-        else 'Ongoing'
-    end job_status,
-    1 as completed_tasks,
+    DATE(p.campaign_date) task_creation_date,
+    CASE
+        WHEN p.tasks_assigned IS NULL THEN 1
+        ELSE p.tasks_assigned
+    END tasks_assigned,
+    CASE 
+        WHEN lower(p.payment_status) = 'successful' THEN 'Complete'
+        ELSE 'Ongoing'
+    END job_status,
+    1 AS completed_tasks,
     p.amount_lcy,
     p.currency campaign_currency,
-    case 
-      when lower(p.payment_status) = 'successful'
-      then p.amount_usd
-      else null
-    end amount_usd,
-    date(p.payment_date) payment_date,
-    p.payment_status periphery_payment_status,
-    cast(p.amount_usd as numeric) periphery_job_value_usd,
-    null platfrom_job_value_lcy,
+    CASE 
+      WHEN lower(p.payment_status) = 'successful'
+      THEN p.amount_usd
+      ELSE NULL
+    END amount_usd,
+    DATE(p.payment_date) payment_date,
+    CAST(p.payment_status AS STRING) periphery_payment_status,
+    CAST(p.amount_usd AS NUMERIC) periphery_job_value_usd,
+    NULL platfrom_job_value_lcy,
     INITCAP(p.influencer) inf_first_name,
-    null inf_last_name,
-    date(p.inf_date_account_created) created,
-    date(p.first_campaign_date) first_campaign_date,
-    date(p.last_campaign_date) as inf_last_campaign_date,
-    DATE_DIFF(date(p.first_campaign_date), date(p.inf_date_account_created), day) as days_to_job,
-    DATE_DIFF(date(current_date), date(p.last_campaign_date), day) as days_since_last_campaign,
+    NULL inf_last_name,
+    DATE(p.inf_date_account_created) created,
+    DATE(p.first_campaign_date) first_campaign_date,
+    DATE(p.last_campaign_date) AS inf_last_campaign_date,
+    DATE_DIFF(DATE(p.first_campaign_date), DATE(p.inf_date_account_created), DAY) AS days_to_job,
+    DATE_DIFF(DATE(current_date), DATE(p.last_campaign_date), DAY) AS days_since_last_campaign,
     INITCAP(p.gender) gender,
     null as dob,
     p.age inf_age,
-    case when p.age is null then 'No DOB'
-        when p.age >= 18 and p.age <= 25 then '18-25'
-        when p.age >= 26 and p.age <= 35 then '26-35'
-        when p.age >= 36 and p.age <= 45 then '36-45'
-        else '>45'
-    end as age_groups,
+    CASE WHEN p.age IS NULL THEN 'No DOB'
+         WHEN p.age >= 18 AND p.age <= 25 THEN '18-25'
+         WHEN p.age >= 26 AND p.age <= 35 THEN '26-35'
+         WHEN p.age >= 36 AND p.age <= 45 THEN '36-45'
+         ELSE '>45'
+    END AS age_groups,
     p.Country country,
     'ACCEPTED' invitation_status,
-    null as Instagram_influencer_level, 
-    null as Facebook_influencer_level, 
-    null as X_influencer_level, 
-    null as Linkedin_influencer_level, 
-    null as Tiktok_influencer_level,
+    NULL AS Instagram_influencer_level, 
+    NULL AS Facebook_influencer_level, 
+    NULL AS X_influencer_level, 
+    NULL AS Linkedin_influencer_level, 
+    NULL AS Tiktok_influencer_level,
     p.social_media_platform channel,
     p.influencer_level,
-    'Periphery Sheet' as datasource
-from `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` p
-),
+    'Periphery Sheet' AS datasource
+FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` p),
 
 first_jobs as
 (
