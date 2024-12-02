@@ -51,6 +51,7 @@ SELECT
         ELSE false END) AS inf_accepted_job,
     p.amount_usd amount_usd_earned_by_referred_inf,
     ref.referred_by_influencer_id AS ambassador_influencer_id,
+    ref_codes.code AS referral_code,
     inf2.first_name||' '||inf2.last_name AS ambassador_influencer_name,
     (CASE WHEN inf2.gender IS NULL THEN 'GENDER NOT SET'
         ELSE inf2.gender END) AS ambassador_gender,
@@ -69,6 +70,7 @@ SELECT
     p2.amount_usd amount_usd_earned_by_ambassador,
     ref.creation_time
 FROM {{ ref('postgres_stg__influencer_referral_influencer') }} ref
+LEFT JOIN {{ ref('influencer_referral_code') }} ref_codes ON ref.referred_by_influencer_id = ref_codes.influencer_id
 LEFT JOIN {{ ref('influencer_facts') }} inf on ref.influencer_id = inf.influencer_id
 LEFT JOIN {{ ref('influencer_facts') }} inf2 on ref.referred_by_influencer_id = inf2.influencer_id
 LEFT JOIN payments p on ref.influencer_id = p.influencer_id
@@ -112,6 +114,7 @@ SELECT
     inf_accepted_job,
     amount_usd_earned_by_referred_inf,
     ambassador_influencer_id,
+    referral_code,
     ambassador_influencer_name,
     ambassador_gender,
     ambassador_age_range,
