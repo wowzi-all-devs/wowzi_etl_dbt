@@ -15,8 +15,8 @@ SELECT
   e.Country country,
   FORMAT_DATETIME("%b", DATETIME(date(date_account_created))) acc_cre_mon,
   dense_rank () over (order by extract(year from date_account_created), extract(month from date_account_created) desc) acc_cre_rnk
-from bi-staging-1-309112.wowzi_dbt_prod.influencer_facts d
-left join bi-staging-1-309112.dbt_kayode.country_key e
+from  {{ ref('influencer_facts') }} d
+left join {{ source('staging','country_key') }} e
 on (d.country = e.Key)
 where 
 (lower(email) not like '%@getnada.com%'
@@ -52,12 +52,12 @@ SELECT
   --initcap(c.channel) submission_channel, 
   --submission_link, 
   --date(c.submission_link_add_time) submission_link_date
-FROM `bi-staging-1-309112.wowzi_dbt_prod.campaign_facts`b
-JOIN bi-staging-1-309112.wowzi_dbt_prod.job_facts a
+FROM {{ ref('campaign_facts') }} b
+JOIN {{ ref('job_facts') }} a
 ON 
   (safe_cast(b.campaign_id as string) = safe_cast(a.campaign_id as string))
 AND (a.invitation_status = 'ACCEPTED')
-JOIN bi-staging-1-309112.wowzi_dbt_prod.influencer_task_facts c 
+JOIN {{ ref('influencer_task_facts') }} c 
 ON 
   (safe_cast(a.job_id as string) = safe_cast(c.job_id as string) )
 WHERE b.company_id not in 
