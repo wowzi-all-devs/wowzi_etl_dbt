@@ -22,14 +22,14 @@ SELECT
     CASE WHEN c.Country is null then c1.Country
     ELSE c.Country
     END country
-FROM `bi-staging-1-309112.wowzi_dbt_prod.campaign_facts` cf 
-LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.back_officers` bo
+FROM {{ ref('campaign_facts') }} cf 
+LEFT JOIN {{ ref('postgres_stg__back_officers') }} bo
 ON cf.creator_type = bo.role AND cf.creator_id = bo.backofficer_id
-LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.dim_advertisers` a
+LEFT JOIN {{ ref('dim_advertisers') }} a
 ON cf.creator_id = a.advertiser_id
-LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.country_key` c 
+LEFT JOIN {{ source('staging', 'country_key') }} c 
 ON lower(cf.country) = lower(c.Key)
-LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.country_key` c1 
+LEFT JOIN {{ source('staging', 'country_key') }} c1 
 ON lower(cf.currency) = lower(c1.Currency)
   where lower(cf.company_name) not like '%demo%'
   and lower(cf.company_name) not like '%test%'
@@ -44,7 +44,7 @@ campaigns_requiring_manual_metrics AS
     distinct 
     campaign_id,
     true requires_manual_metrics
-  FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_task_facts` 
+  FROM {{ ref('influencer_task_facts') }} 
     where lower(channel) <> 'twitter'
 
 ),
@@ -77,7 +77,7 @@ FROM
   distinct 
   campaign_id,
   advertiser_skip_pre_approval
-FROM `bi-staging-1-309112.wowzi_dbt_prod.campaign_facts` )),
+FROM {{ ref('campaign_facts') }} )),
 
 platform_campaigns_b AS 
 (
@@ -154,7 +154,7 @@ SELECT
     false has_twitter_metrics,
     false has_content_pre_approval,
     'Periphery' as datasource
-FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean` pc
+FROM {{ ref('periphery_markets_data_clean') }}  pc
 ),
 
 combined_analytics AS 
