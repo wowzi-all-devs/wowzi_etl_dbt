@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+    - name: staging
+      #For bigquery:
+      database: bi-staging-1-309112
+      schema: wowzi_dbt_prod
+      tables:
+        - name: one_on_one_tracker
+        - name: periphery_markets_data
