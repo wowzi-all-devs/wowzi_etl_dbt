@@ -2,7 +2,7 @@ WITH cohort_items AS
 (SELECT 
   Client,
   min(Month) as cohort_month
-FROM `bi-staging-1-309112.wowzi_dbt_prod.mom_client_revenue` 
+FROM {{ source('staging', 'mom_client_revenue') }} 
   group by Client),
 
 client_activities as
@@ -10,7 +10,7 @@ client_activities as
   a.Client,
   a.Month,
   date_diff(a.Month, b.cohort_month, month) month_number
-FROM `bi-staging-1-309112.wowzi_dbt_prod.mom_client_revenue` a 
+FROM {{ source('staging', 'mom_client_revenue') }} a 
 left join cohort_items b on a.Client = b.Client),
 
 cohort_size as
