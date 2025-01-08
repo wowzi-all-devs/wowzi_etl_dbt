@@ -1,11 +1,11 @@
 WITH max_starters AS 
 (
 SELECT 
-  max(job_id) + 1000 AS job_id_start,
-  max(campaign_id) + 1000 AS campaign_id_start,
-  max(company_id) + 1000 AS company_id_start,
-  max(task_id) + 1000 AS task_id_start,
-  max(influencer_id) + 1000 AS influencer_id_start
+  max(job_id) + 10000000 AS job_id_start,
+  max(campaign_id) + 10000000 AS campaign_id_start,
+  max(company_id) + 10000000 AS company_id_start,
+  max(task_id) + 10000000 AS task_id_start,
+  max(influencer_id) + 10000000 AS influencer_id_start
 FROM {{ ref('influencer_task_facts') }} 
 ),
 
