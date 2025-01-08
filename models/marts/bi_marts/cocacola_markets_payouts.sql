@@ -35,8 +35,8 @@ WITH platform_payments AS
   reference,
   narration,
   'Platform' as datasource
-FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_payouts` p
-left join bi-staging-1-309112.wowzi_dbt_prod.country_key c
+FROM {{ ref('influencer_payouts') }} p
+left join {{ source('staging', 'country_key') }} c
 on (lower(p.country) = lower(c.Key))
   where lower(REGEXP_REPLACE(company_name, r'[^a-zA-Z0-9]', '')) like '%cocacola%'),
 /*
@@ -72,7 +72,7 @@ periphery_payments AS
     null reference,
     null narration,
     'Periphery Sheet' as datasource
-FROM `bi-staging-1-309112.wowzi_dbt_prod.periphery_markets_data_clean`),
+FROM {{ ref('periphery_markets_data_clean') }} ),
 
 all_payments as
 (select 
