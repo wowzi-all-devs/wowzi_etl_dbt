@@ -20,6 +20,8 @@ SELECT
   second_verification_feedback_time,
   third_verification_feedback_time,
   payment_amount_list,
+  fast_payments_enabled,
+  amount_without_fast_payment_fee,
   top_post,
   inft.creation_time AS task_creation_time,
   country
