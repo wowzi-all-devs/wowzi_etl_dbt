@@ -1,0 +1,9 @@
+
+version: 2
+
+models:
+  - name: gsheets_stg__tech_feature_deployments_data
+    description: "a list of tech feature release dates"
+    columns:
+      - name: feature_name
+        description: "The primary key for this table"

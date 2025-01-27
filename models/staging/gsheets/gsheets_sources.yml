@@ -9,3 +9,5 @@ sources:
         - name: one_on_one_tracker
         - name: periphery_markets_data
         - name: mom_client_revenue
+        - name: gsheets_company_metrics_targets
+        - name: gsheets_tech_deployments
