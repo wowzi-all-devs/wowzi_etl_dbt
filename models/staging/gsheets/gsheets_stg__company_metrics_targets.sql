@@ -86,7 +86,7 @@ SELECT
     CASE
         -- Convert percentages (e.g., "10%" -> 0.1)
         WHEN REGEXP_CONTAINS(clean_Q1_25, r'^\d+(\.\d+)?%$') THEN 
-        CAST(REPLACE(clean_Q1_25, '%', '') AS STRING) / 100
+        CAST(CAST(REPLACE(clean_Q1_25, '%', '') AS NUMERIC) / 100 AS STRING)
         
         -- Remove "$" and commas from currency values and convert to number
         WHEN REGEXP_CONTAINS(clean_Q1_25, r'^\s*\$\s*[0-9,]+$') THEN 
