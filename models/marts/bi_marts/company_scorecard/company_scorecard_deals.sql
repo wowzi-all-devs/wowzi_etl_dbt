@@ -22,7 +22,7 @@ SELECT
   'Commercial' function,
   NULL dept_name,
   NULL metric_name,
-  NULL segment,
+  brand_payment_segment segment,
   CASE
     WHEN hs_is_closed IS FALSE THEN DATE(createdAt)
     WHEN hs_is_closed IS TRUE AND hs_is_closed_won IS TRUE THEN DATE(hs_closed_won_date)

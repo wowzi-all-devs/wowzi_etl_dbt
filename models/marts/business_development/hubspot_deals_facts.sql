@@ -4,6 +4,7 @@ WITH deals AS
   d.dealname,
   d.companies,
   d.deal___select_brand_name,
+  d.properties_payment_net brand_payment_segment,
   d.dealtype,
   d.hs_priority,
   d.dealstage,

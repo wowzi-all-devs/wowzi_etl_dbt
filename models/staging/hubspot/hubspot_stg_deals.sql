@@ -14,6 +14,7 @@ renamed as (
         createdat,
         updatedat,
         line_items,
+        JSON_EXTRACT_SCALAR(properties, "$.payment_net") AS properties_payment_net,
         properties_amount,
         properties_hs_acv,
         properties_hs_arr,
