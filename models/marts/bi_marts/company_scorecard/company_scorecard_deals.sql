@@ -42,6 +42,7 @@ SELECT
   END data_class,
   NULL target_metric
 FROM `bi-staging-1-309112.wowzi_dbt_prod.hubspot_deals_facts`
+WHERE pipeline = '202561015'
 UNION ALL 
 SELECT  
   NULL id,
