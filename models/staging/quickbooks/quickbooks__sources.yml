@@ -9,4 +9,5 @@ sources:
         - name: invoices
         - name: bill_payments
         - name: payments
+        - name: bills
         
