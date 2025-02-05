@@ -43,6 +43,7 @@ SELECT
   NULL target_metric
 FROM `bi-staging-1-309112.wowzi_dbt_prod.hubspot_deals_facts`
 WHERE pipeline = '202561015'
+AND id NOT IN ('10007253435','12916878270','30231459055')
 UNION ALL 
 SELECT  
   NULL id,
