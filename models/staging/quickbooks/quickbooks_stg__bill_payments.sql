@@ -1,4 +1,35 @@
 SELECT 
+  DocNumber,
+  --VendorRef,
+  JSON_VALUE(VendorRef, '$.value') AS VendorRefValue,
+  JSON_VALUE(VendorRef, '$.name') AS VendorRefName,
+  --DepartmentRef,
+  JSON_VALUE(DepartmentRef, '$.value') AS DepartmentRefValue,
+  TxnDate,
+  PayType,
+  --CheckPayment,
+  JSON_VALUE(CheckPayment, '$.BankAccountRef.value') AS CheckPayment_BankAccountRefValue,
+  JSON_VALUE(CheckPayment, '$.BankAccountRef.name') AS CheckPayment_BankAccountRefName,
+  JSON_VALUE(CheckPayment, '$.PrintStatus') AS CheckPayment_PrintStatus,
+  --CurrencyRef,
+  JSON_VALUE(CurrencyRef, '$.value') AS CurrencyRefValue,
+  JSON_VALUE(CurrencyRef, '$.name') AS CurrencyRefName,
+  ExchangeRate,
+  TotalAmt,
+  --MetaData,
+  JSON_VALUE(MetaData, '$.CreateTime') AS CreateTime,
+  JSON_VALUE(MetaData, '$.LastUpdatedTime') AS LastUpdatedTime,
+  PrivateNote,
+  --Line,
+  JSON_VALUE(Line, '$[0].Amount') AS Line_Amount,
+  JSON_VALUE(Line, '$[0].LinkedTxn[0].TxnId') AS Line_TxnId,
+  JSON_VALUE(Line, '$[0].LinkedTxn[0].TxnType') AS Line_TxnType
+FROM {{ source('staging', 'bill_payments') }} 
+
+
+
+/**
+SELECT 
   id,
   Line as Line_data,
   JSON_EXTRACT_SCALAR(Line, '$[0].Amount') AS Line_Amount,
@@ -27,3 +58,4 @@ SELECT
   DepartmentRef,
   CreditCardPayment
 FROM {{ source('staging', 'bill_payments') }}  
+**/

@@ -4,7 +4,7 @@ sources:
     - name: staging
       #For bigquery:
 #      database: wowzi-data-dev-env
-      schema: wowzi_airbyte_quickbooks
+      schema: wowzi_quickbooks
       tables:
         - name: invoices
         - name: bill_payments

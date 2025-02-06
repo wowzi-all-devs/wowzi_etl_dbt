@@ -1,4 +1,51 @@
 SELECT 
+  Id,
+  --VendorRef,
+  JSON_VALUE(VendorRef, '$.value') AS VendorRefValue,
+  JSON_VALUE(VendorRef, '$.name') AS VendorRefName,
+  --DepartmentRef,
+  JSON_VALUE(DepartmentRef, '$.value') AS DepartmentRefValue,
+  JSON_VALUE(DepartmentRef, '$.name') AS DepartmentRefName,
+  --APAccountRef,
+  JSON_VALUE(APAccountRef, '$.value') AS APAccountRefValue,
+  JSON_VALUE(APAccountRef, '$.name') AS APAccountRefName,
+  TxnDate,
+  DueDate,
+  --CurrencyRef,
+  JSON_VALUE(CurrencyRef, '$.value') AS CurrencyRefValue,
+  JSON_VALUE(CurrencyRef, '$.name') AS CurrencyRefName,
+  ExchangeRate,
+  TotalAmt,
+  Balance,
+  --MetaData,
+  JSON_VALUE(MetaData, '$.CreateTime') AS CreateTime,
+  JSON_VALUE(MetaData, '$.LastUpdatedTime') AS LastUpdatedTime,
+  GlobalTaxCalculation,
+  --LinkedTxn,
+  JSON_VALUE(LinkedTxn, '$[0].TxnId') AS LinkedTxn_TxnId,
+  JSON_VALUE(LinkedTxn, '$[0].TxnType') AS LinkedTxn_TxnType,
+  PrivateNote,
+  TxnTaxDetail,
+  Line,
+  -- Extract top-level fields
+  JSON_VALUE(Line, '$[0].Id') AS Line_Id,
+  JSON_VALUE(Line, '$[0].LineNum') AS Line_LineNum,
+  JSON_VALUE(Line, '$[0].Description') AS Line_Description,
+  JSON_VALUE(Line, '$[0].Amount') AS Line_Amount,
+  JSON_VALUE(Line, '$[0].DetailType') AS Line_DetailType,
+
+  -- Extract AccountBasedExpenseLineDetail fields
+  JSON_VALUE(Line, '$[0].AccountBasedExpenseLineDetail.AccountRef.value') AS Line_AccountRefValue,
+  JSON_VALUE(Line, '$[0].AccountBasedExpenseLineDetail.AccountRef.name') AS Line_AccountRefName,
+  JSON_VALUE(Line, '$[0].AccountBasedExpenseLineDetail.BillableStatus') AS Line_BillableStatus,
+  JSON_VALUE(Line, '$[0].AccountBasedExpenseLineDetail.TaxCodeRef.value') AS Line_TaxCodeRefValue
+FROM {{ source('staging', 'bills') }}
+
+
+
+
+/**
+SELECT 
   --CurrencyRef,
   JSON_EXTRACT_SCALAR(CurrencyRef, '$.name') AS currency_name,
   JSON_EXTRACT_SCALAR(CurrencyRef, '$.value') AS currency,
@@ -42,3 +89,4 @@ SELECT
   LinkedTxn
 FROM {{ source('staging', 'bills') }}
 --UNNEST(Line) AS item
+**/

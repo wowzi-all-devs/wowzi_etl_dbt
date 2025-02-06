@@ -1,4 +1,46 @@
 SELECT 
+  Id,
+  --CustomerRef,
+  JSON_VALUE(CustomerRef, '$.value') AS CustomerRefValue,
+  JSON_VALUE(CustomerRef, '$.name') AS CustomerRefName,
+  --DepositToAccountRef,
+  JSON_VALUE(DepositToAccountRef, '$.value') AS DepositToAccountRefValue,
+  TxnDate,
+  --CurrencyRef,
+  JSON_VALUE(CurrencyRef, '$.value') AS CurrencyRefValue,
+  JSON_VALUE(CurrencyRef, '$.name') AS CurrencyRefName,
+  ExchangeRate,
+  TotalAmt,
+  UnappliedAmt,
+  ProcessPayment,
+  PaymentMethodRef,
+  PaymentRefNum,
+  PrivateNote,
+  --MetaData,
+  JSON_VALUE(MetaData, '$.CreateTime') AS CreateTime,
+  JSON_VALUE(MetaData, '$.LastUpdatedTime') AS LastUpdatedTime,
+  Line,
+  -- Extract top-level fields
+  JSON_VALUE(Line, '$[0].Amount') AS Line_Amount,
+
+  -- Extract Linked Transaction details
+  JSON_VALUE(Line, '$[0].LinkedTxn[0].TxnId') AS Line_TxnId,
+  JSON_VALUE(Line, '$[0].LinkedTxn[0].TxnType') AS Line_TxnType,
+
+  -- Extract values from LineEx.any array
+  JSON_VALUE(Line, '$[0].LineEx.any[0].value.Name') AS Line_TxnId_Name,
+  JSON_VALUE(Line, '$[0].LineEx.any[0].value.Value') AS Line_TxnId_Value
+FROM {{ source('staging', 'payments') }}
+
+
+
+
+
+
+
+
+/**
+SELECT 
   id,
   Line,
   JSON_EXTRACT_SCALAR(Line, '$[0].Amount') AS line_amount,
@@ -27,3 +69,4 @@ SELECT
   PaymentMethodRef,
   DepositToAccountRef
 FROM {{ source('staging', 'payments') }}
+**/
