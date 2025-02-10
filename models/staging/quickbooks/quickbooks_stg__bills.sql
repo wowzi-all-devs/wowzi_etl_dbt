@@ -1,4 +1,5 @@
 SELECT 
+  DISTINCT
   Id,
   --VendorRef,
   JSON_VALUE(VendorRef, '$.value') AS VendorRefValue,

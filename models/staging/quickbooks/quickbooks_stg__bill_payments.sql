@@ -1,4 +1,5 @@
 SELECT 
+  DISTINCT
   DocNumber,
   --VendorRef,
   JSON_VALUE(VendorRef, '$.value') AS VendorRefValue,

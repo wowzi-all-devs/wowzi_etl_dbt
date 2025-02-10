@@ -1,4 +1,5 @@
 SELECT 
+  DISTINCT
   Id,
   --CustomerRef,
   JSON_VALUE(CustomerRef, '$.value') AS CustomerRefValue,

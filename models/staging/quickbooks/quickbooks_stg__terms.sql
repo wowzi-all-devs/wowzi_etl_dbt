@@ -1,4 +1,5 @@
 SELECT 
+  DISTINCT
   Id,
   Name,
   type,
