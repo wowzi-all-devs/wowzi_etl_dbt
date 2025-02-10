@@ -110,3 +110,36 @@ SELECT
   'targets' data_class,
   'pipeline' target_metric
 FROM `bi-staging-1-309112.wowzi_dbt_prod.pipeline_value_scorecard_targets`
+UNION ALL 
+SELECT 
+  NULL id,
+  NULL dealname,
+  NULL deal___select_brand_name,
+  NULL dealtype,
+  NULL dealstage,
+  NULL pipeline,
+  NULL deal_currency_code,
+  NULL hs_forecast_amount, 
+  NULL hs_closed_amount,
+  NULL deal___country,
+  NULL days_to_close,
+  NULL hs_is_closed,
+  NULL closedate,
+  NULL hs_is_closed_won,
+  NULL hs_closed_won_date,
+  NULL createdAt,
+  NULL hs_created_by_user_id,
+  NULL archived,
+  NULL hubspot_owner_id,
+  NULL hubspot_owner_assigneddate,
+  function,
+  dept_name,
+  metric_name,
+  segment,
+  Date,
+  target_type,
+  currency,
+  Target,
+  'targets' data_class,
+  'gross_revenue' target_metric
+FROM `bi-staging-1-309112.wowzi_dbt_prod.gross_revenue_scorecard_targets` 
