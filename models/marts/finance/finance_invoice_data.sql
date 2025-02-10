@@ -1,3 +1,71 @@
+WITH invoices AS 
+(
+SELECT 
+  DISTINCT
+  i.Id,
+  i.DocNumber,
+  i.CustomerRefValue,
+  i.CustomerRefName,
+  i.BillAddr,
+  i.ShipAddr,
+  i.BillEmail,
+  i.SalesTermRef,
+  t.Name SalesTermRefName,
+  i.TxnDate,
+  i.DueDate,
+  i.CreateTime,
+  i.LastUpdatedTime,
+  i.CurrencyRefValue,
+  i.CurrencyRefName,
+  i.ExchangeRate,
+  i.TotalAmt,
+  i.HomeTotalAmt,
+  i.Balance,
+  i.LinkedTxn,
+  i.Line_Id,
+  i.Line_LineNum,
+  i.Line_Description,
+  i.Line_Amount,
+  i.Line_DetailType,
+  i.Line_ServiceDate,
+  i.Line_ItemRefValue,
+  i.Line_ItemRefName,
+  i.Line_UnitPrice,
+  i.Line_Qty,
+  i.Line_TaxCodeRefValue,
+  i.Line_SubTotalAmount,
+  i.Line_SubTotalDetailType,
+  i.TxnTaxDetail,
+  i.GlobalTaxCalculation,
+  i.CustomerMemo,
+  i.EInvoiceStatus,
+  i.DeliveryInfo,
+  i.DepartmentRef
+FROM {{ ref('quickbooks_stg__invoices') }} i
+LEFT JOIN {{ ref('quickbooks_stg__terms') }} t on i.SalesTermRef = t.Id
+),
+
+payments AS
+(
+SELECT 
+  DISTINCT
+  p.Id payment_id,
+  p.CustomerRefName payment_customer_name,
+  p.TxnDate payment_txndate,
+  p.CurrencyRefValue payment_currency_value,
+  p.CurrencyRefName payment_currency_name,
+  p.ExchangeRate payment_exchangerate,
+  p.TotalAmt payment_totalamt,
+  p.CreateTime payment_createtime,
+  p.LastUpdatedTime payment_lastupdatedtime,
+  p.Line_Amount payment_lineamt,
+  p.Line_TxnId payment_linked_txnid,
+  p.Line_TxnType linked_txntype,
+  row_number() over(partition by p.Line_TxnId order by p.TxnDate) row_num
+FROM {{ ref('quickbooks_stg__payments') }} p 
+  WHERE p.Line_TxnType = 'Invoice'
+)
+
 SELECT 
   i.Id,
   i.DocNumber,
@@ -7,6 +75,7 @@ SELECT
   i.ShipAddr,
   i.BillEmail,
   i.SalesTermRef,
+  i.SalesTermRefName,
   i.TxnDate,
   i.DueDate,
   i.CreateTime,
@@ -37,23 +106,22 @@ SELECT
   i.EInvoiceStatus,
   i.DeliveryInfo,
   i.DepartmentRef,
-  p.Id payment_id,
-  p.CustomerRefName payment_customer_name,
-  p.TxnDate payment_txndate,
-  p.CurrencyRefValue payment_currency_value,
-  p.CurrencyRefName payment_currency_name,
-  p.ExchangeRate payment_exchangerate,
-  p.TotalAmt payment_totalamt,
-  p.CreateTime payment_createtime,
-  p.LastUpdatedTime payment_lastupdatedtime,
-  p.Line_Amount payment_lineamt,
-  p.Line_TxnId payment_linked_txnid,
-  p.Line_TxnType linked_txntype
-FROM {{ ref('quickbooks_stg__invoices') }} i 
-LEFT JOIN {{ ref('quickbooks_stg__payments') }} p 
-ON CAST(i.id AS STRING) = CAST(p.Line_TxnId AS STRING)
-  --WHERE i.Id = 196
-
+  p.payment_id,
+  p.payment_customer_name,
+  p.payment_txndate,
+  p.payment_currency_value,
+  p.payment_currency_name,
+  p.payment_exchangerate,
+  p.payment_totalamt,
+  p.payment_createtime,
+  p.payment_lastupdatedtime,
+  p.payment_lineamt,
+  p.payment_linked_txnid,
+  p.linked_txntype
+FROM invoices i 
+LEFT JOIN payments p 
+ON CAST(i.id AS STRING) = CAST(p.payment_linked_txnid AS STRING)
+AND p.row_num = 1
 
 
 /**
