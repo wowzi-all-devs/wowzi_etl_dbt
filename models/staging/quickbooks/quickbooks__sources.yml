@@ -10,4 +10,5 @@ sources:
         - name: bill_payments
         - name: payments
         - name: bills
+        - name: terms
         
