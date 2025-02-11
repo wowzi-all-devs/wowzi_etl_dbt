@@ -28,6 +28,42 @@ SELECT
     WHEN hs_is_closed IS TRUE AND hs_is_closed_won IS TRUE THEN DATE(hs_closed_won_date)
     WHEN hs_is_closed IS TRUE AND hs_is_closed_won IS FALSE THEN DATE(closedate)
   END Date,
+  CASE 
+    WHEN hs_is_closed IS TRUE AND hs_is_closed_won IS TRUE 
+    AND DATE(hs_closed_won_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+    THEN TRUE 
+    ELSE FALSE 
+  END deal_closed_won_last_24_hours,
+  CASE 
+    WHEN hs_is_closed IS TRUE AND hs_is_closed_won IS TRUE 
+    AND DATE(hs_closed_won_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+    THEN TRUE 
+    ELSE FALSE 
+  END deal_closed_won_last_7_days,
+  CASE 
+    WHEN hs_is_closed IS TRUE AND hs_is_closed_won IS TRUE 
+    AND DATE(hs_closed_won_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)
+    THEN TRUE 
+    ELSE FALSE 
+  END deal_closed_won_last_1_month,
+  CASE 
+    WHEN hs_is_closed IS FALSE
+    AND DATE(createdAt) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+    THEN TRUE 
+    ELSE FALSE 
+  END pipeline_last_24_hours,
+  CASE 
+    WHEN hs_is_closed IS FALSE 
+    AND DATE(createdAt) >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+    THEN TRUE 
+    ELSE FALSE 
+  END pipeline_last_7_days,
+  CASE 
+    WHEN hs_is_closed IS FALSE
+    AND DATE(createdAt) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)
+    THEN TRUE 
+    ELSE FALSE 
+  END pipeline_last_1_month,
   NULL target_type,
   NULL currency,
   CASE
@@ -71,6 +107,12 @@ SELECT
   metric_name,
   segment,
   Date,
+  NULL deal_closed_won_last_24_hours,
+  NULL deal_closed_won_last_7_days,
+  NULL deal_closed_won_last_1_month,
+  NULL pipeline_last_24_hours,
+  NULL pipeline_last_7_days,
+  NULL pipeline_last_1_month,
   target_type,
   currency,
   target,
@@ -104,6 +146,12 @@ SELECT
   metric_name,
   segment,
   Date,
+  NULL deal_closed_won_last_24_hours,
+  NULL deal_closed_won_last_7_days,
+  NULL deal_closed_won_last_1_month,
+  NULL pipeline_last_24_hours,
+  NULL pipeline_last_7_days,
+  NULL pipeline_last_1_month,
   target_type,
   currency,
   target,
@@ -137,6 +185,12 @@ SELECT
   metric_name,
   segment,
   Date,
+  NULL deal_closed_won_last_24_hours,
+  NULL deal_closed_won_last_7_days,
+  NULL deal_closed_won_last_1_month,
+  NULL pipeline_last_24_hours,
+  NULL pipeline_last_7_days,
+  NULL pipeline_last_1_month,
   target_type,
   currency,
   Target,
