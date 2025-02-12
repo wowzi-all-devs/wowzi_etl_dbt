@@ -8,7 +8,8 @@ SELECT
   CAST(ExchangeRate AS NUMERIC) ExchangeRate,
   CAST(TotalAmt AS NUMERIC) TotalAmt,
   CAST(Balance AS NUMERIC) Balance,
-  case when payment_id is null then 'Not Paid'
+  CASE 
+    WHEN Balance > 0 THEN 'Not Paid'
   else 'Paid' end payment_status,
   CAST(payment_id AS STRING) payment_id,
   CAST(payment_txndate AS DATE) payment_txndate,
@@ -20,9 +21,9 @@ SELECT
   CAST(SalesTermRefName AS STRING) segment,
   CAST(payment_txndate AS DATE) Date,
   CAST(NULL AS STRING) target_type,
-  DATE_DIFF(DATE(payment_txndate), DATE(TxnDate), DAY) AS target
+  DATE_DIFF(DATE(payment_txndate), DATE(DueDate), DAY) AS target
 FROM `bi-staging-1-309112.wowzi_dbt_prod.finance_invoice_data` 
-where Balance = 0
+--where Balance = 0
 UNION ALL
 SELECT 
   Distinct
