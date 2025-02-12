@@ -1,3 +1,62 @@
+WITH bills AS
+(
+SELECT 
+  DISTINCT
+  b.Id,
+  b.VendorRefValue,
+  b.VendorRefName,
+  b.DepartmentRefValue,
+  b.DepartmentRefName,
+  b.APAccountRefValue,
+  b.APAccountRefName,
+  b.TxnDate,
+  b.DueDate,
+  b.CurrencyRefValue,
+  b.CurrencyRefName,
+  b.ExchangeRate,
+  b.TotalAmt,
+  b.Balance,
+  b.CreateTime,
+  b.LastUpdatedTime,
+  b.GlobalTaxCalculation,
+  b.LinkedTxn_TxnId,
+  b.LinkedTxn_TxnType,
+  b.PrivateNote,
+  b.TxnTaxDetail,
+  b.Line_Id,
+  b.Line_LineNum,
+  b.Line_Description,
+  b.Line_Amount,
+  b.Line_DetailType,
+  b.Line_AccountRefValue,
+  b.Line_AccountRefName,
+  b.Line_BillableStatus,
+  b.Line_TaxCodeRefValue
+FROM `bi-staging-1-309112.wowzi_dbt_prod.quickbooks_stg__bills` b 
+),
+
+payments AS 
+(
+SELECT 
+  DISTINCT
+  bp.DocNumber billpayment_docnumber,
+  bp.VendorRefName billpayment_vendorname,
+  bp.TxnDate billpayment_txn_date,
+  bp.PayType billpayment_paytype,
+  bp.CheckPayment_BankAccountRefName billpayment_bankaccountname,
+  bp.CurrencyRefValue billpayment_currencyvalue,
+  bp.CurrencyRefName billpayment_currencyname,
+  bp.ExchangeRate billpayment_exchangerate,
+  bp.TotalAmt billpayment_totalamt,
+  bp.Line_Amount billpayment_lineamt,
+  bp.CreateTime billpayment_createtime,
+  bp.LastUpdatedTime billpayment_lastupdatetime,
+  bp.Line_TxnId billpayment_linkedtxnid,
+  bp.Line_TxnType billpayment_linkedtxntype,
+  row_number() over(partition by bp.Line_TxnId order by bp.TxnDate DESC) row_num
+FROM `bi-staging-1-309112.wowzi_dbt_prod.quickbooks_stg__bill_payments` bp 
+)
+
 SELECT 
   b.Id,
   b.VendorRefValue,
@@ -29,25 +88,24 @@ SELECT
   b.Line_AccountRefName,
   b.Line_BillableStatus,
   b.Line_TaxCodeRefValue,
-  bp.DocNumber billpayment_docnumber,
-  bp.VendorRefName billpayment_vendorname,
-  bp.TxnDate billpayment_txn_date,
-  bp.PayType billpayment_paytype,
-  bp.CheckPayment_BankAccountRefName billpayment_bankaccountname,
-  bp.CurrencyRefValue billpayment_currencyvalue,
-  bp.CurrencyRefName billpayment_currencyname,
-  bp.ExchangeRate billpayment_exchangerate,
-  bp.TotalAmt billpayment_totalamt,
-  bp.Line_Amount billpayment_lineamt,
-  bp.CreateTime billpayment_createtime,
-  bp.LastUpdatedTime billpayment_lastupdatetime,
-  bp.Line_TxnId billpayment_linkedtxnid,
-  bp.Line_TxnType billpayment_linkedtxntype
-FROM `bi-staging-1-309112.wowzi_dbt_prod.quickbooks_stg__bills` b 
-LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.quickbooks_stg__bill_payments` bp 
-ON CAST(b.Id AS STRING) = CAST(bp.Line_TxnId AS STRING)
---WHERE b.Id = 4080
-
+  bp.billpayment_docnumber,
+  bp.billpayment_vendorname,
+  bp.billpayment_txn_date,
+  bp.billpayment_paytype,
+  bp.billpayment_bankaccountname,
+  bp.billpayment_currencyvalue,
+  bp.billpayment_currencyname,
+  bp.billpayment_exchangerate,
+  bp.billpayment_totalamt,
+  bp.billpayment_lineamt,
+  bp.billpayment_createtime,
+  bp.billpayment_lastupdatetime,
+  bp.billpayment_linkedtxnid,
+  bp.billpayment_linkedtxntype
+FROM bills b
+LEFT JOIN payments bp
+ON CAST(b.Id AS STRING) = CAST(bp.billpayment_linkedtxnid AS STRING)
+AND bp.row_num = 1
 
 
 /**

@@ -61,7 +61,7 @@ SELECT
   p.Line_Amount payment_lineamt,
   p.Line_TxnId payment_linked_txnid,
   p.Line_TxnType linked_txntype,
-  row_number() over(partition by p.Line_TxnId order by p.TxnDate) row_num
+  row_number() over(partition by p.Line_TxnId order by p.TxnDate DESC) row_num
 FROM {{ ref('quickbooks_stg__payments') }} p 
   WHERE p.Line_TxnType = 'Invoice'
 )
