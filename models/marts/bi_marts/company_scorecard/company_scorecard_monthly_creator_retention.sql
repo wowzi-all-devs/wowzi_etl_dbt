@@ -10,6 +10,7 @@ SELECT
   active_inf,
   retention_rate
 FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_job_retention_rates` 
+  where month_number <> 0
 ),
 
 three_month_retention AS (
@@ -18,7 +19,7 @@ SELECT
     AVG(c2.retention_rate) AS avg_3_month_retention_rate
 FROM cohort_data c1
 LEFT JOIN cohort_data c2 ON
-c2.cohort_month BETWEEN DATE_SUB(c1.active_month, INTERVAL 3 MONTH) AND c1.active_month
+c2.cohort_month BETWEEN DATE_SUB(c1.active_month, INTERVAL 4 MONTH) AND c1.active_month
     GROUP BY c1.active_month
 )
 
