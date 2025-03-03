@@ -14,7 +14,6 @@ SELECT
     payment_amount_brutto_for_merchant,
     payment_amount_netto,
     fast_payments_enabled,
-    amount_without_fast_payment_fee,
     first_verification_feedback,
     second_verification_feedback,
     third_verification_feedback,
