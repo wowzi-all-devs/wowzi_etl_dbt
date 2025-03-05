@@ -9,7 +9,10 @@ SELECT
   'Deployment frequency' metric_name,
   NULL feature_type_target,
   NULL target_type,
-  NULL target,
+  CASE 
+    WHEN actual_release_date is not null then 1
+    ELSE null 
+  END target,
   'actuals' data_class
 FROM {{ ref('gsheets_stg__tech_feature_deployments_data') }}
 UNION ALL 
