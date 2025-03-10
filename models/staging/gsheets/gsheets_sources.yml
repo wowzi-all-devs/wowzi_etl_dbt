@@ -12,3 +12,4 @@ sources:
         - name: gsheets_company_metrics_targets
         - name: gsheets_tech_deployments
         - name: gsheets_social_media_linking_outreach
+        - name: gsheets_sales_accruals

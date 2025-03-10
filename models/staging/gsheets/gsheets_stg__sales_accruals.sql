@@ -1,0 +1,27 @@
+SELECT 
+  Date invoice_date,
+  Transaction_type transaction_type,
+  Number invoice_no,
+  Name billing_client_name,
+  Description invoice_desc,
+  Account account_name,
+  Amount invoice_amt,
+  Exch_Rate exch_rate,
+  USD_Value invoice_amt_usd,
+  EOMonth invoice_month,
+  Influencer_Payable_Amount creator_payable_amt,
+  Gross_Profit gross_profit,
+  Gross_Profit/Exch_Rate gross_profit_usd,
+  GP_Margin gp_margin,
+  Campaigns_Calc campaigns_calc,
+  Client client,
+  Brand brand,
+  Market_Segment_ market_segment,
+  Region region,
+  Country country,
+  Agency_Direct_ agency_direct,
+  Agency_Name agency_name,
+  Actual_Influencer_Payable actual_influencer_payable,
+  Type event_type
+FROM  {{ source('staging', 'gsheets_sales_accruals') }} 
+  WHERE Transaction_type IS NOT NULL
