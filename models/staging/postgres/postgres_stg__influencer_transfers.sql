@@ -8,6 +8,7 @@ SELECT
     fullname,
     date(creation_time) as date_created,
     currency,
+    exchange_rate,
     amount,
     fee,
     status,
@@ -18,6 +19,7 @@ SELECT
     requires_approval,
     is_approved,
     bank_name,
+    payment_method,
     creation_time,
     payment_eligible_at,
     updated_at
