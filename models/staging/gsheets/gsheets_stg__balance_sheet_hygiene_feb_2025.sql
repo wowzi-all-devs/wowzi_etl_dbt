@@ -1,7 +1,7 @@
 WITH numbered_rows AS
 (
 SELECT 
-    '2025-01-01' Date,
+    '2025-02-01' Date,
     Account,
     Comments,
     row_number() over() row_num
