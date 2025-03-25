@@ -1,9 +1,10 @@
 WITH numbered_rows AS
 (
 SELECT 
-  Account,
-  Comments,
-  row_number() over() row_num
+    '2025-01-01' Date,
+    Account,
+    Comments,
+    row_number() over() row_num
 FROM {{ source('staging', 'gsheets_balance_sheet_hygiene_jan_2025') }}
 ),
 
@@ -16,6 +17,7 @@ FROM numbered_rows
 )
 
 SELECT 
+    n.Date,
     n.Account,
     n.Comments
 FROM numbered_rows n
