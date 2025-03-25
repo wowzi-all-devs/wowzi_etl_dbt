@@ -7,3 +7,21 @@ models:
     columns:
       - name: feature_name
         description: "The primary key for this table"
+
+  - name: gsheets_stg__balance_sheet_hygiene_jan_2025
+    description: "A list of monthly account balance sheet hygiene status"
+    columns:
+      - name: Account
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
+  - name: gsheets_stg__balance_sheet_hygiene_feb_2025
+    description: "A list of monthly account balance sheet hygiene status"
+    columns:
+      - name: Account
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null

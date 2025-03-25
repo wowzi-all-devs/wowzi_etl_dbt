@@ -14,3 +14,5 @@ sources:
         - name: gsheets_social_media_linking_outreach
         - name: gsheets_sales_accruals
         - name: gsheets_finance_reporting_dates
+        - name: gsheets_balance_sheet_hygiene_jan_2025
+        - name: gsheets_balance_sheet_hygiene_feb_2025
