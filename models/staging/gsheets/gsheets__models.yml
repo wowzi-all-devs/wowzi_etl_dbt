@@ -25,3 +25,11 @@ models:
         tests:
           - unique
           - not_null
+          
+  - name: gsheets__stg__creator_nps_march
+    description: "NPS ratings for all creators"
+    columns:
+      - name: date
+        description: "Date field for the nps score"
+        tests:
+          - not_null

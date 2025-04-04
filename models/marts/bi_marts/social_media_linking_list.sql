@@ -1,4 +1,4 @@
-WITH inf AS
+git brancWITH inf AS
 (
 SELECT 
   influencer_id,
