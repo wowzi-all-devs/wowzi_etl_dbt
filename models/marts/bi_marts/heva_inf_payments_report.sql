@@ -22,6 +22,7 @@ inf as
 (
  select 
  inf.influencer_id,
+ inf.company_id,
  initcap(inf.company_name) company_name,
  inf.campaign_id,
  inf.job_id,
@@ -38,10 +39,15 @@ inf as
  initcap(inf.invitation_status) invitation_status,
  case when loc.location is null then 'Not Provided' else
  initcap(loc.location) end as location,
- inf.amount_lcy job_value
- 
- FROM bi-staging-1-309112.wowzi_dbt_prod.influencer_job_breakdown inf
- LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.influencer_facts loc on inf.influencer_id = loc.influencer_id 
+ inf.amount_lcy job_value,
+ case when company_id IN (1191, 5957, 6121, 17398, 19907, 19773, 20248)
+--   ('Safaricom', 'Mediacom', 'Uk-Kenya Tech Hub', 
+--  'Equity Bank', 'Predator', 'Infinix', 'Kenya Tourism Board') 
+ then 0 else 1 end as order_flg 
+--  FROM bi-staging-1-309112.wowzi_dbt_prod.influencer_job_breakdown inf
+--  LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.influencer_facts loc on inf.influencer_id = loc.influencer_id 
+ FROM {{ ref('influencer_job_breakdown') }} inf
+ LEFT JOIN {{ ref('influencer_facts') }} loc on inf.influencer_id = loc.influencer_id 
 )
  select 
  fp.id payment_id,
@@ -86,6 +92,8 @@ fp.payable_days_flag,
   and lower(fp.status) = 'waiting_for_payment' 
   then 'old_unpaid' else 'Paid_or_upcoming'
   end as 
-clean_payment_flag
+clean_payment_flag,
+order_flg
  FROM fp 
  LEFT JOIN inf on fp.task_id = inf.task_id
+ order by order_flg
