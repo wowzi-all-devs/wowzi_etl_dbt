@@ -7,6 +7,7 @@ select
     Replenished_Amount_ replenished_amount,
     extract(year from Paid_Out_Date_ ) mon,
     extract(year from Paid_Out_Date_ ) yr,
+    concat(FORMAT_DATETIME("%b", DATETIME(date(Paid_Out_Date_))),"-", extract(year from date(Paid_Out_Date_))) mon_yr,
     dense_rank () over (order by extract(year from Paid_Out_Date_ ) asc, extract(month from Paid_Out_Date_ )asc) mon_yr_rnk,
     Balance_ balance
  FROM 
