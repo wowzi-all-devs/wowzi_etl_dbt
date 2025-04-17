@@ -6,6 +6,7 @@ SELECT
     account_number,
     bank_code,
     fullname,
+    provider,
     date(creation_time) as date_created,
     currency,
     exchange_rate,
