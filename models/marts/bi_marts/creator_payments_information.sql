@@ -12,7 +12,8 @@ fp as
       ELSE 'Beyond 7 Days' 
     END AS payable_days_flag,
     
-  from {{ ref('postgres_stg__influencer_transfers') }} 
+  -- from  bi-staging-1-309112.wowzi_airbyte.influencer_transfers
+  From {{ ref('postgres_stg__influencer_transfers') }} 
 where 
   -- payment_eligible_at >= '2024-12-27'
   -- and payment_eligible_at <= '2025-02-13'
@@ -43,6 +44,9 @@ inf as
  initcap(loc.location) end as location,
  inf.amount_lcy job_value
  
+--   FROM bi-staging-1-309112.wowzi_dbt_prod.influencer_job_breakdown inf
+--  LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.influencer_facts loc on inf.influencer_id = loc.influencer_id 
+ 
  FROM {{ ref('influencer_job_breakdown') }} inf
  LEFT JOIN {{ ref('influencer_facts') }} loc on inf.influencer_id = loc.influencer_id 
 )
@@ -71,6 +75,12 @@ inf as
  fp.amount paid_amount,
  (fp.amount * fp.exchange_rate) paid_amount_usd,
  lower(fp.status) payment_status,
+ case 
+    when lower(fp.status) in ('completed', 'new', 'successful') then 'Successful'
+    when lower(fp.status) = 'manual' then 'Manual'
+    when lower(fp.status) = 'failed' then 'Failed'
+    when lower(fp.status) = 'waiting_for_payment' then 'Awaiting payment'   
+  else fp.status end as fine_payment_status,
 --  CASE when 
 --  LOWER(fp.status) IN ('successful', 'manual', 'new') THEN 'Successful'
 --  else 'Failed' end as payment_status,
