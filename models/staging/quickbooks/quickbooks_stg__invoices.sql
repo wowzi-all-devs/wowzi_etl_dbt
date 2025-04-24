@@ -5,8 +5,12 @@ SELECT
   --CustomerRef,
   JSON_VALUE(CustomerRef, '$.value') AS CustomerRefValue,
   JSON_VALUE(CustomerRef, '$.name') AS CustomerRefName,
-  BillAddr,
-  ShipAddr,
+  CONCAT(
+    JSON_EXTRACT_SCALAR(BillAddr, '$.Line1'), ', ',
+    JSON_EXTRACT_SCALAR(BillAddr, '$.Line2'), ', ',
+    JSON_EXTRACT_SCALAR(BillAddr, '$.Line3')
+        ) BillAddr,
+  JSON_EXTRACT_SCALAR(ShipAddr, '$.Line1') ShipAddr,
   --BillEmail,
   JSON_VALUE(BillEmail, '$.Address') AS BillEmail,
   --SalesTermRef,
@@ -23,8 +27,12 @@ SELECT
   TotalAmt,
   HomeTotalAmt,
   Balance,
-  LinkedTxn,
-  Line,
+  --LinkedTxn,
+  
+  --- List of dict, Select the first dict and extract the values 
+  JSON_EXTRACT_SCALAR(LinkedTxn, '$[0].TxnId') AS linked_txn_txnId,
+  JSON_EXTRACT_SCALAR(LinkedTxn, '$[0].TxnType') AS linked_txntype,
+  -- Line,
   -- Extract from the first object in the array
   JSON_VALUE(Line, '$[0].Id') AS Line_Id,
   JSON_VALUE(Line, '$[0].LineNum') AS Line_LineNum,
@@ -43,12 +51,13 @@ SELECT
   -- Extract from the second object in the array (SubTotalLineDetail)
   JSON_VALUE(Line, '$[1].Amount') AS Line_SubTotalAmount,
   JSON_VALUE(Line, '$[1].DetailType') AS Line_SubTotalDetailType,
-  TxnTaxDetail,
-  GlobalTaxCalculation,
-  CustomerMemo,
-  EInvoiceStatus,
-  DeliveryInfo,
-  DepartmentRef
+  -- TxnTaxDetail,
+  -- GlobalTaxCalculation,
+  json_extract_scalar(CustomerMemo, '$.value') CustomerMemo,
+  -- EInvoiceStatus,
+  json_extract_scalar(DeliveryInfo, '$.DeliveryTime') DeliveryInfo_DeliveryTime,
+  json_extract_scalar(DeliveryInfo, '$.DeliveryType') DeliveryInfo_DeliveryType
+  -- DepartmentRef
 FROM {{ source('staging', 'invoices') }}
 
 

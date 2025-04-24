@@ -14,13 +14,13 @@ SELECT
   TotalAmt,
   UnappliedAmt,
   ProcessPayment,
-  PaymentMethodRef,
+  json_extract_scalar(PaymentMethodRef, '$.value') PaymentMethodRef,
   PaymentRefNum,
   PrivateNote,
   --MetaData,
   JSON_VALUE(MetaData, '$.CreateTime') AS CreateTime,
   JSON_VALUE(MetaData, '$.LastUpdatedTime') AS LastUpdatedTime,
-  Line,
+  -- Line,
   -- Extract top-level fields
   JSON_VALUE(Line, '$[0].Amount') AS Line_Amount,
 

@@ -21,7 +21,9 @@ SELECT
   i.TotalAmt,
   i.HomeTotalAmt,
   i.Balance,
-  i.LinkedTxn,
+  i.linked_txn_txnId,
+  i.linked_txntype,
+  -- i.LinkedTxn,
   i.Line_Id,
   i.Line_LineNum,
   i.Line_Description,
@@ -35,12 +37,14 @@ SELECT
   i.Line_TaxCodeRefValue,
   i.Line_SubTotalAmount,
   i.Line_SubTotalDetailType,
-  i.TxnTaxDetail,
-  i.GlobalTaxCalculation,
+  -- i.TxnTaxDetail,
+  -- i.GlobalTaxCalculation,
   i.CustomerMemo,
-  i.EInvoiceStatus,
-  i.DeliveryInfo,
-  i.DepartmentRef
+  -- i.EInvoiceStatus,
+  -- i.DeliveryInfo,
+  i.DeliveryInfo_DeliveryTime,
+  i.DeliveryInfo_DeliveryType,
+  -- i.DepartmentRef
 FROM {{ ref('quickbooks_stg__invoices') }} i
 LEFT JOIN {{ ref('quickbooks_stg__terms') }} t on i.SalesTermRef = t.Id
 ),
@@ -60,7 +64,7 @@ SELECT
   p.LastUpdatedTime payment_lastupdatedtime,
   p.Line_Amount payment_lineamt,
   p.Line_TxnId payment_linked_txnid,
-  p.Line_TxnType linked_txntype,
+  p.Line_TxnType,
   row_number() over(partition by p.Line_TxnId order by p.TxnDate ASC) row_num
 FROM {{ ref('quickbooks_stg__payments') }} p 
   WHERE p.Line_TxnType = 'Invoice'
@@ -86,7 +90,9 @@ SELECT
   i.TotalAmt,
   i.HomeTotalAmt,
   i.Balance,
-  i.LinkedTxn,
+  -- i.LinkedTxn,
+  i.linked_txn_txnId,
+  i.linked_txntype,
   i.Line_Id,
   i.Line_LineNum,
   i.Line_Description,
@@ -100,12 +106,12 @@ SELECT
   i.Line_TaxCodeRefValue,
   i.Line_SubTotalAmount,
   i.Line_SubTotalDetailType,
-  i.TxnTaxDetail,
-  i.GlobalTaxCalculation,
+  -- i.TxnTaxDetail,
+  -- i.GlobalTaxCalculation,
   i.CustomerMemo,
-  i.EInvoiceStatus,
-  i.DeliveryInfo,
-  i.DepartmentRef,
+  -- i.EInvoiceStatus,
+  -- i.DeliveryInfo,
+  -- i.DepartmentRef,
   p.payment_id,
   p.payment_customer_name,
   p.payment_txndate,
@@ -116,8 +122,7 @@ SELECT
   p.payment_createtime,
   p.payment_lastupdatedtime,
   p.payment_lineamt,
-  p.payment_linked_txnid,
-  p.linked_txntype
+  p.payment_linked_txnid
 FROM invoices i 
 LEFT JOIN payments p 
 ON CAST(i.id AS STRING) = CAST(p.payment_linked_txnid AS STRING)
