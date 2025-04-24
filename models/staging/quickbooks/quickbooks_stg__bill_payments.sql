@@ -20,7 +20,7 @@ SELECT
   --MetaData,
   JSON_VALUE(MetaData, '$.CreateTime') AS CreateTime,
   JSON_VALUE(MetaData, '$.LastUpdatedTime') AS LastUpdatedTime,
-  PrivateNote,
+  -- PrivateNote,
   --Line,
   JSON_VALUE(Line, '$[0].Amount') AS Line_Amount,
   JSON_VALUE(Line, '$[0].LinkedTxn[0].TxnId') AS Line_TxnId,
