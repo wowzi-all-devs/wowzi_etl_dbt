@@ -9,7 +9,7 @@ SELECT
   ExchangeRate,
   TotalAmt,
   Balance,
-  PrivateNote,
+  -- PrivateNote,
   billpayment_txn_date,
   case when billpayment_txn_date is null then 'Not Paid'
   else 'Paid' end payment_status,
@@ -35,7 +35,7 @@ SELECT
     NULL ExchangeRate,
     NULL TotalAmt,
     NULL Balance,
-    NULL PrivateNote,
+    -- NULL PrivateNote,
     NULL billpayment_txn_date,
     NULL  payment_status,
     Date,
