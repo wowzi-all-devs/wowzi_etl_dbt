@@ -3,9 +3,7 @@ with i_groups as
 select id,name
 from 
 {{ source('staging', 'influencer_groups') }} 
-where trim(name) in ('Ajira-Meru', 'Ajira-Mombasa', 'Ajira-Nairobi', 'Ajira Nakuru', 'Sanara-Kisumu',
-                'Sanara-Mombasa', 'Sanara-Nairobi', 'Sanara-Nakuru', 'Sanara-Kakamega',
-                'Sanara-Turkana')
+where id in (2742,2743,2764,2784,2779,2780, 2783,2782, 2781,2778,2741,2776)
 ),
 inf as
 (
