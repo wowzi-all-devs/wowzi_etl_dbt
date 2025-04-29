@@ -16,6 +16,18 @@ from {{ source('staging', 'influencer_group_influencers') }} inf
 right join i_groups ------Right join bc my right tbl is where all the groups are that i need matched to inf_id
 on inf.influencer_group_id = i_groups.id 
 ),
+jb as
+(
+select 
+influencer_id,
+sum(amount_lcy) job_value_lcy,
+sum(completed_tasks) completed_tasks
+from {{ref('influencer_job_breakdown')}}
+where job_status = 'Completed'
+and invitation_status = 'Accepted'
+and job_status <> 'Failed'
+group by influencer_id
+),
 inf_data as
 (
 select
@@ -29,10 +41,18 @@ inf_data.job_eligibility,
 inf_data.job_activity,
 inf_data.clean_country,
 initcap(inf_data.location) location,
-inf_data.completed_one_job
+inf_data.completed_one_job,
+inf_data.facebook_status,
+inf_data.instagram_status,
+inf_data.tiktok_status,
+inf_data.twitter_status,
+jb.completed_tasks,
+jb.job_value_lcy
 from inf 
 LEFT JOIN 
 {{ ref('influencer_reg_job_facts_cob') }} inf_data
 ON cast(inf.influencer_id as Int64) = cast(inf_data.influencer_id_a as Int64)
+LEFT JOIN jb
+ON inf.influencer_id = jb.influencer_id
 )
 SELECT * FROM inf_data
