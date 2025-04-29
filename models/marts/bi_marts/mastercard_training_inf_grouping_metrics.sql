@@ -11,7 +11,8 @@ select
 i_groups.id group_id, 
 i_groups.name group_name, 
 inf.influencer_id, 
-inf.influencer_group_id 
+inf.influencer_group_id,
+date(inf.creation_time) creation_time,
 from {{ source('staging', 'influencer_group_influencers') }} inf
 right join i_groups ------Right join bc my right tbl is where all the groups are that i need matched to inf_id
 on inf.influencer_group_id = i_groups.id 
@@ -33,18 +34,20 @@ select
 inf.group_id,
 inf.group_name,
 inf.influencer_id, 
+inf.creation_time,
 concat(inf_data.first_name,' ', inf_data.last_name) inf_name,
 inf_data.gender,
 inf_data.inf_age_range,
 inf_data.job_eligibility,
+initcap(inf_data.smileidentity_status) smileidentity_status,
 inf_data.job_activity,
 inf_data.clean_country,
 initcap(inf_data.location) location,
 inf_data.completed_one_job,
-inf_data.facebook_status,
-inf_data.instagram_status,
-inf_data.tiktok_status,
-inf_data.twitter_status,
+Initcap(inf_data.facebook_status) facebook_status,
+initcap(inf_data.instagram_status) instagram_status,
+initcap(inf_data.tiktok_status) tiktok_status,
+initcap(inf_data.twitter_status) twitter_status,
 jb.completed_tasks,
 jb.job_value_lcy
 from inf 
@@ -53,5 +56,6 @@ LEFT JOIN
 ON cast(inf.influencer_id as Int64) = cast(inf_data.influencer_id_a as Int64)
 LEFT JOIN jb
 ON inf.influencer_id = jb.influencer_id
+where inf.influencer_id is not null
 )
 SELECT * FROM inf_data
