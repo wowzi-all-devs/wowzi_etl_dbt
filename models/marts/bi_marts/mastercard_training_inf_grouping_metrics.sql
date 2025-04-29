@@ -23,8 +23,7 @@ influencer_id,
 sum(amount_lcy) job_value_lcy,
 sum(completed_tasks) completed_tasks
 from {{ref('influencer_job_breakdown')}}
-where job_status = 'Completed'
-and invitation_status = 'Accepted'
+where invitation_status = 'Accepted'
 and job_status <> 'Failed'
 group by influencer_id
 ),
