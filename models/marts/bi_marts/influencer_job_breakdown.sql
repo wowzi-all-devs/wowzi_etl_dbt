@@ -1,4 +1,4 @@
-With platform_jobs AS
+With platform_jobs AS  ---Platform Jobs duplicates records bc an influencer can be paid on separate days.
 (
 SELECT 
     t.influencer_id,
