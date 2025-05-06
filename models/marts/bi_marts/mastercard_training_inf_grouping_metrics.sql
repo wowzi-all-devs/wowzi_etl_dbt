@@ -97,9 +97,42 @@ case when
 case when
   payment.fine_payment_status in ('Successful', 'Manual') then payment.paid_amount_usd
   else 0
-  end as paid_amt_usd
+  end as paid_amt_usd,
+ CASE 
+    WHEN SUM(paid_amount) OVER (PARTITION BY inf_data.influencer_id) > 13000 THEN 'Above 13k'
+    ELSE 'Below 13k'
+  END AS payout_bucket
+
 from inf_data 
 LEFT JOIN payment 
 on cast(inf_data.task_id as Int64) = cast(payment.task_id as Int64)
+group by 
+group_id,
+group_name,
+influencer_id, 
+creation_time,
+inf_name,
+gender,
+inf_age_range,
+job_eligibility,
+smileidentity_status,
+job_activity,
+clean_country,
+location,
+task_id,
+completed_one_job,
+facebook_status,
+instagram_status,
+tiktok_status,
+twitter_status,
+tasks_assigned,
+completed_tasks,
+job_value_lcy,
+fine_payment_status,
+paid_amount,
+paid_amount_usd
 )
-SELECT * FROM final
+SELECT 
+*
+ FROM 
+final
