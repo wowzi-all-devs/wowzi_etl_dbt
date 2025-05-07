@@ -101,9 +101,12 @@ case when inf.profession is null then 'n/a' else inf.profession end as professio
 case when (inf_age_range is null) or (inf_age_range = 'N0 DOB') then 'n/a' else inf_age_range end as inf_age_range,
 case when clean_country is null then 'n/a' else clean_country end as country,
 case when highest_category is null then 'n/a' else highest_category end as level,
-case when gender is null then 'n/a' else gender end as gender
+case when gender is null then 'n/a' else gender end as gender,
+count(*) frequency
 from 
 inf 
 LEFT JOIN
 inf_data
 on SAFE_CAST(inf.influencer_id_b as INT64) = SAFE_CAST(inf_data.influencer_id_a as INT64)
+group by
+1,2,3,4,5,6
