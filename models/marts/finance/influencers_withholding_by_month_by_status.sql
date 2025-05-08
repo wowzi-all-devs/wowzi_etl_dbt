@@ -5,7 +5,7 @@ WITH payouts AS (
     influencer_id,
     FORMAT_DATE("%Y-%m-01", payment_eligible_at) AS month,
     status as payment_status,
-    SUM(gross_amount) as total_amount
+    SUM(tax_amount) as total_amount
   FROM 
     {{ ref('postgres_stg__influencer_transfers') }}
   GROUP BY 1, 2, 3
