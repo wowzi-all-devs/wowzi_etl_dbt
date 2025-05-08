@@ -10,6 +10,7 @@ SELECT
     date(creation_time) as date_created,
     currency,
     exchange_rate,
+    gross_amount,
     amount,
     fee,
     status,
