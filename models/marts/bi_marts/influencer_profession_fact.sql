@@ -100,6 +100,7 @@ inf.influencer_id_b influencer_id,
 case when inf.profession is null then 'n/a' else inf.profession end as profession,
 case when (inf_age_range is null) or (inf_age_range = 'N0 DOB') then 'n/a' else inf_age_range end as inf_age_range,
 case when clean_country is null then 'n/a' else clean_country end as country,
+case when location is null then 'n/a' else location end as city,
 case when highest_category is null then 'n/a' else highest_category end as level,
 case when gender is null then 'n/a' else gender end as gender,
 count(*) frequency
@@ -109,4 +110,4 @@ LEFT JOIN
 inf_data
 on SAFE_CAST(inf.influencer_id_b as INT64) = SAFE_CAST(inf_data.influencer_id_a as INT64)
 group by
-1,2,3,4,5,6
+1,2,3,4,5,6,7
