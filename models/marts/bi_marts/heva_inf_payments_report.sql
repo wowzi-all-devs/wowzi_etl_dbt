@@ -44,12 +44,14 @@ inf as
 --   ('Safaricom', 'Mediacom', 'Uk-Kenya Tech Hub', 
 --  'Equity Bank', 'Predator', 'Infinix', 'Kenya Tourism Board') 
  then 0 else 1 end as order_flg 
---  FROM bi-staging-1-309112.wowzi_dbt_prod.influencer_job_breakdown inf
---  LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.influencer_facts loc on inf.influencer_id = loc.influencer_id 
- FROM {{ ref('influencer_job_breakdown') }} inf
- LEFT JOIN {{ ref('influencer_facts') }} loc on inf.influencer_id = loc.influencer_id 
-)
- select 
+ FROM bi-staging-1-309112.wowzi_dbt_prod.influencer_job_breakdown inf
+ LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.influencer_facts loc on inf.influencer_id = loc.influencer_id 
+--  FROM {{ ref('influencer_job_breakdown') }} inf
+--  LEFT JOIN {{ ref('influencer_facts') }} loc on inf.influencer_id = loc.influencer_id 
+),
+semi_final as
+(
+select 
  fp.id payment_id,
  fp.influencer_id,
  inf.company_name,
@@ -97,3 +99,39 @@ order_flg
  FROM fp 
  LEFT JOIN inf on fp.task_id = inf.task_id
  order by order_flg
+),
+final as 
+(
+  select 
+*,
+  SUM(paid_amount) OVER (
+    PARTITION BY influencer_id, mon_yr
+  ) AS period_total_paid,
+  row_number() over (Partition by influencer_id, mon_yr_rnk order by payment_date) as paymnt_rnk,
+    CASE 
+    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, mon_yr_rnk) < 20000 THEN '< 20K'
+    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, mon_yr_rnk) BETWEEN 20000 AND 49999 THEN '20K - 50K'
+    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, mon_yr_rnk) BETWEEN 50000 AND 99999 THEN '50K - 100K'
+    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, mon_yr_rnk) BETWEEN 100000 AND 249999 THEN '100K - 250K'
+    ELSE '> 250K'
+  END AS paid_bucket,
+
+   CASE 
+    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id) < 16500 THEN 'Below DFW'
+    ELSE 'Above DFW'
+
+  END AS DFW_Category
+  from semi_final
+)
+select 
+      payment_id, influencer_id, company_name, campaign_id, job_id,
+       task_id, job_status, no_of_tasks, completed_tasks, gender,
+       age_groups, income_category, country, location, transfer_id,
+       currency, job_value,
+       payment_status, provider, payment_channel, reference,
+       payment_date, payment_flag, mon, yr, mon_yr, mon_yr_rnk,
+       payable_days_flag, clean_payment_flag, order_flg,
+       case when paymnt_rnk = 1 then period_total_paid else null end as period_total_paid, 
+       fast_pay_fee, paid_amount,
+       paid_bucket, DFW_Category
+from final
