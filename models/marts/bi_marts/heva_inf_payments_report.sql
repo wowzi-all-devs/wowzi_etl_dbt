@@ -13,7 +13,7 @@ fp as
     END AS payable_days_flag,
     
   from bi-staging-1-309112.wowzi_airbyte.influencer_transfers
-  where payment_eligible_at >= '2025-01-02'
+  where payment_eligible_at >= '2025-01-02' --payments from jan 2nd
   and lower(status) in ('completed', 'successful', 'manual') 
   and influencer_id <> 126859
   order by date_created asc
