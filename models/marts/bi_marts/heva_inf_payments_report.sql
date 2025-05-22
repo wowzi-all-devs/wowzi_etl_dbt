@@ -13,8 +13,8 @@ fp as
     END AS payable_days_flag,
     
   from bi-staging-1-309112.wowzi_airbyte.influencer_transfers
-  where payment_eligible_at >= '2024-12-27'
-  and lower(status) in ('completed', 'successful', 'manual', 'waiting_for_payment') 
+  where payment_eligible_at >= '2025-01-02'
+  and lower(status) in ('completed', 'successful', 'manual') 
   and influencer_id <> 126859
   order by date_created asc
  ),
@@ -30,7 +30,7 @@ inf as
  inf.job_status,
  inf.gender,
  inf.age_groups,
- initcap(loc.income_category) income_category,
+--  initcap(loc.income_category) income_category,
  inf.country,
  inf.job_offer_date,
  inf.task_creation_date,
@@ -63,7 +63,7 @@ select
  inf.completed_tasks,
  inf.gender,
  inf.age_groups,
- inf.income_category,
+--  inf.income_category,
  inf.country,
  inf.location,
  CASE WHEN 
@@ -87,6 +87,14 @@ fp.provider,
  extract(year from date(fp.payment_eligible_at)) yr,
  concat(FORMAT_DATETIME("%b", DATETIME(date(fp.payment_eligible_at))),"-", extract(year from date(fp.payment_eligible_at))) mon_yr,
  dense_rank () over (order by extract(year from date(fp.payment_eligible_at)) asc, extract(month from date(fp.payment_eligible_at))asc) mon_yr_rnk,
+
+ EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) AS quarter,
+ CONCAT("Q", CAST(EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) AS STRING), "-", CAST(EXTRACT(YEAR FROM DATE(fp.payment_eligible_at)) AS STRING)) AS 
+   qtr_yr,
+ DENSE_RANK() OVER (ORDER BY EXTRACT(YEAR FROM DATE(fp.payment_eligible_at)) ASC,
+ EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) ASC
+) AS qtr_yr_rnk,
+
 fp.payable_days_flag,
  case 
   when 
@@ -104,20 +112,18 @@ final as
 (
   select 
 *,
-  SUM(paid_amount) OVER (
-    PARTITION BY influencer_id, mon_yr
-  ) AS period_total_paid,
-  row_number() over (Partition by influencer_id, mon_yr_rnk order by payment_date) as paymnt_rnk,
+  SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) AS period_total_paid,
+  row_number() over (Partition by influencer_id, qtr_yr order by payment_date) as paymnt_rnk,
     CASE 
-    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, mon_yr_rnk) < 20000 THEN '< 20K'
-    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, mon_yr_rnk) BETWEEN 20000 AND 49999 THEN '20K - 50K'
-    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, mon_yr_rnk) BETWEEN 50000 AND 99999 THEN '50K - 100K'
-    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, mon_yr_rnk) BETWEEN 100000 AND 249999 THEN '100K - 250K'
+    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) < 20000 THEN '< 20K'
+    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) BETWEEN 20000 AND 49999 THEN '20K - 50K'
+    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) BETWEEN 50000 AND 99999 THEN '50K - 100K'
+    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) BETWEEN 100000 AND 249999 THEN '100K - 250K'
     ELSE '> 250K'
   END AS paid_bucket,
 
    CASE 
-    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id) < 16500 THEN 'Below DFW'
+    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) < 49500 THEN 'Below DFW'
     ELSE 'Above DFW'
 
   END AS DFW_Category
@@ -126,12 +132,14 @@ final as
 select 
       payment_id, influencer_id, company_name, campaign_id, job_id,
        task_id, job_status, no_of_tasks, completed_tasks, gender,
-       age_groups, income_category, country, location, transfer_id,
+       age_groups, country, location, transfer_id,
        currency, job_value,
        payment_status, provider, payment_channel, reference,
-       payment_date, payment_flag, mon, yr, mon_yr, mon_yr_rnk,
+       payment_date, payment_flag, mon, yr, quarter, mon_yr, qtr_yr,  mon_yr_rnk,
+       qtr_yr_rnk,
        payable_days_flag, clean_payment_flag, order_flg,
        case when paymnt_rnk = 1 then period_total_paid else null end as period_total_paid, 
+       paymnt_rnk,
        fast_pay_fee, paid_amount,
        paid_bucket, DFW_Category
 from final
