@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+    - name: staging
+      #For bigquery:
+      database: bi-staging-1-309112
+      schema: wowzi_airbyte_dynamo
+      tables:
+        - name: ms_platform_analytics
