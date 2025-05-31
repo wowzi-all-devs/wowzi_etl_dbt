@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: ms_platform_analytics
+    description: "campaign platform analytics"
+    columns:
+      - name: event_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
