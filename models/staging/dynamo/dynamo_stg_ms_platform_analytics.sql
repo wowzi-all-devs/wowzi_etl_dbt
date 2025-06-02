@@ -22,7 +22,7 @@ FROM bi-staging-1-309112.dbt_kayode.country_key
 )
 SELECT 
   a.event_id,
-  a.user_id,
+  SAFE_CAST(a.user_id AS INT64) AS user_id,
   a.created,
   a.city,
   country.Country AS country,
