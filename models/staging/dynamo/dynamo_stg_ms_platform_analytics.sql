@@ -3,7 +3,7 @@ with a as
 (
 select 
   event_id,
-  JSON_VALUE(metadata, '$.decoded_ip_info.user_id') AS user_id,
+  JSON_VALUE(metadata, '$.user_id') AS user_id,
   date(created) created,
   JSON_VALUE(tracking, '$.decoded_ip_info.country') AS country,
   JSON_VALUE(tracking, '$.decoded_ip_info.city') AS city,
