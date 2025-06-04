@@ -9,6 +9,24 @@ select
   JSON_VALUE(tracking, '$.decoded_ip_info.city') AS city,
   JSON_VALUE(tracking, '$.decoded_ip_info.org') AS org,
 
+CASE 
+  WHEN Date(created) >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
+  THEN TRUE 
+  ELSE FALSE
+END AS last_24_hours_activity,
+
+CASE 
+  WHEN DATE(created) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) AND CURRENT_DATE()
+  THEN TRUE 
+  ELSE FALSE
+END AS last_7_days_activity,
+
+CASE 
+  WHEN DATE(created) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH) AND CURRENT_DATE()
+  THEN TRUE 
+  ELSE FALSE 
+END AS last_1_month_activity,
+
   platform,
 --   event_name,
   REGEXP_REPLACE(event_name, r'([a-z])([A-Z])', r'\1 \2') AS fine_event_name -- This regex replaces camelCase with space-separated words
@@ -28,7 +46,10 @@ SELECT
   country.Country AS country,
   a.platform,
   a.fine_event_name,
-  REGEXP_REPLACE(a.org, r'^AS\d+\s*', '') AS org
+  REGEXP_REPLACE(a.org, r'^AS\d+\s*', '') AS org,
+  a.last_24_hours_activity,
+  a.last_7_days_activity,
+  a.last_1_month_activity
   from 
   a LEFT join   
   country
