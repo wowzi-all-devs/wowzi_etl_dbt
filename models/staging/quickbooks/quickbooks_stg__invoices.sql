@@ -24,6 +24,7 @@ SELECT
   JSON_VALUE(CurrencyRef, '$.value') AS CurrencyRefValue,
   JSON_VALUE(CurrencyRef, '$.name') AS CurrencyRefName,
   ExchangeRate,
+  PrivateNote,
   TotalAmt,
   HomeTotalAmt,
   Balance,
