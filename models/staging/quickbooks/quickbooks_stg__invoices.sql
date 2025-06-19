@@ -33,6 +33,23 @@ SELECT
   --- List of dict, Select the first dict and extract the values 
   JSON_EXTRACT_SCALAR(LinkedTxn, '$[0].TxnId') AS linked_txn_txnId,
   JSON_EXTRACT_SCALAR(LinkedTxn, '$[0].TxnType') AS linked_txntype,
+
+  (
+    SELECT JSON_EXTRACT_SCALAR(item, '$.TxnId')
+    FROM UNNEST(JSON_EXTRACT_ARRAY(LinkedTxn)) AS item
+    WITH OFFSET AS pos
+    ORDER BY pos DESC
+    LIMIT 1
+  ) AS linked_txn_txnId_2,
+
+  (
+    SELECT JSON_EXTRACT_SCALAR(item, '$.TxnType')
+    FROM UNNEST(JSON_EXTRACT_ARRAY(LinkedTxn)) AS item
+    WITH OFFSET AS pos
+    ORDER BY pos DESC
+    LIMIT 1
+  ) AS linked_txntype_2,
+
   -- Line,
   -- Extract from the first object in the array
   JSON_VALUE(Line, '$[0].Id') AS Line_Id,

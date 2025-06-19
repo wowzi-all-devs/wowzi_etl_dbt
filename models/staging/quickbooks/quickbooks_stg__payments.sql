@@ -30,7 +30,24 @@ SELECT
 
   -- Extract values from LineEx.any array
   JSON_VALUE(Line, '$[0].LineEx.any[0].value.Name') AS Line_TxnId_Name,
-  JSON_VALUE(Line, '$[0].LineEx.any[0].value.Value') AS Line_TxnId_Value
+  JSON_VALUE(Line, '$[0].LineEx.any[0].value.Value') AS Line_TxnId_Value,
+
+(
+  SELECT JSON_VALUE(entry, '$.value.Value')
+  FROM UNNEST(
+    ARRAY(
+      SELECT AS STRUCT
+        JSON_EXTRACT_ARRAY(JSON_EXTRACT(line_item, '$.LineEx.any')) AS any_array,
+        OFFSET AS line_index
+      FROM UNNEST(JSON_EXTRACT_ARRAY(Line)) AS line_item WITH OFFSET
+    )
+  ) AS line_struct,
+  UNNEST(line_struct.any_array) AS entry WITH OFFSET AS inner_offset
+  WHERE JSON_VALUE(entry, '$.value.Name') = 'txnReferenceNumber'
+  ORDER BY line_struct.line_index DESC, inner_offset DESC
+  LIMIT 1
+) AS txn_reference_number
+  
 FROM {{ source('staging', 'payments') }}
 
 
