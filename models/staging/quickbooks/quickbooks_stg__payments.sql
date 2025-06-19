@@ -46,7 +46,7 @@ SELECT
   WHERE JSON_VALUE(entry, '$.value.Name') = 'txnReferenceNumber'
   ORDER BY line_struct.line_index DESC, inner_offset DESC
   LIMIT 1
-) AS txn_reference_number
+) AS DocNumber
   
 FROM {{ source('staging', 'payments') }}
 
