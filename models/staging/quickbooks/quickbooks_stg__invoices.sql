@@ -2,25 +2,28 @@ SELECT
   DISTINCT
   Id,
   DocNumber,
-  --CustomerRef,
+
+  -- Customer & Address Info
   JSON_VALUE(CustomerRef, '$.value') AS CustomerRefValue,
   JSON_VALUE(CustomerRef, '$.name') AS CustomerRefName,
   CONCAT(
     JSON_EXTRACT_SCALAR(BillAddr, '$.Line1'), ', ',
     JSON_EXTRACT_SCALAR(BillAddr, '$.Line2'), ', ',
     JSON_EXTRACT_SCALAR(BillAddr, '$.Line3')
-        ) BillAddr,
-  JSON_EXTRACT_SCALAR(ShipAddr, '$.Line1') ShipAddr,
-  --BillEmail,
+  ) AS BillAddr,
+  JSON_EXTRACT_SCALAR(ShipAddr, '$.Line1') AS ShipAddr,
   JSON_VALUE(BillEmail, '$.Address') AS BillEmail,
-  --SalesTermRef,
+
+  -- Sales Terms
   JSON_VALUE(SalesTermRef, '$.value') AS SalesTermRef,
+
+  -- Dates
   TxnDate,
   DueDate,
-  --MetaData,
   JSON_VALUE(MetaData, '$.CreateTime') AS CreateTime,
   JSON_VALUE(MetaData, '$.LastUpdatedTime') AS LastUpdatedTime,
-  --CurrencyRef,
+
+  -- Currency & Notes
   JSON_VALUE(CurrencyRef, '$.value') AS CurrencyRefValue,
   JSON_VALUE(CurrencyRef, '$.name') AS CurrencyRefName,
   ExchangeRate,
@@ -28,54 +31,47 @@ SELECT
   TotalAmt,
   HomeTotalAmt,
   Balance,
-  --LinkedTxn,
-  
-  --- List of dict, Select the first dict and extract the values 
-  JSON_EXTRACT_SCALAR(LinkedTxn, '$[0].TxnId') AS linked_txn_txnId,
-  JSON_EXTRACT_SCALAR(LinkedTxn, '$[0].TxnType') AS linked_txntype,
 
-  (
-    SELECT JSON_EXTRACT_SCALAR(item, '$.TxnId')
-    FROM UNNEST(JSON_EXTRACT_ARRAY(LinkedTxn)) AS item
-    WITH OFFSET AS pos
-    ORDER BY pos DESC
-    LIMIT 1
-  ) AS linked_txn_txnId_2,
+  -- -- Extract LinkedTxn (first and last position)
+  -- JSON_EXTRACT_SCALAR(LinkedTxn, '$[0].TxnId') AS linked_txn_txnId,
+  -- JSON_EXTRACT_SCALAR(LinkedTxn, '$[0].TxnType') AS linked_txntype,
 
-  (
-    SELECT JSON_EXTRACT_SCALAR(item, '$.TxnType')
-    FROM UNNEST(JSON_EXTRACT_ARRAY(LinkedTxn)) AS item
-    WITH OFFSET AS pos
-    ORDER BY pos DESC
-    LIMIT 1
-  ) AS linked_txntype_2,
+(
+  SELECT JSON_EXTRACT_SCALAR(payment_item, '$.TxnId')
+  FROM UNNEST(JSON_EXTRACT_ARRAY(LinkedTxn)) AS payment_item
+  WHERE JSON_EXTRACT_SCALAR(payment_item, '$.TxnType') = 'Payment'
+  LIMIT 1
+) AS linked_txn_payment_txnId,
 
-  -- Line,
-  -- Extract from the first object in the array
+(
+  SELECT JSON_EXTRACT_SCALAR(payment_item, '$.TxnType')
+  FROM UNNEST(JSON_EXTRACT_ARRAY(LinkedTxn)) AS payment_item
+  WHERE JSON_EXTRACT_SCALAR(payment_item, '$.TxnType') = 'Payment'
+  LIMIT 1
+) AS linked_txn_payment_txntype,
+
+  -- Line Details (first item)
   JSON_VALUE(Line, '$[0].Id') AS Line_Id,
   JSON_VALUE(Line, '$[0].LineNum') AS Line_LineNum,
   JSON_VALUE(Line, '$[0].Description') AS Line_Description,
   JSON_VALUE(Line, '$[0].Amount') AS Line_Amount,
   JSON_VALUE(Line, '$[0].DetailType') AS Line_DetailType,
-  
-  -- Extract SalesItemLineDetail fields
   JSON_VALUE(Line, '$[0].SalesItemLineDetail.ServiceDate') AS Line_ServiceDate,
   JSON_VALUE(Line, '$[0].SalesItemLineDetail.ItemRef.value') AS Line_ItemRefValue,
   JSON_VALUE(Line, '$[0].SalesItemLineDetail.ItemRef.name') AS Line_ItemRefName,
   JSON_VALUE(Line, '$[0].SalesItemLineDetail.UnitPrice') AS Line_UnitPrice,
   JSON_VALUE(Line, '$[0].SalesItemLineDetail.Qty') AS Line_Qty,
   JSON_VALUE(Line, '$[0].SalesItemLineDetail.TaxCodeRef.value') AS Line_TaxCodeRefValue,
-  
-  -- Extract from the second object in the array (SubTotalLineDetail)
+
+  -- SubTotal Line (second item)
   JSON_VALUE(Line, '$[1].Amount') AS Line_SubTotalAmount,
   JSON_VALUE(Line, '$[1].DetailType') AS Line_SubTotalDetailType,
-  -- TxnTaxDetail,
-  -- GlobalTaxCalculation,
-  json_extract_scalar(CustomerMemo, '$.value') CustomerMemo,
-  -- EInvoiceStatus,
-  json_extract_scalar(DeliveryInfo, '$.DeliveryTime') DeliveryInfo_DeliveryTime,
-  json_extract_scalar(DeliveryInfo, '$.DeliveryType') DeliveryInfo_DeliveryType
-  -- DepartmentRef
+
+  -- Customer Memo & Delivery Info
+  JSON_EXTRACT_SCALAR(CustomerMemo, '$.value') AS CustomerMemo,
+  JSON_EXTRACT_SCALAR(DeliveryInfo, '$.DeliveryTime') AS DeliveryInfo_DeliveryTime,
+  JSON_EXTRACT_SCALAR(DeliveryInfo, '$.DeliveryType') AS DeliveryInfo_DeliveryType
+
 FROM {{ source('staging', 'invoices') }}
 
 
