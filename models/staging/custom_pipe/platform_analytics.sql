@@ -3,11 +3,11 @@ with a as
 (
 select 
   event_id,
-  JSON_VALUE(metadata, '$.user_id') AS user_id,
+  user_id,
   date(created) created,
-  JSON_VALUE(tracking, '$.decoded_ip_info.country') AS country,
-  JSON_VALUE(tracking, '$.decoded_ip_info.city') AS city,
-  JSON_VALUE(tracking, '$.decoded_ip_info.org') AS org,
+  country,
+  city,
+  org,
 
 CASE 
   WHEN Date(created) >= DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY)
@@ -31,7 +31,7 @@ END AS last_1_month_activity,
 --   event_name,
   REGEXP_REPLACE(event_name, r'([a-z])([A-Z])', r'\1 \2') AS fine_event_name -- This regex replaces camelCase with space-separated words
 from 
-  {{ source('staging', 'ms_platform_analytics') }} 
+  {{ source('staging', 'platform_analytics') }} 
 ),
 country as 
 (
@@ -46,7 +46,7 @@ SELECT
   country.Country AS country,
   a.platform,
   a.fine_event_name,
-  REGEXP_REPLACE(a.org, r'^AS\d+\s*', '') AS org,
+  a.org,
   a.last_24_hours_activity,
   a.last_7_days_activity,
   a.last_1_month_activity

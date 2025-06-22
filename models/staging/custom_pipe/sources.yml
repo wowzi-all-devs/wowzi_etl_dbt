@@ -4,6 +4,6 @@ sources:
     - name: staging
       #For bigquery:
       database: bi-staging-1-309112
-      schema: wowzi_airbyte_dynamo
+      schema: custom_pipe_eu
       tables:
-        - name: ms_platform_analytics
+        - name: platform_analytics

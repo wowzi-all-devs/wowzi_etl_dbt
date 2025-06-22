@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: ms_platform_analytics
+  - name: platform_analytics
     description: "campaign platform analytics"
     columns:
       - name: event_id
