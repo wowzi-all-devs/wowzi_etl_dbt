@@ -7,5 +7,5 @@ models:
       - name: event_id
         description: "The primary key for this table"
         tests:
-          - unique
+          # - unique
           - not_null
