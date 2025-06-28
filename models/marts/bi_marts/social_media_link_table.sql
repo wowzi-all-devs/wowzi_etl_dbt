@@ -11,7 +11,10 @@ WITH
     f.age_range,
     c.Country country,
     job_activity,
-    last_campaign_date
+    last_campaign_date,
+    date_account_created,
+    initcap(smileidentity_status) smileidentity_status,
+    job_eligibility
   FROM
     `bi-staging-1-309112.wowzi_dbt_prod.influencer_facts` f
   LEFT JOIN
@@ -34,6 +37,9 @@ WITH
     age,
     age_range,
     job_activity,
+    job_eligibility,
+    date_account_created,
+    smileidentity_status,
     last_campaign_date
   FROM
     inf
