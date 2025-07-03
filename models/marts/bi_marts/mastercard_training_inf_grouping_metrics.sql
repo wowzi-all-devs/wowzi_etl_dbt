@@ -4,7 +4,7 @@ select id,name
 from 
 {{ source('staging', 'influencer_groups') }} 
 -- `bi-staging-1-309112`.`wowzi_airbyte`.`influencer_groups` 
-where id in (2742,2743,2764,2784,2779,2780, 2783,2782, 2781,2778,2741,2776)
+where id in (2742,2743,2764,2784,2779,2780, 2783,2782, 2781,2778,2741,2776,2810)
 ),
 inf as
 (
