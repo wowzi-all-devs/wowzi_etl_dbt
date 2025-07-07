@@ -1,4 +1,4 @@
-  SELECT 
+  SELECT /*This section desplays the phone numbers of 500 influencers who have not linked their social media accounts*/
   influencer_id,
   full_name,
   gender,
@@ -24,15 +24,8 @@
   instagram_linked,
   facebook_linked
 FROM (
-  SELECT 
+  SELECT /*This section adds a rank to influencers who have not linked their social media accounts*/
     *,
-    -- inf3.*,
-    -- username.facebook_username,
-    -- username.twitter_username,
-    -- username.tiktok_username,
-    -- username.linkedin_username,
-    -- instagram_linked,
-    -- facebook_linked,
     CASE 
       WHEN instagram_linked = 'not-linked' AND facebook_linked = 'not-linked' 
       THEN ROW_NUMBER() OVER (
