@@ -1,38 +1,22 @@
-  SELECT /*This section desplays the phone numbers of 500 influencers who have not linked their social media accounts*/
+WITH base AS (
+  SELECT
   influencer_id,
   full_name,
   gender,
   email,
-  CASE 
-    WHEN (instagram_linked = 'not-linked' 
-         and facebook_linked = 'not-linked') 
-         AND unlinked_rnk <= 500
-      THEN mobile_number
-    ELSE NULL
-  END AS mobile_number,
+  mobile_number,
   country,
   location,
   age,
   age_range,
   job_activity,
   job_eligibility,
+  smileidentity_status,
   completed_job_l1y,
-  facebook_username,
-  twitter_username,
-  tiktok_username,
-  linkedin_username,
-  instagram_linked,
-  facebook_linked
-FROM (
-  SELECT /*This section adds a rank to influencers who have not linked their social media accounts*/
-    *,
-    CASE 
-      WHEN instagram_linked = 'not-linked' AND facebook_linked = 'not-linked' 
-      THEN ROW_NUMBER() OVER (
-            ORDER BY influencer_id desc
-          )
-      ELSE NULL
-    END AS unlinked_rnk
+  case when instagram_linked is null then 'not-linked' else instagram_linked end as instagram_linked,
+  case when facebook_linked is null then 'not-linked' else facebook_linked end as facebook_linked,
+  linked_date,
+  ROW_NUMBER() OVER (PARTITION BY influencer_id) AS rnk
   FROM (
     WITH
       inf AS (
@@ -59,7 +43,7 @@ FROM (
       inf2 AS (
         SELECT
           SAFE_CAST(influencer_id AS INT64) influencer_id,
-          initcap(full_name) full_name,
+          INITCAP(full_name) full_name,
           gender,
           email,
           mobile_number,
@@ -95,38 +79,71 @@ FROM (
       linked_acc AS (
         SELECT
           SAFE_CAST(influencer_id AS INT64) influencer_id,
+          max(date(updated_at)) linked_date,
           MAX(CASE WHEN LOWER(GSI1SK) = 'instagram' THEN 'linked' ELSE 'not-linked' END) AS instagram_linked,
           MAX(CASE WHEN LOWER(GSI1SK) = 'facebook' THEN 'linked' ELSE 'not-linked' END) AS facebook_linked
-        FROM  bi-staging-1-309112.custom_pipe_eu.socials
+        FROM bi-staging-1-309112.custom_pipe_eu.socials
         WHERE GSI1SK NOT LIKE 'INFLUENCER%'
         GROUP BY 1
-      ),
-      username AS (
-        SELECT 
-          influencer_id,
-          MAX(CASE WHEN LOWER(channel) = 'tiktok' THEN username ELSE NULL END) AS tiktok_username,
-          MAX(CASE WHEN LOWER(channel) = 'facebook' THEN username ELSE NULL END) AS facebook_username,
-          MAX(CASE WHEN LOWER(channel) = 'twitter' THEN username ELSE NULL END) AS twitter_username,
-          MAX(CASE WHEN LOWER(channel) = 'linkedin' THEN username ELSE NULL END) AS linkedin_username
-        FROM bi-staging-1-309112.wowzi_airbyte.influencer_channel_data
-        WHERE LOWER(status) = 'approved'
-        GROUP BY 1
       )
-    SELECT 
-      inf3.*,
-      username.facebook_username,
-      username.twitter_username,
-      username.tiktok_username,
-      username.linkedin_username,
-      case when instagram_linked is null then 'not-linked' else instagram_linked end as instagram_linked,
-      case when facebook_linked is null then 'not-linked' else facebook_linked end as facebook_linked,
-      ROW_NUMBER() OVER (PARTITION BY inf3.influencer_id) AS rnk
+      -- username AS (
+      --   SELECT 
+      --     influencer_id,
+      --     MAX(CASE WHEN LOWER(channel) = 'tiktok' THEN username ELSE NULL END) AS tiktok_username,
+      --     MAX(CASE WHEN LOWER(channel) = 'facebook' THEN username ELSE NULL END) AS facebook_username,
+      --     MAX(CASE WHEN LOWER(channel) = 'twitter' THEN username ELSE NULL END) AS twitter_username,
+      --     MAX(CASE WHEN LOWER(channel) = 'linkedin' THEN username ELSE NULL END) AS linkedin_username
+      --   FROM bi-staging-1-309112.wowzi_airbyte.influencer_channel_data
+      --   WHERE LOWER(status) = 'approved'
+      --   GROUP BY 1
+      -- )
+    SELECT inf3.*,
+    linked_acc.linked_date,
+    linked_acc.instagram_linked,
+    linked_acc.facebook_linked
     FROM inf3
     LEFT JOIN linked_acc 
       ON inf3.influencer_id = linked_acc.influencer_id
-    LEFT JOIN username
-      ON inf3.influencer_id = username.influencer_id
-  ) full_data 
-where rnk = 1
-) final
-WHERE rnk = 1
+    -- LEFT JOIN username
+    --   ON inf3.influencer_id = username.influencer_id
+  ) final
+),
+base2 as
+(
+select
+base.*
+from base
+where rnk =1
+),
+unlinked_ranked AS (
+  SELECT 
+    influencer_id,
+    DENSE_RANK() OVER (ORDER BY influencer_id DESC) AS unlinked_rnk
+  FROM base2
+  WHERE instagram_linked = 'not-linked'
+    AND facebook_linked = 'not-linked'
+    AND mobile_number IS NOT NULL
+)
+SELECT 
+  b.influencer_id,
+  b.full_name,
+  b.gender,
+  b.email,
+  CASE 
+    WHEN u.unlinked_rnk <= 500 THEN b.mobile_number
+    ELSE NULL
+  END AS mobile_number,
+  b.country,
+  b.location,
+  b.age,
+  b.age_range,
+  b.job_activity,
+  b.job_eligibility,
+  b.completed_job_l1y,
+  b.instagram_linked,
+  b.facebook_linked,
+  b.linked_date,
+  u.unlinked_rnk
+FROM base2 b
+LEFT JOIN unlinked_ranked u
+  ON b.influencer_id = u.influencer_id
