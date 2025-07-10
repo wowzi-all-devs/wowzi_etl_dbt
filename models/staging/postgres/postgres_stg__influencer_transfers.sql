@@ -23,6 +23,7 @@ SELECT
     bank_name,
     payment_method,
     creation_time,
+    date(processed_date) as processed_date,
     payment_eligible_at,
     updated_at
 
