@@ -28,8 +28,6 @@ inf as
  inf.job_id,
  inf.task_id,
  inf.job_status,
- inf.gender,
- inf.age_groups,
 --  initcap(loc.income_category) income_category,
  inf.country,
  inf.job_offer_date,
@@ -61,8 +59,6 @@ select
  inf.job_status,
  inf.no_of_tasks,
  inf.completed_tasks,
- inf.gender,
- inf.age_groups,
 --  inf.income_category,
  inf.country,
  inf.location,
@@ -93,8 +89,8 @@ fp.provider,
    qtr_yr,
  DENSE_RANK() OVER (ORDER BY EXTRACT(YEAR FROM DATE(fp.payment_eligible_at)) ASC,
  EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) ASC
-) AS qtr_yr_rnk,
-
+) 
+AS qtr_yr_rnk,
 fp.payable_days_flag,
  case 
   when 
@@ -107,7 +103,7 @@ order_flg
  FROM fp 
  LEFT JOIN inf on fp.task_id = inf.task_id
  order by order_flg
-),
+)1,
 final as 
 (
   select 
@@ -130,10 +126,10 @@ final as
   from semi_final
 )
 select 
-      payment_id, influencer_id, company_name, campaign_id, job_id,
-       task_id, job_status, no_of_tasks, completed_tasks, gender,
-       age_groups, country, location, transfer_id,
-       currency, job_value,
+      a.payment_id, b.influencer_id, a.company_name, a.campaign_id, a.job_id,
+       a.task_id, a.job_status, a.no_of_tasks, a.completed_tasks, Initcap(b.gender) gender,
+       b.age_range age_groups, b.country, b.location, a.transfer_id,
+       a.currency, a.job_value,
        payment_status, provider, payment_channel, reference,
        payment_date, payment_flag, mon, yr, quarter, mon_yr, qtr_yr,  mon_yr_rnk,
        qtr_yr_rnk,
@@ -142,4 +138,5 @@ select
        paymnt_rnk,
        fast_pay_fee, paid_amount,
        paid_bucket, DFW_Category
-from final
+from final a
+left join bi-staging-1-309112.wowzi_dbt_prod.influencer_facts b on a.influencer_id = b.influencer_id
