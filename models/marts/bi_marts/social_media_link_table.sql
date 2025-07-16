@@ -84,13 +84,13 @@ WITH base AS (
           ON inf2.influencer_id = jobs_l1y.influencer_id
       ),
       linked_acc AS (
-        SELECT
+          SELECT
           SAFE_CAST(influencer_id AS INT64) influencer_id,
-          max(date(updated_at)) linked_date,
-          MAX(CASE WHEN LOWER(GSI1SK) = 'instagram' THEN 'linked' ELSE 'not-linked' END) AS instagram_linked,
-          MAX(CASE WHEN LOWER(GSI1SK) = 'facebook' THEN 'linked' ELSE 'not-linked' END) AS facebook_linked
+          MAX(DATE(updated_at)) AS linked_date,
+          COALESCE(MAX(CASE WHEN LOWER(GSI1SK) = 'instagram' THEN 'linked' END), 'not-linked') AS instagram_linked,
+         coalesce(MAX(CASE WHEN LOWER(GSI1SK) = 'facebook' THEN 'linked' END), 'not-linked') AS facebook_linked
         FROM bi-staging-1-309112.custom_pipe_eu.socials
-        WHERE GSI1SK NOT LIKE 'INFLUENCER%'
+        WHERE LOWER(GSI1SK) IN ('facebook', 'instagram')
         GROUP BY 1
       )
       -- username AS (
@@ -127,9 +127,7 @@ unlinked_snapshot AS (
     influencer_id,
     CEIL(ROW_NUMBER() OVER (ORDER BY influencer_id DESC) / 500.0) AS group_id
   FROM base2
-  WHERE instagram_linked = 'not-linked'
-    AND facebook_linked = 'not-linked'
-    AND mobile_number IS NOT NULL
+  WHERE mobile_number IS NOT NULL
 )
 
 SELECT 
