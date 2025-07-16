@@ -103,7 +103,7 @@ order_flg
  FROM fp 
  LEFT JOIN inf on fp.task_id = inf.task_id
  order by order_flg
-)1,
+),
 final as 
 (
   select 
