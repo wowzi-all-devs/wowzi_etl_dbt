@@ -1,7 +1,7 @@
 SELECT 
   DISTINCT
   DATE(start_date) as Date,
-  DATE_DIFF(CURRENT_DATE(), date(start_date), WEEK) + 1 week_of_qtr
+  DATE_DIFF(CURRENT_DATE(), date(start_date), WEEK) + 1 week_of_qtr,
   creator_id,
   country,
   CASE 
@@ -32,6 +32,7 @@ UNION ALL
 
 SELECT 
   DATE,
+  NULL week_of_qtr,
   NULL influencer_id,
   NULL country,
   NULL active_last_24_hours,
