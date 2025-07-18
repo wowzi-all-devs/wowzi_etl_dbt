@@ -18,3 +18,4 @@ sources:
         - name: gsheets_balance_sheet_hygiene_feb_2025
         - name: gsheets__creator_nps_march
         - name: gsheet__stg__HEVA_requisition_data
+        - name: gsheets__tech_deployment

@@ -5,3 +5,4 @@ logs/
 .user.yml
 .env
 .idea/
+models/marts/bi_marts/company_scorecard_2/jkae.py

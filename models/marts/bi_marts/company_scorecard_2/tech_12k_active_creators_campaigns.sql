@@ -1,6 +1,7 @@
 SELECT 
   DISTINCT
   DATE(start_date) as Date,
+  DATE_DIFF(CURRENT_DATE(), date(start_date), WEEK) + 1 week_of_qtr
   creator_id,
   country,
   CASE 

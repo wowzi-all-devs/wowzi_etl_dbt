@@ -27,6 +27,7 @@ SELECT
     gross_profit_usd,
     invoice_date,
     invoice_date Date,
+    DATE_DIFF(CURRENT_DATE(), PARSE_DATE('%B %e %Y', Date), WEEK) + 1 week_of_qtr,
     gp_last_24_hours,
     gp_last_7_days,
     gp_last_1_month,
