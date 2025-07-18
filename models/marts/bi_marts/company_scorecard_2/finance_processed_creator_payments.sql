@@ -17,7 +17,7 @@ SELECT
   concat('Q',EXTRACT(QUARTER FROM payment_eligible_at)) AS qtr,
   EXTRACT(YEAR FROM payment_eligible_at) AS year,
   concat('Q',EXTRACT(QUARTER FROM payment_eligible_at), "-", EXTRACT(YEAR FROM payment_eligible_at)) qtr_yr,
-  DATE_DIFF(CURRENT_DATE(), date(payment_eligible_at), WEEK) + 1 week_of_qtr,
+  DATE_DIFF(CURRENT_DATE(), DATE_TRUNC(CURRENT_DATE(), QUARTER), WEEK) + 1 week_of_qtr,
   CASE
     WHEN lower(fine_payment_status) in ('successful', 'manual', 'new', 'completed')
          AND processed_date <= DATE_ADD(date(payment_eligible_at), INTERVAL 2 DAY)

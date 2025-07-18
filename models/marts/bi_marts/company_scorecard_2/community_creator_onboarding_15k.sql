@@ -22,12 +22,12 @@ b.facebook_linked,
 c.bank_account_number,
 concat('Q',extract(quarter from a.date_account_created)) quarter,
 concat('Q',extract(quarter from a.date_account_created), '-', (extract(year from a.date_account_created))) qtr_yr,
-DATE_DIFF(CURRENT_DATE(), date(date_account_created), WEEK) + 1 week_of_qtr
+DATE_DIFF(CURRENT_DATE(),DATE_TRUNC(CURRENT_DATE(), QUARTER), WEEK) + 1 week_of_qtr
 
  from  
   bi-staging-1-309112.wowzi_dbt_prod.influencer_facts  a
 left join
- bi-staging-1-309112.wowzi_dbt_prod.social_media_link_table b
+ bi-staging-1-309112.wowzi_dbt_prod.sociWal_media_link_table b
 on 
   a.influencer_id = b.influencer_id
 left join

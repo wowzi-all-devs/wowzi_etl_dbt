@@ -4,6 +4,7 @@ SELECT
   format_date('%Y-%m', date(invoice_date)) invoice_month,
   gross_profit_usd,
   invoice_date,
+  DATE_DIFF(CURRENT_DATE(), DATE_TRUNC(CURRENT_DATE(), QUARTER), WEEK) + 1 week_of_qtr,
   CASE 
     WHEN date(invoice_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
     THEN TRUE 
@@ -27,6 +28,7 @@ SELECT
     gross_profit_usd,
     invoice_date,
     invoice_date Date,
+    week_of_qtr,
     gp_last_24_hours,
     gp_last_7_days,
     gp_last_1_month,
@@ -46,6 +48,7 @@ SELECT
     NULL gross_profit_usd,
     NULL invoice_date,
     Date,
+    NULL week_of_qtr,
     NULL gp_last_24_hours,
     NULL gp_last_7_days,
     NULL gp_last_1_month,
