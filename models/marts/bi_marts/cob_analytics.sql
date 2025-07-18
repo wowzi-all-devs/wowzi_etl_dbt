@@ -189,6 +189,7 @@ SELECT
   a.task_id,
   a.currency currency,
   a.campaign_start_date,
+  week_of_qtr,
   a.offer_creation_time_job_offer_date,
   a.Job_offer_mon,
   a.Job_offer_mon_rnk,
