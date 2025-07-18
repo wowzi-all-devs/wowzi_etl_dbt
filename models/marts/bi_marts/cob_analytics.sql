@@ -139,6 +139,7 @@ SELECT
   safe_cast(c.task_id as string) task_id,
   b.currency currency,
   --Initcap(a.invitation_status) invitation_status,
+  DATE_DIFF(CURRENT_DATE(), date(start_date), WEEK) + 1 week_of_qtr,
   date(b.start_date) campaign_start_date,
   date(a.offer_creation_time) offer_creation_time_job_offer_date,
   --date(c.submission_link_add_time) submission_link_date_task_submission, 
