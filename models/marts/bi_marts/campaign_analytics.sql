@@ -225,6 +225,10 @@ SELECT
     concat(FORMAT_DATETIME("%b", DATETIME(date(start_date))),"-", extract(year from date(start_date))) mon_yr,
     dense_rank () over (order by extract(year from start_date) asc, extract(month from start_date)asc ) mon_yr_rnk,
     DATE_DIFF(CURRENT_DATE(), DATE_TRUNC(CURRENT_DATE(), QUARTER), WEEK) + 1 week_of_qtr,
+    DATE_DIFF(
+    DATE_ADD(DATE_TRUNC(CURRENT_DATE(), QUARTER), INTERVAL 1 QUARTER), DATE_TRUNC(CURRENT_DATE(), QUARTER),
+    WEEK
+) weeks_in_qtr,
     end_date,
     currency, 
     budget, 

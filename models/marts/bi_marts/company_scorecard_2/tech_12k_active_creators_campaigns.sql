@@ -2,6 +2,10 @@ SELECT
   DISTINCT
   DATE(start_date) as Date,
   DATE_DIFF(CURRENT_DATE(), DATE_TRUNC(CURRENT_DATE(), QUARTER), WEEK) + 1 week_of_qtr,
+  DATE_DIFF(
+  DATE_ADD(DATE_TRUNC(CURRENT_DATE(), QUARTER), INTERVAL 1 QUARTER), DATE_TRUNC(CURRENT_DATE(), QUARTER),
+  WEEK
+) weeks_in_qtr,
   creator_id,
   country,
   CASE 
@@ -33,6 +37,7 @@ UNION ALL
 SELECT 
   DATE,
   NULL week_of_qtr,
+  NULL weeks_in_qtr,
   NULL influencer_id,
   NULL country,
   NULL active_last_24_hours,
