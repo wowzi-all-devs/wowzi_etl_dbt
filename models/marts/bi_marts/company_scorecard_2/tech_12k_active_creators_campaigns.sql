@@ -1,25 +1,25 @@
 SELECT 
   DISTINCT
-  DATE(start_date) as Date,
+  DATE(task_creation_time) as Date,
   DATE_DIFF(CURRENT_DATE(), DATE_TRUNC(CURRENT_DATE(), QUARTER), WEEK) + 1 week_of_qtr,
   DATE_DIFF(
   DATE_ADD(DATE_TRUNC(CURRENT_DATE(), QUARTER), INTERVAL 1 QUARTER), DATE_TRUNC(CURRENT_DATE(), QUARTER),
   WEEK
 ) weeks_in_qtr,
-  creator_id,
+  influencer_id creator_id,
   country,
   CASE 
-    WHEN DATE(start_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+    WHEN DATE(task_creation_time) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
     THEN TRUE 
     ELSE FALSE 
   END active_last_24_hours,
   CASE 
-    WHEN DATE(start_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+    WHEN DATE(task_creation_time) >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
     THEN TRUE 
     ELSE FALSE 
   END active_last_7_days,
   CASE 
-    WHEN DATE(start_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)
+    WHEN DATE(task_creation_time) >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)
     THEN TRUE 
     ELSE FALSE 
   END active_last_1_month,
@@ -29,7 +29,7 @@ SELECT
   CAST(NULL AS STRING) target_type,
   NULL target,
   'actuals' data_class
-  from bi-staging-1-309112.wowzi_dbt_prod.campaign_facts
+  from bi-staging-1-309112.wowzi_dbt_prod.influencer_task_facts
 -- FROM {{ ref('campaign_facts') }}
 
 UNION ALL  
