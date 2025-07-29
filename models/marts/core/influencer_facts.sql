@@ -30,7 +30,10 @@ FROM (
     mobile_number,
     mobile_number_verified,
     gender,
-    country,
+    case 
+      when country is null then 'KE'
+      else country 
+    end country,
     location,
     dob,
     income_category,
