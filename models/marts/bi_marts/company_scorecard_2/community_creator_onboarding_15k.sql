@@ -2,7 +2,8 @@ select
 *,
 case when
   lower(smileidentity_status) = 'approved' 
-  and job_eligibility and 
+  -- and job_eligibility 
+  and 
   (instagram_linked = 'linked' 
   or facebook_linked = 'linked')
   and bank_account_number is not null
