@@ -76,8 +76,8 @@ inf as
  (fp.amount * fp.exchange_rate) paid_amount_usd,
  lower(fp.status) payment_status,
  case 
-    when lower(fp.status) in ('completed', 'new', 'successful') then 'Successful'
-    when lower(fp.status) = 'manual' then 'Manual'
+    when lower(fp.status) in ('completed', 'new', 'successful') then 'Successful - Backoffice'
+    when lower(fp.status) = 'manual' then 'Successful - Marked'
     when lower(fp.status) = 'failed' then 'Failed'
     when lower(fp.status) = 'waiting_for_payment' then 'Awaiting payment'   
   else fp.status end as fine_payment_status,

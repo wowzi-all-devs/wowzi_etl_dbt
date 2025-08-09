@@ -69,7 +69,7 @@ select
  inf.job_value,
  (fp.amount * 0.09) / 12 fast_pay_fee,
  fp.amount paid_amount,
- lower(fp.status) payment_status,
+ case when lower(fp.status) = 'successful' then 'Successful - Backoffice' else 'Successful - Marked' end as payment_status,
 fp.provider,
  case when
  fp.provider <> 'MPESA_KE' THEN 'Cellulant'
