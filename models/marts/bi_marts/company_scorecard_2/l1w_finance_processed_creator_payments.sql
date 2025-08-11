@@ -87,9 +87,14 @@ case when
     <= 
       date_add(date(payment_eligible_at), interval case when extract(dayofweek from date(payment_eligible_at)) in (5, 6) 
       then 4 
-      else 2 end day )then influencer_id else null end as paid_within_limit
+      else 2 end day )then influencer_id else null end as paid_within_limit,
+      DATE_DIFF(CURRENT_DATE(), DATE_TRUNC(CURRENT_DATE(), QUARTER), WEEK) + 1 week_of_qtr,
+        DATE_DIFF(
+  DATE_ADD(DATE_TRUNC(CURRENT_DATE(), QUARTER), INTERVAL 1 QUARTER), DATE_TRUNC(CURRENT_DATE(), QUARTER),
+  WEEK
+) weeks_in_qtr
 from c
-where date(payment_eligible_at) >= date(last_thursday) and date(payment_eligible_at) < current_thursday
+where date(payment_eligible_at) >= date(last_thursday) and date(payment_eligible_at) <= current_thursday
   )
    select * from last_one_week
 

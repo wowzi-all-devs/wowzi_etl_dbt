@@ -6,6 +6,7 @@ SELECT
   format_date('%Y-%m', date(invoice_date)) as invoice_month,
   gross_profit_usd,
   invoice_date,
+  net_payment_days,
   DATE_DIFF(CURRENT_DATE(), DATE_TRUNC(CURRENT_DATE(), QUARTER), WEEK) + 1 as week_of_qtr,
   DATE_DIFF(
   DATE_ADD(DATE_TRUNC(CURRENT_DATE(), QUARTER), INTERVAL 1 QUARTER), DATE_TRUNC(CURRENT_DATE(), QUARTER),
@@ -33,6 +34,7 @@ SELECT
     gross_profit_usd,
     invoice_date,
     invoice_date as Date, -- Alias 'Date' for invoice_date
+    net_payment_days,
     week_of_qtr,
     weeks_in_qtr,
     gp_last_24_hours,
@@ -57,6 +59,7 @@ SELECT
     CAST(NULL AS DATE) as invoice_date, -- Assuming DATE type
     Date, -- This 'Date' comes from the targets table
     -- *** ADD THESE CALCULATIONS HERE ***
+    CAST(NULL AS STRING) as net_payment_days,
     DATE_DIFF(CURRENT_DATE(), DATE_TRUNC(CURRENT_DATE(), QUARTER), WEEK) + 1 as week_of_qtr,
     DATE_DIFF(
         DATE_ADD(DATE_TRUNC(CURRENT_DATE(), QUARTER), INTERVAL 1 QUARTER), DATE_TRUNC(CURRENT_DATE(), QUARTER),

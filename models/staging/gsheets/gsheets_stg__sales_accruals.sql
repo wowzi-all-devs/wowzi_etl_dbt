@@ -23,6 +23,6 @@ SELECT
   Agency_Name agency_name,
   SAFE_CAST(REPLACE(Actual_Influencer_Payable, ',', '') AS INT64) actual_influencer_payable,
   Type event_type,
-  Net_Payment_Days 
+  Net_Payment_Days net_payment_days
 FROM  {{ source('staging', 'gsheets_sales_accruals') }} 
   WHERE Transaction_type IS NOT NULL
