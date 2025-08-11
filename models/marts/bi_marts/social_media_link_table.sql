@@ -21,6 +21,9 @@ WITH base AS (
   completed_job_l1y,
   case when instagram_linked is null then 'not-linked' else instagram_linked end as instagram_linked,
   case when facebook_linked is null then 'not-linked' else facebook_linked end as facebook_linked,
+  case when tiktok_linked is null then 'not-linked' else tiktok_linked end as tiktok_linked,
+  case when twitter_linked is null then 'not-linked' else twitter_linked end as twitter_linked,
+  case when linkedin_linked is null then 'not-linked' else linkedin_linked end as linkedin_linked,
   linked_date,
   ROW_NUMBER() OVER (PARTITION BY influencer_id) AS rnk
   FROM (
@@ -84,14 +87,26 @@ WITH base AS (
           ON inf2.influencer_id = jobs_l1y.influencer_id
       ),
       linked_acc AS (
-          SELECT
-          SAFE_CAST(influencer_id AS INT64) influencer_id,
-          MAX(DATE(updated_at)) AS linked_date,
-          COALESCE(MAX(CASE WHEN LOWER(GSI1SK) = 'instagram' THEN 'linked' END), 'not-linked') AS instagram_linked,
-         coalesce(MAX(CASE WHEN LOWER(GSI1SK) = 'facebook' THEN 'linked' END), 'not-linked') AS facebook_linked
-        FROM bi-staging-1-309112.custom_pipe_eu.socials
-        WHERE LOWER(GSI1SK) IN ('facebook', 'instagram')
-        GROUP BY 1
+                  SELECT
+                    SAFE_CAST(influencer_id AS INT64) influencer_id,
+                    MAX(DATE(status_update_time)) AS linked_date,
+                    COALESCE(MAX(CASE WHEN LOWER(channel) = 'instagram' THEN 'linked' END), 'not-linked') AS instagram_linked,
+                    coalesce(MAX(CASE WHEN LOWER(channel) = 'facebook' THEN 'linked' END), 'not-linked') AS facebook_linked,
+                    COALESCE(MAX(CASE WHEN LOWER(channel) = 'tiktok' THEN 'linked' END), 'not-linked') AS tiktok_linked,
+                    coalesce(MAX(CASE WHEN LOWER(channel) = 'twitter' THEN 'linked' END), 'not-linked') AS twitter_linked,
+                    coalesce(MAX(CASE WHEN LOWER(channel) = 'linkedin' THEN 'linked' END), 'not-linked') AS linkedin_linked,
+                  from bi-staging-1-309112.wowzi_dbt_prod.influencer_channel_data 
+                  WHERE LOWER(status) = 'approved'
+                  -- and influencer_id = 113483
+                  GROUP BY 1
+        --   SELECT
+        --   SAFE_CAST(influencer_id AS INT64) influencer_id,
+        --   MAX(DATE(updated_at)) AS linked_date,
+        --   COALESCE(MAX(CASE WHEN LOWER(GSI1SK) = 'instagram' THEN 'linked' END), 'not-linked') AS instagram_linked,
+        --  coalesce(MAX(CASE WHEN LOWER(GSI1SK) = 'facebook' THEN 'linked' END), 'not-linked') AS facebook_linked
+        -- FROM bi-staging-1-309112.custom_pipe_eu.socials
+        -- WHERE LOWER(GSI1SK) IN ('facebook', 'instagram')
+        -- GROUP BY 1
       )
       -- username AS (
       --   SELECT 
@@ -107,7 +122,10 @@ WITH base AS (
     SELECT inf3.*,
     linked_acc.linked_date,
     linked_acc.instagram_linked,
-    linked_acc.facebook_linked
+    linked_acc.facebook_linked,
+    linked_acc.tiktok_linked,
+    linked_acc.twitter_linked,
+    linked_acc.linkedin_linked
     FROM inf3
     LEFT JOIN linked_acc 
       ON inf3.influencer_id = linked_acc.influencer_id
@@ -139,6 +157,8 @@ SELECT
     WHEN s.group_id IS NOT NULL 
          AND b.instagram_linked = 'not-linked' 
          AND b.facebook_linked = 'not-linked' 
+         AND b.tiktok_linked = 'not-linked'
+         AND b.twitter_linked = 'not-linked'
     THEN b.mobile_number
     ELSE NULL
   END AS mobile_number,
@@ -155,15 +175,14 @@ SELECT
   -- b.linkedin_username,
   b.instagram_linked,
   b.facebook_linked,
+  b.tiktok_linked,
+  b.twitter_linked,
+  b.linkedin_linked,
   b.linked_date,
   s.group_id
 FROM base2 b
 LEFT JOIN unlinked_snapshot s
   ON b.influencer_id = s.influencer_id
-
-
-
-
 
 
 
