@@ -91,7 +91,8 @@ AS (
  ),
 fixed AS (
   SELECT
-    i.* 
+    -- i.* 
+    *
       REPLACE (
       -- new first_name
       CASE WHEN REGEXP_CONTAINS(TRIM(first_name), r'\s+')
@@ -102,14 +103,14 @@ fixed AS (
       CASE WHEN REGEXP_CONTAINS(TRIM(first_name), r'\s+')
            THEN REGEXP_EXTRACT(TRIM(first_name), r'(\S+)$')
            ELSE last_name
-      END AS last_name,
-      -- new country
-      c.Country as country
+      END AS last_name
+      -- -- new country
+      -- c.Country as country
     )
-  FROM influencers i 
-    left join 
-    bi-staging-1-309112.wowzi_dbt_prod.country_key c 
-    on i.country = c.Key
+  FROM influencers  
+    -- left join 
+    -- bi-staging-1-309112.wowzi_dbt_prod.country_key c 
+    -- on i.country = c.Key
 ),
 influencer_facts AS (
   SELECT
