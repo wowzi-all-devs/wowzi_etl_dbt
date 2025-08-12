@@ -92,6 +92,8 @@ AS (
 fixed AS (
   SELECT
     -- i.* 
+    /*if the last name is blank and first name has more then one name, 
+      then the last name is the last word in the first name*/
     *
       REPLACE (
       -- new first_name
