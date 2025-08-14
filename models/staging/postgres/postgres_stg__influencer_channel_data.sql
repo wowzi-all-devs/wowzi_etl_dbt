@@ -5,6 +5,7 @@ SELECT
     cast(followers_count as INT) as followers_count ,
     username,
     status,
+    is_system_linked,
     status_backofficer_id,
     status_comment,
     status_update_time
