@@ -24,6 +24,7 @@ WITH base AS (
   case when tiktok_linked is null then 'not-linked' else tiktok_linked end as tiktok_linked,
   case when twitter_linked is null then 'not-linked' else twitter_linked end as twitter_linked,
   case when linkedin_linked is null then 'not-linked' else linkedin_linked end as linkedin_linked,
+  is_system_linked,
   linked_date,
   ROW_NUMBER() OVER (PARTITION BY influencer_id) AS rnk
   FROM (
@@ -89,16 +90,17 @@ WITH base AS (
       linked_acc AS (
                   SELECT
                     SAFE_CAST(influencer_id AS INT64) influencer_id,
+                    is_system_linked,
                     MAX(DATE(status_update_time)) AS linked_date,
                     COALESCE(MAX(CASE WHEN LOWER(channel) = 'instagram' THEN 'linked' END), 'not-linked') AS instagram_linked,
                     coalesce(MAX(CASE WHEN LOWER(channel) = 'facebook' THEN 'linked' END), 'not-linked') AS facebook_linked,
                     COALESCE(MAX(CASE WHEN LOWER(channel) = 'tiktok' THEN 'linked' END), 'not-linked') AS tiktok_linked,
                     coalesce(MAX(CASE WHEN LOWER(channel) = 'twitter' THEN 'linked' END), 'not-linked') AS twitter_linked,
-                    coalesce(MAX(CASE WHEN LOWER(channel) = 'linkedin' THEN 'linked' END), 'not-linked') AS linkedin_linked,
-                  from bi-staging-1-309112.wowzi_dbt_prod.influencer_channel_data 
+                    coalesce(MAX(CASE WHEN LOWER(channel) = 'linkedin' THEN 'linked' END), 'not-linked') AS linkedin_linked 
+                  from bi-staging-1-309112.wowzi_dbt_prod.postgres_stg__influencer_channel_data 
                   WHERE LOWER(status) = 'approved'
                   -- and influencer_id = 113483
-                  GROUP BY 1
+                  GROUP BY 1, 2
         --   SELECT
         --   SAFE_CAST(influencer_id AS INT64) influencer_id,
         --   MAX(DATE(updated_at)) AS linked_date,
@@ -125,7 +127,8 @@ WITH base AS (
     linked_acc.facebook_linked,
     linked_acc.tiktok_linked,
     linked_acc.twitter_linked,
-    linked_acc.linkedin_linked
+    linked_acc.linkedin_linked,
+    linked_acc.is_system_linked
     FROM inf3
     LEFT JOIN linked_acc 
       ON inf3.influencer_id = linked_acc.influencer_id
@@ -178,6 +181,7 @@ SELECT
   b.tiktok_linked,
   b.twitter_linked,
   b.linkedin_linked,
+  b.is_system_linked,
   b.linked_date,
   s.group_id
 FROM base2 b

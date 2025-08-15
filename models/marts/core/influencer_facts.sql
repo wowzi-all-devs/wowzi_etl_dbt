@@ -135,7 +135,7 @@ influencer_facts AS (
         select distinct
         influencer_id from 
         `bi-staging-1-309112.wowzi_dbt_prod.postgres_stg__influencer_channel_data` 
-        where status='APPROVED' and followers_count>=251 and lower(channel) <> 'linkedin'
+        where lower(status) ='approved' and followers_count>=251 and lower(channel) <> 'linkedin'
       )
        then True else False
      END 
