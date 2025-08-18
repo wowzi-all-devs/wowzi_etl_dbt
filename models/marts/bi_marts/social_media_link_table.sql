@@ -3,7 +3,6 @@ linked their social media accounts. I did this to allow for easy measurement of 
 within each group.
 */
 
-
 WITH base AS (
   SELECT
   influencer_id,
@@ -26,7 +25,7 @@ WITH base AS (
   case when linkedin_linked is null then 'not-linked' else linkedin_linked end as linkedin_linked,
   is_system_linked,
   linked_date,
-  ROW_NUMBER() OVER (PARTITION BY influencer_id) AS rnk
+  ROW_NUMBER() OVER (PARTITION BY influencer_id order by influencer_id ) AS rnk
   FROM (
     WITH
       inf AS (
@@ -49,7 +48,7 @@ WITH base AS (
         FROM `bi-staging-1-309112.wowzi_dbt_prod.influencer_facts` f
         LEFT JOIN `bi-staging-1-309112.wowzi_dbt_prod.country_key` c
           ON LOWER(f.country) = LOWER(c.Key)
-        WHERE job_eligibility IS TRUE
+        -- WHERE job_eligibility IS TRUE
       ),
       inf2 AS (
         SELECT
@@ -143,28 +142,52 @@ base.*
 from base
 where rnk =1
 ),
-unlinked_snapshot AS (
-  SELECT 
-    influencer_id,
-    CEIL(ROW_NUMBER() OVER (ORDER BY influencer_id DESC) / 500.0) AS group_id
+cohort AS (
+  SELECT DISTINCT influencer_id
   FROM base2
-  WHERE mobile_number IS NOT NULL
+  WHERE influencer_id IS NOT NULL
+    AND mobile_number IS NOT NULL
+    AND job_eligibility IS TRUE
+    AND (
+      instagram_linked = 'linked' OR
+      facebook_linked  = 'linked' OR
+      tiktok_linked    = 'linked' OR
+      twitter_linked   = 'linked' OR
+      linkedin_linked  = 'linked'
+    )
+),
+
+-- 2) Assign row numbers ONCE
+ordered AS (
+  SELECT
+    influencer_id,
+    ROW_NUMBER() OVER (ORDER BY influencer_id DESC NULLS LAST) AS rn
+  FROM cohort
+),
+-- 3) Turn rn into 500-sized buckets (exact)
+buckets AS (
+  SELECT
+    influencer_id,
+    CAST(1 + FLOOR((rn - 1) / 500) AS INT64) AS group_id,  -- groups of 500, except last
+    rn
+  FROM ordered
 )
+-- -- 4) Inspect counts AND the rn span per group
+-- SELECT
+--   group_id,
+--   COUNT(*) AS cnt,
+--   MIN(rn) AS min_rn_in_group,
+--   MAX(rn) AS max_rn_in_group
+-- FROM buckets
+-- GROUP BY 1
+-- ORDER BY 1;
 
 SELECT 
   b.influencer_id,
   b.first_name,
   b.gender,
   b.email,
-  CASE 
-    WHEN s.group_id IS NOT NULL 
-         AND b.instagram_linked = 'not-linked' 
-         AND b.facebook_linked = 'not-linked' 
-         AND b.tiktok_linked = 'not-linked'
-         AND b.twitter_linked = 'not-linked'
-    THEN b.mobile_number
-    ELSE NULL
-  END AS mobile_number,
+  b.mobile_number,
   b.country,
   b.location,
   b.age,
@@ -181,14 +204,17 @@ SELECT
   b.tiktok_linked,
   b.twitter_linked,
   b.linkedin_linked,
+  case when 
+    b.instagram_linked = 'linked' or b.facebook_linked = 'linked' or 
+    b.tiktok_linked = 'linked' or b.twitter_linked = 'linked' or
+    b.linkedin_linked = 'linked'
+    then 'one_linked' else 'none_linked' end as at_least_one_linked,
   b.is_system_linked,
   b.linked_date,
   s.group_id
 FROM base2 b
-LEFT JOIN unlinked_snapshot s
+LEFT JOIN buckets s
   ON b.influencer_id = s.influencer_id
-
-
 
 
 
