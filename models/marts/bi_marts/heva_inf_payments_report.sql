@@ -85,12 +85,14 @@ fp.provider,
  dense_rank () over (order by extract(year from date(fp.payment_eligible_at)) asc, extract(month from date(fp.payment_eligible_at))asc) mon_yr_rnk,
 
  EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) AS quarter,
+
  CONCAT("Q", CAST(EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) AS STRING), "-", CAST(EXTRACT(YEAR FROM DATE(fp.payment_eligible_at)) AS STRING)) AS 
    qtr_yr,
+
  DENSE_RANK() OVER (ORDER BY EXTRACT(YEAR FROM DATE(fp.payment_eligible_at)) ASC,
- EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) ASC
-) 
+ EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) ASC) 
 AS qtr_yr_rnk,
+
 fp.payable_days_flag,
  case 
   when 
@@ -108,8 +110,14 @@ final as
 (
   select 
 *,
+  /*used window function to get the total paid to an influencer in a quarter*/
   SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) AS period_total_paid,
-  row_number() over (Partition by influencer_id, qtr_yr order by payment_date) as paymnt_rnk,
+
+  /*used paymnt_rnk to rank the total payments made in a quarter
+   so i could select only the first so as not to double count the total paid in a quarter.
+  */
+  row_number() over (Partition by influencer_id, qtr_yr order by payment_date) as paymnt_rnk, 
+
     CASE 
     WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) < 20000 THEN '< 20K'
     WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) BETWEEN 20000 AND 49999 THEN '20K - 50K'
