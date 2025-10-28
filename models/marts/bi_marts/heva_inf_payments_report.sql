@@ -2,7 +2,10 @@ with
 fp as
 (
   select 
-  *,
+  id,amount,status,task_id,approver,currency,fullname,provider,bank_code,bank_name,narration,reference,created_at,
+  tax_amount,updated_at,is_approved,retry_count,transfer_id,bank_country,date_created,gross_amount,creation_time,
+  exchange_rate,influencer_id,account_number,payment_method,processed_date,complete_message,requires_approval,
+  payment_eligible_at,
     CASE 
     WHEN DATE(payment_eligible_at) BETWEEN CURRENT_DATE() AND DATE_ADD(CURRENT_DATE(), INTERVAL 5 DAY) 
       THEN 'Next 5 Days' 
@@ -25,6 +28,7 @@ inf as
  inf.company_id,
  initcap(inf.company_name) company_name,
  inf.campaign_id,
+ initcap(cf.campaign_name) campaign_name,
  inf.job_id,
  inf.task_id,
  inf.job_status,
@@ -38,12 +42,13 @@ inf as
  case when loc.location is null then 'Not Provided' else
  initcap(loc.location) end as location,
  inf.amount_lcy job_value,
- case when company_id IN (1191, 5957, 6121, 17398, 19907, 19773, 20248)
+ case when inf.company_id IN (1191, 5957, 6121, 17398, 19907, 19773, 20248)
 --   ('Safaricom', 'Mediacom', 'Uk-Kenya Tech Hub', 
 --  'Equity Bank', 'Predator', 'Infinix', 'Kenya Tourism Board') 
  then 0 else 1 end as order_flg 
  FROM bi-staging-1-309112.wowzi_dbt_prod.influencer_job_breakdown inf
  LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.influencer_facts loc on inf.influencer_id = loc.influencer_id 
+ LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.campaign_facts cf on inf.campaign_id = cf.campaign_id 
 --  FROM {{ ref('influencer_job_breakdown') }} inf
 --  LEFT JOIN {{ ref('influencer_facts') }} loc on inf.influencer_id = loc.influencer_id 
 ),
@@ -53,7 +58,9 @@ select
  fp.id payment_id,
  fp.influencer_id,
  inf.company_name,
+ inf.company_id,
  inf.campaign_id,
+ inf.campaign_name,
  inf.job_id,
  fp.task_id,
  inf.job_status,
@@ -77,6 +84,7 @@ fp.provider,
  fp.provider is null THEN fp.provider
  ELSE 'MPESA' END as payment_channel,
  fp.reference,
+ date(fp.creation_time) creation_time,
  fp.payment_eligible_at payment_date,
  case when date(fp.payment_eligible_at) > current_date() then 'Future_payment' else 'Past_payment' end as payment_flag,
  extract(month from date(fp.payment_eligible_at)) mon,
@@ -109,7 +117,7 @@ order_flg
 final as 
 (
   select 
-*,
+  *,
   /*used window function to get the total paid to an influencer in a quarter*/
   SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) AS period_total_paid,
 
@@ -134,12 +142,19 @@ final as
   from semi_final
 )
 select 
-      a.payment_id, b.influencer_id, a.company_name, a.campaign_id, a.job_id,
+      a.payment_id, b.influencer_id, a.company_name, 
+      case when a.company_id in 
+      (17206,16194,17215,19197,17234,19870,17212,19860,17263,17224,
+      17225,17214,17217,2382,17229,17223,17226,17228,20103) then 
+      'Alcoholic Brand' else 'Non-alcoholic Brand'
+      end as brand_category,
+       a.campaign_id, a.campaign_name, a.job_id,
        a.task_id, a.job_status, a.no_of_tasks, a.completed_tasks, Initcap(b.gender) gender,
        b.age_range age_groups, b.country, b.location, a.transfer_id,
        a.currency, a.job_value,
        payment_status, provider, payment_channel, reference,
-       payment_date, payment_flag, mon, yr, quarter, mon_yr, qtr_yr,  mon_yr_rnk,
+       payment_date,
+       creation_time, payment_flag, mon, yr, quarter, mon_yr, qtr_yr,  mon_yr_rnk,
        qtr_yr_rnk,
        payable_days_flag, clean_payment_flag, order_flg,
        case when paymnt_rnk = 1 then period_total_paid else null end as period_total_paid, 
