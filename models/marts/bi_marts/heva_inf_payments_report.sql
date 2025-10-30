@@ -146,7 +146,7 @@ select
       case when a.company_id in 
       (17206,16194,17215,19197,17234,19870,17212,19860,17263,17224,
       17225,17214,17217,2382,17229,17223,17226,17228,20103) then 
-      'Alcoholic Brand' else 'Non-alcoholic Brand'
+      'Regulated Beverage Sector' else 'General Market Sector' 
       end as brand_category,
        a.campaign_id, a.campaign_name, a.job_id,
        a.task_id, a.job_status, a.no_of_tasks, a.completed_tasks, Initcap(b.gender) gender,
