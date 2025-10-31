@@ -16,7 +16,7 @@ fp as
     END AS payable_days_flag,
     
   from bi-staging-1-309112.wowzi_airbyte.influencer_transfers
-  where payment_eligible_at >= '2025-01-02' --payments from jan 2nd
+  where processed_date >= '2025-01-02' --payments from jan 2nd payment_eligible_at
   and lower(status) in ('completed', 'successful', 'manual') 
   and influencer_id <> 126859
   order by date_created asc
@@ -85,26 +85,26 @@ fp.provider,
  ELSE 'MPESA' END as payment_channel,
  fp.reference,
  date(fp.creation_time) creation_time,
- fp.payment_eligible_at payment_date,
- case when date(fp.payment_eligible_at) > current_date() then 'Future_payment' else 'Past_payment' end as payment_flag,
- extract(month from date(fp.payment_eligible_at)) mon,
- extract(year from date(fp.payment_eligible_at)) yr,
- concat(FORMAT_DATETIME("%b", DATETIME(date(fp.payment_eligible_at))),"-", extract(year from date(fp.payment_eligible_at))) mon_yr,
- dense_rank () over (order by extract(year from date(fp.payment_eligible_at)) asc, extract(month from date(fp.payment_eligible_at))asc) mon_yr_rnk,
+ fp.processed_date payment_date,
+ case when date(fp.processed_date) > current_date() then 'Future_payment' else 'Past_payment' end as payment_flag,
+ extract(month from date(fp.processed_date)) mon,
+ extract(year from date(fp.processed_date)) yr,
+ concat(FORMAT_DATETIME("%b", DATETIME(date(fp.processed_date))),"-", extract(year from date(fp.processed_date))) mon_yr,
+ dense_rank () over (order by extract(year from date(fp.processed_date)) asc, extract(month from date(fp.processed_date))asc) mon_yr_rnk,
 
- EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) AS quarter,
+ EXTRACT(QUARTER FROM DATE(fp.processed_date)) AS quarter,
 
- CONCAT("Q", CAST(EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) AS STRING), "-", CAST(EXTRACT(YEAR FROM DATE(fp.payment_eligible_at)) AS STRING)) AS 
+ CONCAT("Q", CAST(EXTRACT(QUARTER FROM DATE(fp.processed_date)) AS STRING), "-", CAST(EXTRACT(YEAR FROM DATE(fp.processed_date)) AS STRING)) AS 
    qtr_yr,
 
- DENSE_RANK() OVER (ORDER BY EXTRACT(YEAR FROM DATE(fp.payment_eligible_at)) ASC,
- EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) ASC) 
+ DENSE_RANK() OVER (ORDER BY EXTRACT(YEAR FROM DATE(fp.processed_date)) ASC,
+ EXTRACT(QUARTER FROM DATE(fp.processed_date)) ASC) 
 AS qtr_yr_rnk,
 
 fp.payable_days_flag,
  case 
   when 
-  date(fp.payment_eligible_at) < current_date() 
+  date(fp.processed_date) < current_date() 
   and lower(fp.status) = 'waiting_for_payment' 
   then 'old_unpaid' else 'Paid_or_upcoming'
   end as 
