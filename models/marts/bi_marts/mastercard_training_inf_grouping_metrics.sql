@@ -91,11 +91,11 @@ final as
 select 
 inf_data.*,
 case when
-  payment.fine_payment_status in ('Successful - Backoffice', 'Successful - Marked') then payment.paid_amount
+  payment.fine_payment_status in ('Successful - Backoffice', 'Successful - Marked', 'Awaiting payment') then payment.paid_amount
   else 0
   end as paid_amt,
 case when
-  payment.fine_payment_status in ('Successful - Backoffice', 'Successful - Marked') then payment.paid_amount_usd
+  payment.fine_payment_status in ('Successful - Backoffice', 'Successful - Marked', 'Awaiting payment') then payment.paid_amount_usd
   else 0
   end as paid_amt_usd,
  CASE 
