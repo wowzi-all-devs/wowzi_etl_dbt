@@ -119,12 +119,12 @@ final as
   select 
   *,
   /*used window function to get the total paid to an influencer in a quarter*/
-  SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) AS period_total_paid,
+  SUM(paid_amount) OVER (PARTITION BY influencer_id) AS period_total_paid, --- qtr_yr add for quarter specific
 
   /*used paymnt_rnk to rank the total payments made in a quarter
    so i could select only the first so as not to double count the total paid in a quarter.
   */
-  row_number() over (Partition by influencer_id, qtr_yr order by payment_date) as paymnt_rnk, 
+  row_number() over (Partition by influencer_id order by payment_date) as paymnt_rnk,  --- qtr_yr add for quarter specific
 
     CASE 
     WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) < 20000 THEN '< 20K'

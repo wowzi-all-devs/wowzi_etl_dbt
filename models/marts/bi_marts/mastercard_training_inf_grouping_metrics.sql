@@ -56,7 +56,7 @@ select
 inf.group_id,
 inf.group_name,
 inf.influencer_id, 
-inf.creation_time,
+inf.creation_time,comple
 concat(inf_data.first_name,' ', inf_data.last_name) inf_name,
 inf_data.gender,
 inf_data.inf_age_range,
