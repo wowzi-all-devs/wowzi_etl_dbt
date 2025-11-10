@@ -13,7 +13,7 @@ i_groups.id group_id,
 i_groups.name group_name, 
 inf.influencer_id, 
 inf.influencer_group_id,
-date(inf.creation_time) creation_time,
+date(inf.creation_time) creation_time
 from {{ source('staging', 'influencer_group_influencers') }} inf
 -- from `bi-staging-1-309112`.`wowzi_airbyte`.`influencer_group_influencers` inf
 right join i_groups ------Right join bc my right tbl is where all the groups are that i need matched to inf_id
@@ -56,7 +56,7 @@ select
 inf.group_id,
 inf.group_name,
 inf.influencer_id, 
-inf.creation_time,comple
+inf.creation_time, 
 concat(inf_data.first_name,' ', inf_data.last_name) inf_name,
 inf_data.gender,
 inf_data.inf_age_range,
