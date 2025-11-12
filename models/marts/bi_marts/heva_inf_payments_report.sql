@@ -85,10 +85,10 @@ fp.provider,
  ELSE 'MPESA' END as payment_channel,
  fp.reference,
  date(fp.creation_time) creation_time,
- fp.payment_eligible_at payment_date,
- case when date(fp.payment_eligible_at) > current_date() then 'Future_payment' else 'Past_payment' end as payment_flag,
- extract(month from date(fp.payment_eligible_at)) mon,
- extract(year from date(fp.payment_eligible_at)) yr,
+ fp.processed_date payment_date,
+ case when date(fp.processed_date) > current_date() then 'Future_payment' else 'Past_payment' end as payment_flag,
+ extract(month from date(fp.processed_date)) mon,
+ extract(year from date(fp.processed_date)) yr,
  concat(FORMAT_DATETIME("%b", DATETIME(date(fp.payment_eligible_at))),"-", extract(year from date(fp.payment_eligible_at))) mon_yr,
  dense_rank () over (order by extract(year from date(fp.payment_eligible_at)) asc, extract(month from date(fp.payment_eligible_at))asc) mon_yr_rnk,
 
@@ -98,7 +98,7 @@ fp.provider,
    qtr_yr,
 
  DENSE_RANK() OVER (ORDER BY EXTRACT(YEAR FROM DATE(fp.payment_eligible_at)) ASC,
- EXTRACT(QUARTER FROM DATE(fp.processed_date)) ASC) 
+ EXTRACT(QUARTER FROM DATE(fp.payment_eligible_at)) ASC) 
 AS qtr_yr_rnk,
 
 fp.payable_days_flag,
@@ -135,7 +135,7 @@ final as
   END AS paid_bucket,
 
    CASE 
-    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) < 49500 THEN 'Below DFW'
+    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id) < 49500 THEN 'Below DFW' --, qtr_yr
     ELSE 'Above DFW'
 
   END AS DFW_Category
