@@ -67,7 +67,6 @@ retained AS (
   INTERSECT DISTINCT
   SELECT user_id FROM curr_active
 )
-
 -- 6) Final counts and the retention rate.
 SELECT
   DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 2 MONTH), MONTH) AS prev_start,

@@ -46,6 +46,13 @@ SELECT
   country.Country AS country,
   a.platform,
   a.fine_event_name,
+    case when
+  a.fine_event_name = 'Landing Page Viewed' then 'Login Viewed'
+  when a.fine_event_name = 'Sign Up Clicked' then 'Sign-up Form Viewed'
+  when a.fine_event_name = 'Sign Up' then 'Sign-up Submitted'
+  when a.fine_event_name = 'User Login' then 'Login Successful'
+  else NULL
+  end as key_platform_event,
   a.org,
   a.last_24_hours_activity,
   a.last_7_days_activity,
