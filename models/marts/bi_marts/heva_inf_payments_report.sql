@@ -13,7 +13,7 @@ fp as
     WHEN DATE(payment_eligible_at) BETWEEN CURRENT_DATE() AND DATE_ADD(CURRENT_DATE(), INTERVAL 7 DAY) 
       THEN 'Next 7 Days' 
       ELSE 'Beyond 7 Days' 
-    END AS payable_days_flag,
+    END AS payable_days_flag
     
   from bi-staging-1-309112.wowzi_airbyte.influencer_transfers
   where payment_eligible_at >= '2025-01-02' --payments from jan 2nd payment_eligible_at

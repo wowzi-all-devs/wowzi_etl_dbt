@@ -7,23 +7,28 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-jkae.py/
+
+# Project-specific scripts to ignore
+jkae.py
+.jkae.py
 
 # --- Virtual environments ---
 venv/
-.env/
 .venv/
 env/
+ENV/
 .conda/
+.venv/venv/
 
 # --- dbt stuff ---
 target/
 dbt_packages/
 logs/
 
-# local profiles (keep your secrets/config out of git)
+# Local profiles (keep your secrets/config out of git)
 profiles.yml
 xprofiles.yml
+.user.yml
 
 # --- pyenv local version file ---
 .python-version
@@ -37,3 +42,9 @@ npm-debug.log*
 .DS_Store
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# --- Env files / secrets ---
+.env
+.env.*
