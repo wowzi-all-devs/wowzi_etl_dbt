@@ -1,7 +1,39 @@
+# --- Python cache / build ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+jkae.py/
+
+# --- Virtual environments ---
+venv/
+.env/
+.venv/
+env/
+.conda/
+
+# --- dbt stuff ---
 target/
 dbt_packages/
 logs/
-.user.yml
-.env
+
+# local profiles (keep your secrets/config out of git)
+profiles.yml
+xprofiles.yml
+
+# --- pyenv local version file ---
+.python-version
+
+# --- Node / npm (if present) ---
+node_modules/
+package-lock.*
+npm-debug.log*
+
+# --- OS / Editor junk ---
+.DS_Store
+.vscode/
 .idea/
-.jkae.py

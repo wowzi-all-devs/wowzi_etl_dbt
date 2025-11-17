@@ -19,6 +19,7 @@ fp as
   where payment_eligible_at >= '2025-01-02' --payments from jan 2nd payment_eligible_at
   and lower(status) in ('completed', 'successful', 'manual') 
   and influencer_id <> 126859
+  and task_id <> 390450
   order by date_created asc
  ),
 inf as 
