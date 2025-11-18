@@ -9,6 +9,7 @@ select
     budget,
     currency,
     gender,
+    package,
     canceled,
     canceled_timestamp,
     canceled_by_merchant_id,
