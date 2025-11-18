@@ -17,6 +17,7 @@ SELECT
   c.campaign_id,
   c.company_id,
   c.campaign_name,
+  c.package,
   c.campaign_creation_date,
   c.start_date,
   c.end_date,
