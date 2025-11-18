@@ -11,6 +11,7 @@ as
           cf.campaign_name,
           cf.company_id, 
           cf.company_name,
+          cf.package,
           campaign_creation_date,
           start_date, end_date,
         cf.currency, 
