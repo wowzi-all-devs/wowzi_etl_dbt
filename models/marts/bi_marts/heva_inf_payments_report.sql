@@ -155,6 +155,7 @@ select
        b.age_range age_groups, b.country, b.location, a.transfer_id,
        a.currency, a.job_value,
        payment_status, provider, payment_channel, reference,
+       processed_date,
        payment_date,
        creation_time, payment_flag, mon, yr, quarter, mon_yr, qtr_yr,  mon_yr_rnk,
        qtr_yr_rnk,
