@@ -1,3 +1,5 @@
+select * from
+(
 with
 fp as
 (
@@ -87,6 +89,7 @@ fp.provider,
  fp.reference,
  date(fp.creation_time) creation_time,
  fp.processed_date,
+ fp.payment_eligible_at,
  fp.payment_eligible_at payment_date,
  case when date(fp.payment_eligible_at) > current_date() then 'Future_payment' else 'Past_payment' end as payment_flag,
  extract(month from date(fp.payment_eligible_at)) mon,
@@ -152,11 +155,22 @@ select
       end as brand_category,
        a.campaign_id, a.campaign_name, a.job_id,
        a.task_id, a.job_status, a.no_of_tasks, a.completed_tasks, Initcap(b.gender) gender,
-       b.age_range age_groups, b.country, b.location, a.transfer_id,
+       b.age_range age_groups, b.country, 
+       case when 
+       b.location is null then 'Not Provided' 
+       else b.location
+       end as location, 
+       a.transfer_id,
        a.currency, a.job_value,
        payment_status, provider, payment_channel, reference,
+       payment_eligible_at,       
        processed_date,
-       payment_date,
+       case when 
+       (date(payment_date) > date('2025-10-01')) 
+       then date(processed_date)
+       else date(payment_date)
+       end as payment_date,      
+       
        creation_time, payment_flag, mon, yr, quarter, mon_yr, qtr_yr,  mon_yr_rnk,
        qtr_yr_rnk,
        payable_days_flag, clean_payment_flag, order_flg,
@@ -333,3 +347,8 @@ select
       end as payment_source
 from final a
 left join bi-staging-1-309112.wowzi_dbt_prod.influencer_facts b on a.influencer_id = b.influencer_id
+) t
+--- adding a logic to filter out non alcoholic payments from 11/13/2025
+WHERE 
+      DATE(t.payment_date) < DATE '2025-11-13'
+   OR t.brand_category = 'General Market Sector'
