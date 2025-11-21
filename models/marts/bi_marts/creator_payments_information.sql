@@ -28,6 +28,12 @@ inf as
  inf.influencer_id,
  initcap(inf.company_name) company_name,
  inf.campaign_id,
+ inf.company_id,
+ case when inf.company_id in 
+      (17206,16194,17215,19197,17234,19870,17212,19860,17263,17224,
+      17225,17214,17217,2382,17229,17223,17226,17228,20103,17222,17262,17235,19383) then 
+      'Regulated Beverage Sector' else 'General Market Sector' 
+  end as brand_category,
  inf.job_id,
  inf.task_id,
  inf.job_status,
@@ -54,6 +60,12 @@ inf as
  fp.id payment_id,
  fp.influencer_id,
  inf.company_name,
+ inf.company_id,
+ case when inf.company_id in 
+      (17206,16194,17215,19197,17234,19870,17212,19860,17263,17224,
+      17225,17214,17217,2382,17229,17223,17226,17228,20103,17222,17262,17235,19383) then 
+      'Regulated Beverage Sector' else 'General Market Sector' 
+  end as brand_category,
  inf.campaign_id,
  inf.job_id,
  fp.task_id,
