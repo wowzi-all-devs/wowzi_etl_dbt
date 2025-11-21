@@ -148,9 +148,10 @@ final as
 )
 select 
       a.payment_id, b.influencer_id, a.company_name, 
+      a.company_id,
       case when a.company_id in 
       (17206,16194,17215,19197,17234,19870,17212,19860,17263,17224,
-      17225,17214,17217,2382,17229,17223,17226,17228,20103) then 
+      17225,17214,17217,2382,17229,17223,17226,17228,20103,17222,17262,17235,19383) then 
       'Regulated Beverage Sector' else 'General Market Sector' 
       end as brand_category,
        a.campaign_id, a.campaign_name, a.job_id,
