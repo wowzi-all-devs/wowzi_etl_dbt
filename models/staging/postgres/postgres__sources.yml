@@ -34,6 +34,7 @@ sources:
         - name: clusters
         - name: cluster_country
         - name: cluster_company
+        - name: campaign_report_metrics_daily
 
     - name: rates
       #For bigquery:
