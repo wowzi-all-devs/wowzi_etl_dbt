@@ -11,6 +11,7 @@ safaricom_camp as
 (
 select 
 a.influencer_id,
+b.task_id,
 b.processed_at,
 b.platform,
 b.reach_delta reach,
