@@ -22,3 +22,4 @@ sources:
         - name: gsheet__stg__HEVA_requsition_data_2 
         - name: gsheets__safaricom_poc_influencers
         - name: gsheets__safaricom_immersed_influencers
+        - name: gsheets__safaricom_curators_influencers
