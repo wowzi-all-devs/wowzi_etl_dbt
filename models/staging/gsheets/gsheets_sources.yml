@@ -23,3 +23,5 @@ sources:
         - name: gsheets__safaricom_poc_influencers
         - name: gsheets__safaricom_immersed_influencers
         - name: gsheets__safaricom_curators_influencers
+        - name: gsheets_safaricom_sentiments_influencers
+
