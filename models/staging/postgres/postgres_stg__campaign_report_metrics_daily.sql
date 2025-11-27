@@ -29,6 +29,7 @@ per_platform AS (
     influencer_id,
     created_at,
     processed_at,
+    extract(week(MONDAY) from date(processed_at)) AS week_number,
     end_date,
     status,
     verification_status,

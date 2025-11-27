@@ -1,7 +1,7 @@
 select 
 name,
 date(join_date) as join_date,
-
+extract(week(MONDAY) from date(join_date)) AS week_number,
 case when 
  DATE_TRUNC(date(join_date), week(MONDAY)) =
   DATE_SUB(date_trunc(current_date(), week(MONDAY)), INTERVAL 7 DAY)
