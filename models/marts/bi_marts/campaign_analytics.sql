@@ -25,7 +25,7 @@ as
           WHEN creator_type = 'BACK_OFFICER' then bo.email
           else NULL
           END) AS creator_email,
-          canceled, total_tasks, quality_verified_tasks, time_verified_tasks,
+          canceled, influencers_accepted_count,  total_tasks, quality_verified_tasks, time_verified_tasks,
           cf.advertiser_id, 
           CASE WHEN c.Country is null then c1.Country
           ELSE c.Country
@@ -111,6 +111,7 @@ as
         pa.creator_name,
         pa.creator_email,
         pa.canceled, 
+        pa.influencers_accepted_count,
         pa.total_tasks, 
         pa.quality_verified_tasks, 
         pa.time_verified_tasks,
@@ -158,6 +159,7 @@ as
         null creator_name,
         null creator_email,
         false canceled, 
+        null influencers_accepted_count,
         null total_tasks, 
         null quality_verified_tasks, 
         null time_verified_tasks,
@@ -189,6 +191,7 @@ as
         cast(a.creator_name as string) creator_name,
         cast(a.creator_email as string) creator_email,
         a.canceled, 
+        a.influencers_accepted_count,
         a.total_tasks, 
         a.quality_verified_tasks, 
         a.time_verified_tasks,
@@ -218,6 +221,7 @@ as
         cast(b.creator_name as string) creator_name,
         cast(b.creator_email as string) creator_email,
         b.canceled, 
+        b.influencers_accepted_count,
         b.total_tasks, 
         b.quality_verified_tasks, 
         b.time_verified_tasks,
@@ -254,6 +258,7 @@ as
         creator_name,
         creator_email,
         canceled, 
+        influencers_accepted_count,
         total_tasks, 
         quality_verified_tasks, 
         time_verified_tasks,
