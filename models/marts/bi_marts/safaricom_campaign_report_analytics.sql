@@ -51,5 +51,9 @@ bi-staging-1-309112.wowzi_dbt_prod.postgres_stg__campaign_report_metrics_daily b
 on a.influencer_id = b.influencer_id
 and b.campaign_id = 10375
 )
-select * from 
+select *,
+row_number() over (order by processed_at desc) rnk
+ from 
 safaricom_camp
+where 
+processed_at < curr_week_start
