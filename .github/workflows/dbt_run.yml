@@ -54,7 +54,9 @@ jobs:
 
       - name: Write service account key
         run: |
-          echo "${{ secrets.DBT_BQ_KEY_B64 }}" | base64 -d > push_job.json
+          cat > push_job.json <<'JSON'
+          ${{ secrets.GCP_SA_KEY_JSON }}
+          JSON
 
       - name: Create profiles.yml
         run: |
