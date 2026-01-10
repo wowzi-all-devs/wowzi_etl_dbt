@@ -66,8 +66,7 @@ jobs:
                 type: bigquery
                 method: service-account
                 project: "{{ env_var('GCP_BQ_PROJECT') }}"
-                dataset: "{{ env_var('GCP_DBT_DATASET') }}"
-                schema: "{{ env_var('GCP_DBT_DATASET') }}"
+                schema: "{{ env_var('GCP_BQ_DATASET') }}"
                 location: "{{ env_var('GCP_BQ_LOCATION') }}"
                 keyfile: "{{ env_var('GCP_DBT_KEYFILE') }}"
                 threads: 4
@@ -76,29 +75,30 @@ jobs:
 
       - name: dbt deps
         env:
-          GCP_BQ_PROJECT: ${{ secrets.GCP_BQ_PROJECT }}
-          GCP_DBT_DATASET: ${{ secrets.GCP_DBT_DATASET }}
-          GCP_BQ_LOCATION: ${{ secrets.GCP_BQ_LOCATION }}
+          GCP_BQ_PROJECT: ${{ vars.GCP_BQ_PROJECT }}
+          GCP_BQ_DATASET: ${{ vars.GCP_BQ_DATASET }}
+          GCP_BQ_LOCATION: ${{ vars.GCP_BQ_LOCATION }}
           GCP_DBT_KEYFILE: ${{ github.workspace }}/push_job.json
         run: dbt deps --profiles-dir .
 
       - name: Show key env vars (safe)
         env:
-          GCP_BQ_PROJECT: ${{ secrets.GCP_BQ_PROJECT }}
-          GCP_DBT_DATASET: ${{ secrets.GCP_DBT_DATASET }}
-          GCP_BQ_LOCATION: ${{ secrets.GCP_BQ_LOCATION }}
+          GCP_BQ_PROJECT: ${{ vars.GCP_BQ_PROJECT }}
+          GCP_BQ_DATASET: ${{ vars.GCP_BQ_DATASET }}
+          GCP_BQ_LOCATION: ${{ vars.GCP_BQ_LOCATION }}
         run: |
           echo "GCP_BQ_PROJECT=${GCP_BQ_PROJECT}"
-          echo "GCP_DBT_DATASET=${GCP_DBT_DATASET}"
+          echo "GCP_BQ_DATASET=${GCP_BQ_DATASET}"
           echo "GCP_BQ_LOCATION=${GCP_BQ_LOCATION}"
 
       - name: Run dbt
         env:
-          GCP_BQ_PROJECT: ${{ secrets.GCP_BQ_PROJECT }}
-          GCP_DBT_DATASET: ${{ secrets.GCP_DBT_DATASET }}
-          GCP_BQ_LOCATION: ${{ secrets.GCP_BQ_LOCATION }}
+          GCP_BQ_PROJECT: ${{ vars.GCP_BQ_PROJECT }}
+          GCP_BQ_DATASET: ${{ vars.GCP_BQ_DATASET }}
+          GCP_BQ_LOCATION: ${{ vars.GCP_BQ_LOCATION }}
           GCP_DBT_KEYFILE: ${{ github.workspace }}/push_job.json
         run: dbt run --profiles-dir . --threads 4
+
 
 
 
