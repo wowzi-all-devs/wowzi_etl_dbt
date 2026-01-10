@@ -1,3 +1,32 @@
+# name: dbt-CI
+
+# on:
+#   push:
+#     branches: [main]
+#   schedule:
+#     - cron: "0 0 * * *"
+
+# jobs:
+#   dbt-build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+
+#       - uses: actions/setup-python@v5
+#         with:
+#           python-version: "3.11"
+
+#       - name: Install dbt + deps
+#         run: |
+#           pip install --upgrade pip
+#           pip install dbt-bigquery==1.7.5
+#           dbt --version
+#           dbt deps --profiles-dir .
+
+#       - name: Run dbt
+#         run: dbt run --profiles-dir . --threads 4
+
+
 name: dbt-CI
 
 on:
@@ -16,13 +45,47 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dbt + deps
+      - name: Install dbt
         run: |
           pip install --upgrade pip
           pip install dbt-bigquery==1.7.5
           dbt --version
-          dbt deps --profiles-dir .
+
+      - name: Write service account key
+        run: |
+          echo "${{ secrets.DBT_BQ_KEY_B64 }}" | base64 -d > push_job.json
+
+      - name: Create profiles.yml
+        run: |
+          cat > profiles.yml <<'YAML'
+          dbt_wowzi:
+            target: dev
+            outputs:
+              dev:
+                type: bigquery
+                method: service-account
+                project: "{{ env_var('GCP_BQ_PROJECT') }}"
+                dataset: "{{ env_var('GCP_DBT_DATASET') }}"
+                location: "{{ env_var('GCP_BQ_LOCATION') }}"
+                keyfile: "{{ env_var('GCP_DBT_KEYFILE') }}"
+                threads: 4
+                timeout_seconds: 300
+          YAML
+
+      - name: dbt deps
+        env:
+          GCP_BQ_PROJECT: ${{ secrets.GCP_BQ_PROJECT }}
+          GCP_DBT_DATASET: ${{ secrets.GCP_DBT_DATASET }}
+          GCP_BQ_LOCATION: ${{ secrets.GCP_BQ_LOCATION }}
+          GCP_DBT_KEYFILE: ${{ github.workspace }}/push_job.json
+        run: dbt deps --profiles-dir .
 
       - name: Run dbt
+        env:
+          GCP_BQ_PROJECT: ${{ secrets.GCP_BQ_PROJECT }}
+          GCP_DBT_DATASET: ${{ secrets.GCP_DBT_DATASET }}
+          GCP_BQ_LOCATION: ${{ secrets.GCP_BQ_LOCATION }}
+          GCP_DBT_KEYFILE: ${{ github.workspace }}/push_job.json
         run: dbt run --profiles-dir . --threads 4
+
 
