@@ -58,6 +58,23 @@ jobs:
           ${{ secrets.GCP_SA_KEY_JSON }}
           JSON
 
+      - name: Validate keyfile (safe)
+        run: |
+          python - <<'PY'
+          import json, pathlib, re
+          p = pathlib.Path("push_job.json")
+          b = p.read_bytes()
+          print("push_job.json bytes:", len(b))
+          m = re.search(rb"\S", b)
+          if not m:
+            raise SystemExit("File is empty / whitespace only")
+          i = m.start()
+          print("first non-whitespace byte (hex):", b[i:i+1].hex())
+          # Don't print the JSON. Just validate it parses.
+          json.loads(b.decode("utf-8"))
+          print("push_job.json is valid JSON ✅")
+          PY
+
       - name: Create profiles.yml
         run: |
           cat > profiles.yml <<'YAML'
