@@ -1,0 +1,33 @@
+# .github/workflows/dbt_run.yml
+name: dbt-CI
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Daily at midnight UTC
+
+jobs:
+  dbt-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+    #   - name: Write service-account key
+    #     run: echo '${{ secrets.DBT_BQ }}' > "push_job.json"
+
+    #   - name: Set GOOGLE_APPLICATION_CREDENTIALS
+    #     run: echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/ooopor.json" >> $GITHUB_ENV
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dbt
+        run: |
+          pip install --upgrade pip
+          pip install dbt-bigquery==1.7.5
+          dbt --version
+          dbt deps
+
+      - name: Run dbt (run)
+        run: dbt run --profiles-dir . --threads 4
