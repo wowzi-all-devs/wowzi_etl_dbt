@@ -1,82 +1,32 @@
-# # .github/workflows/dbt_run.yml
-# name: dbt-CI
-
-# on:
-#     push:
-#         branches:
-#         - main
-#     schedule:
-#         - cron: "0 0 * * *" # Daily at midnight UTC
-
-# jobs:
-#   dbt-build:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - uses: actions/checkout@v4
-
-#     #   - name: Write service-account key
-#     #     run: echo '${{ secrets.DBT_BQ }}' > "push_job.json"
-
-#     #   - name: Set GOOGLE_APPLICATION_CREDENTIALS
-#     #     run: echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/ooopor.json" >> $GITHUB_ENV
-
-#       - uses: actions/setup-python@v5
-#         with:
-#           python-version: "3.11"
-
-#       - name: Install dbt
-#         run: |
-#           pip install --upgrade pip
-#           pip install dbt-bigquery==1.7.5
-#           dbt --version
-#           dbt deps
-
-#       - name: Run dbt (run)
-#         run: dbt run --profiles-dir . --threads 4
-
-
-
 # .github/workflows/dbt_run.yml
 name: dbt-CI
 
 on:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: "0 0 * * *" # Daily at midnight UTC
+    push:
+        branches:
+        - main
+    schedule:
+        - cron: "0 0 * * *" # Daily at midnight UTC
 
 jobs:
   dbt-build:
     runs-on: ubuntu-latest
 
-    env:
-      GCP_DBT_DATASET: ${{ vars.GCP_DBT_DATASET }}
-      GCP_DBT_DATASET_PROD: ${{ vars.GCP_DBT_DATASET_PROD }}
-      GCP_BQ_LOCATION: ${{ vars.GCP_BQ_LOCATION }}
-      GCP_BQ_PROJECT: ${{ vars.GCP_BQ_PROJECT }}
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Write service-account key (keep ooopor.json)
-        shell: bash
-        run: |
-          cat > ooopor.json <<'EOF'
-          ${{ secrets.GCP_DBT_KEYFILE }}
-          EOF
+    #   - name: Write service-account key
+    #     run: echo '${{ secrets.DBT_BQ }}' > "push_job.json"
 
-      - name: Set GCP_DBT_KEYFILE path for dbt
-        shell: bash
-        run: |
-          echo "GCP_DBT_KEYFILE=$(pwd)/ooopor.json" >> $GITHUB_ENV
+    #   - name: Set GOOGLE_APPLICATION_CREDENTIALS
+    #     run: echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/ooopor.json" >> $GITHUB_ENV
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install dbt
+        working-directory: wowzi_etl_dbt
         run: |
           pip install --upgrade pip
           pip install dbt-bigquery==1.7.5
@@ -84,5 +34,5 @@ jobs:
           dbt deps
 
       - name: Run dbt (run)
+        working-directory: wowzi_etl_dbt
         run: dbt run --profiles-dir . --threads 4
-
