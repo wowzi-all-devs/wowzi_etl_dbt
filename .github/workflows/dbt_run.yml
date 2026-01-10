@@ -55,7 +55,7 @@ jobs:
       - name: Write service account key
         run: |
           cat > push_job.json <<'JSON'
-          ${{ secrets.GCP_SA_KEY_JSON }}
+          ${{ secrets.GCP_DBT_KEYFILE }}
           JSON
 
       - name: Validate keyfile (safe)
