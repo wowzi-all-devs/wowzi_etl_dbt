@@ -55,5 +55,5 @@ select *,
 row_number() over (order by processed_at desc) rnk
  from 
 safaricom_camp
-where 
-processed_at < curr_week_start
+-- where 
+-- processed_at < curr_week_start. --- exclude the filter and then use the 'is_this_week' field to flag on the dashboard
