@@ -1,41 +1,11 @@
-# name: dbt-CI
-
-# on:
-#   push:
-#     branches: [main]
-#   schedule:
-#     - cron: "0 0 * * *" # runs daily at midnight" 
-
-# jobs:
-#   dbt-build:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-
-#       - uses: actions/setup-python@v5
-#         with:
-#           python-version: "3.11"
-
-#       - name: Install dbt + deps
-#         run: |
-#           pip install --upgrade pip
-#           pip install dbt-bigquery==1.7.5
-#           dbt --version
-#           dbt deps --profiles-dir .
-
-#       - name: Run dbt
-#         run: dbt run --profiles-dir . --threads 4
-
-
 name: dbt-CI
 
 on:
   push:
     branches: [main]
   schedule:
-#    - cron: "0 */2 * * *" # runs every 2 hours 
-     - cron: "0 0 * * *" # runs daily at midnight" 
-   
+    - cron: "0 0 * * *" # daily at midnight (UTC)
+
 jobs:
   dbt-build:
     runs-on: ubuntu-latest
@@ -71,7 +41,6 @@ jobs:
             raise SystemExit("File is empty / whitespace only")
           i = m.start()
           print("first non-whitespace byte (hex):", b[i:i+1].hex())
-          # Don't print the JSON. Just validate it parses.
           json.loads(b.decode("utf-8"))
           print("push_job.json is valid JSON ✅")
           PY
@@ -118,7 +87,3 @@ jobs:
           GCP_BQ_LOCATION: ${{ vars.GCP_BQ_LOCATION }}
           GCP_DBT_KEYFILE: ${{ github.workspace }}/push_job.json
         run: dbt run --profiles-dir . --threads 4
-
-
-
-
