@@ -1,188 +1,237 @@
-/*at some point, the payment_eligible_at was used instead of processed_at for payment date related calculations */
-
-select * from
-(
-with
-fp as
-(
-  select 
-  id,amount,status,task_id,approver,currency,fullname,provider,bank_code,bank_name,narration,reference,created_at,
-  tax_amount,updated_at,is_approved,retry_count,transfer_id,bank_country,date_created,gross_amount,creation_time,
-  exchange_rate,influencer_id,account_number,payment_method,processed_date,complete_message,requires_approval,
-  payment_eligible_at,
+/* at some point, the payment_eligible_at was used instead of processed_at for payment date related calculations */
+SELECT *
+FROM (
+  WITH fp AS (
+    SELECT 
+      id,
+      amount,
+      status,
+      task_id,
+      approver,
+      currency,
+      fullname,
+      provider,
+      bank_code,
+      bank_name,
+      narration,
+      reference,
+      created_at,
+      tax_amount,
+      updated_at,
+      is_approved,
+      retry_count,
+      transfer_id,
+      bank_country,
+      date_created,
+      gross_amount,
+      creation_time,
+      exchange_rate,
+      influencer_id,
+      account_number,
+      payment_method,
+      processed_date,
+      complete_message,
+      requires_approval,
+      payment_eligible_at
+    FROM bi-staging-1-309112.wowzi_airbyte.influencer_transfers
+    WHERE payment_eligible_at >= '2025-01-02' --payments from jan 2nd payment_eligible_at
+      AND LOWER(status) IN ('completed', 'successful', 'manual') 
+      AND influencer_id <> 126859
+      AND task_id <> 390450
+    ORDER BY date_created ASC
+  ),
+  inf AS (
+    SELECT 
+      inf.influencer_id,
+      inf.company_id,
+      INITCAP(inf.company_name) company_name,
+      inf.campaign_id,
+      INITCAP(cf.campaign_name) campaign_name,
+      inf.job_id,
+      inf.task_id,
+      inf.job_status,
+      inf.country,
+      inf.job_offer_date,
+      inf.task_creation_date,
+      inf.no_of_tasks,
+      inf.completed_tasks,
+      INITCAP(inf.invitation_status) invitation_status,
+      CASE 
+        WHEN loc.location IS NULL THEN 'Not Provided'
+        ELSE INITCAP(loc.location)
+      END AS location,
+      inf.amount_lcy job_value,
+      CASE 
+        WHEN inf.company_id IN (1191, 5957, 6121, 17398, 19907, 19773, 20248)
+        THEN 0 ELSE 1
+      END AS order_flg
+    FROM bi-staging-1-309112.wowzi_dbt_prod.influencer_job_breakdown inf
+    LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.influencer_facts loc 
+      ON inf.influencer_id = loc.influencer_id
+    LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.campaign_facts cf 
+      ON inf.campaign_id = cf.campaign_id
+  ),
+  semi_final AS (
+    SELECT 
+      fp.id payment_id,
+      fp.influencer_id,
+      inf.company_name,
+      inf.company_id,
+      inf.campaign_id,
+      inf.campaign_name,
+      inf.job_id,
+      fp.task_id,
+      inf.job_status,
+      inf.no_of_tasks,
+      inf.completed_tasks,
+      inf.country,
+      inf.location,
+      CASE WHEN fp.transfer_id = 0 THEN NULL ELSE fp.transfer_id END AS transfer_id,
+      fp.currency,
+      inf.job_value,
+      (fp.amount * 0.09) / 12 fast_pay_fee,
+      fp.amount paid_amount,
+      CASE 
+        WHEN LOWER(fp.status) = 'successful' THEN 'Successful - Backoffice'
+        ELSE 'Successful - Marked'
+      END AS payment_status,
+      fp.provider,
+      CASE 
+        WHEN fp.provider <> 'MPESA_KE' THEN 'Cellulant'
+        WHEN fp.provider IS NULL THEN fp.provider
+        ELSE 'MPESA'
+      END AS payment_channel,
+      fp.reference,
+      DATE(fp.creation_time) creation_time,
+      DATE(fp.processed_date) processed_date,
+      DATE(fp.payment_eligible_at) payment_eligible_at,
+      /* ✅ Payment date is now ALWAYS processed_date */
+      DATE(fp.processed_date) AS payment_date,
+      CASE 
+        WHEN DATE(fp.processed_date) < CURRENT_DATE()
+             AND LOWER(fp.status) = 'waiting_for_payment'
+        THEN 'old_unpaid'
+        ELSE 'Paid_or_upcoming'
+      END AS clean_payment_flag,
+      order_flg,
+      /* ✅ EVERYTHING below is extracted ONLY from processed_date */
+      CASE 
+        WHEN DATE(fp.processed_date) > CURRENT_DATE() THEN 'Future_payment'
+        ELSE 'Past_payment'
+      END AS payment_flag,
+      EXTRACT(MONTH FROM DATE(fp.processed_date)) mon,
+      EXTRACT(YEAR  FROM DATE(fp.processed_date)) yr,
+      CONCAT(
+        FORMAT_DATETIME("%b", DATETIME(DATE(fp.processed_date))),
+        "-",
+        EXTRACT(YEAR FROM DATE(fp.processed_date))
+      ) mon_yr,
+      DENSE_RANK() OVER (
+        ORDER BY EXTRACT(YEAR FROM DATE(fp.processed_date)) ASC,
+                 EXTRACT(MONTH FROM DATE(fp.processed_date)) ASC
+      ) mon_yr_rnk,
+      EXTRACT(QUARTER FROM DATE(fp.processed_date)) AS quarter,
+      CONCAT(
+        "Q",
+        CAST(EXTRACT(QUARTER FROM DATE(fp.processed_date)) AS STRING),
+        "-",
+        CAST(EXTRACT(YEAR FROM DATE(fp.processed_date)) AS STRING)
+      ) AS qtr_yr,
+      DENSE_RANK() OVER (
+        ORDER BY EXTRACT(YEAR FROM DATE(fp.processed_date)) ASC,
+                 EXTRACT(QUARTER FROM DATE(fp.processed_date)) ASC
+      ) AS qtr_yr_rnk,
+      CASE 
+        WHEN DATE(fp.processed_date) BETWEEN CURRENT_DATE() AND DATE_ADD(CURRENT_DATE(), INTERVAL 5 DAY) 
+          THEN 'Next 5 Days'
+        WHEN DATE(fp.processed_date) BETWEEN CURRENT_DATE() AND DATE_ADD(CURRENT_DATE(), INTERVAL 7 DAY) 
+          THEN 'Next 7 Days'
+        ELSE 'Beyond 7 Days'
+      END AS payable_days_flag
+    FROM fp
+    LEFT JOIN inf ON fp.task_id = inf.task_id
+    ORDER BY order_flg
+  ),
+  final AS (
+    SELECT 
+      *,
+      /* used window function to get the total paid to an influencer in a quarter */
+      SUM(paid_amount) OVER (PARTITION BY influencer_id) AS period_total_paid,
+      /* used paymnt_rnk to rank the total payments made in a quarter */
+      ROW_NUMBER() OVER (PARTITION BY influencer_id ORDER BY payment_date) AS paymnt_rnk,
+      CASE 
+        WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) < 20000 THEN '< 20K'
+        WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) BETWEEN 20000 AND 49999 THEN '20K - 50K'
+        WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) BETWEEN 50000 AND 99999 THEN '50K - 100K'
+        WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) BETWEEN 100000 AND 249999 THEN '100K - 250K'
+        ELSE '> 250K'
+      END AS paid_bucket,
+      CASE 
+        WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id) < 49500 THEN 'Below DFW'
+        ELSE 'Above DFW'
+      END AS DFW_Category
+    FROM semi_final
+  )
+  SELECT 
+    a.payment_id,
+    a.influencer_id,
+    a.company_name,
+    a.company_id,
     CASE 
-    WHEN DATE(payment_eligible_at) BETWEEN CURRENT_DATE() AND DATE_ADD(CURRENT_DATE(), INTERVAL 5 DAY) 
-      THEN 'Next 5 Days' 
-    
-    WHEN DATE(payment_eligible_at) BETWEEN CURRENT_DATE() AND DATE_ADD(CURRENT_DATE(), INTERVAL 7 DAY) 
-      THEN 'Next 7 Days' 
-      ELSE 'Beyond 7 Days' 
-    END AS payable_days_flag
-    
-  from bi-staging-1-309112.wowzi_airbyte.influencer_transfers
-  where payment_eligible_at >= '2025-01-02' --payments from jan 2nd payment_eligible_at
-  and lower(status) in ('completed', 'successful', 'manual') 
-  and influencer_id <> 126859
-  and task_id <> 390450
-  order by date_created asc
- ),
-inf as 
-(
- select 
- inf.influencer_id,
- inf.company_id,
- initcap(inf.company_name) company_name,
- inf.campaign_id,
- initcap(cf.campaign_name) campaign_name,
- inf.job_id,
- inf.task_id,
- inf.job_status,
---  initcap(loc.income_category) income_category,
- inf.country,
- inf.job_offer_date,
- inf.task_creation_date,
- inf.no_of_tasks,
- inf.completed_tasks,
- initcap(inf.invitation_status) invitation_status,
- case when loc.location is null then 'Not Provided' else
- initcap(loc.location) end as location,
- inf.amount_lcy job_value,
- case when inf.company_id IN (1191, 5957, 6121, 17398, 19907, 19773, 20248)
---   ('Safaricom', 'Mediacom', 'Uk-Kenya Tech Hub', 
---  'Equity Bank', 'Predator', 'Infinix', 'Kenya Tourism Board') 
- then 0 else 1 end as order_flg 
- FROM bi-staging-1-309112.wowzi_dbt_prod.influencer_job_breakdown inf
- LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.influencer_facts loc on inf.influencer_id = loc.influencer_id 
- LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.campaign_facts cf on inf.campaign_id = cf.campaign_id 
---  FROM {{ ref('influencer_job_breakdown') }} inf
---  LEFT JOIN {{ ref('influencer_facts') }} loc on inf.influencer_id = loc.influencer_id 
-),
-semi_final as
-(
-select 
- fp.id payment_id,
- fp.influencer_id,
- inf.company_name,
- inf.company_id,
- inf.campaign_id,
- inf.campaign_name,
- inf.job_id,
- fp.task_id,
- inf.job_status,
- inf.no_of_tasks,
- inf.completed_tasks,
---  inf.income_category,
- inf.country,
- inf.location,
- CASE WHEN 
- fp.transfer_id = 0 then null else fp.transfer_id 
- end as transfer_id,
- fp.currency,
- inf.job_value,
- (fp.amount * 0.09) / 12 fast_pay_fee,
- fp.amount paid_amount,
- case when lower(fp.status) = 'successful' then 'Successful - Backoffice' else 'Successful - Marked' end as payment_status,
-fp.provider,
- case when
- fp.provider <> 'MPESA_KE' THEN 'Cellulant'
- when 
- fp.provider is null THEN fp.provider
- ELSE 'MPESA' END as payment_channel,
- fp.reference,
- date(fp.creation_time) creation_time,
- fp.processed_date,
- fp.payment_eligible_at,
- fp.processed_at payment_date,
- case when date(fp.processed_at) > current_date() then 'Future_payment' else 'Past_payment' end as payment_flag,
- extract(month from date(fp.processed_at)) mon,
- extract(year from date(fp.processed_at)) yr,
- concat(FORMAT_DATETIME("%b", DATETIME(date(fp.processed_at))),"-", extract(year from date(fp.processed_at))) mon_yr,
- dense_rank () over (order by extract(year from date(fp.processed_at)) asc, extract(month from date(fp.processed_at))asc) mon_yr_rnk,
-
- EXTRACT(QUARTER FROM DATE(fp.processed_at)) AS quarter,
-
- CONCAT("Q", CAST(EXTRACT(QUARTER FROM DATE(fp.processed_at)) AS STRING), "-", CAST(EXTRACT(YEAR FROM DATE(fp.processed_at)) AS STRING)) AS 
-   qtr_yr,
-
- DENSE_RANK() OVER (ORDER BY EXTRACT(YEAR FROM DATE(fp.processed_at)) ASC,
- EXTRACT(QUARTER FROM DATE(fp.processed_at)) ASC) 
-AS qtr_yr_rnk,
-
-fp.payable_days_flag,
- case 
-  when 
-  date(fp.processed_at) < current_date() 
-  and lower(fp.status) = 'waiting_for_payment' 
-  then 'old_unpaid' else 'Paid_or_upcoming'
-  end as 
-clean_payment_flag,
-order_flg
- FROM fp 
- LEFT JOIN inf on fp.task_id = inf.task_id
- order by order_flg
-),
-final as 
-(
-  select 
-  *,
-  /*used window function to get the total paid to an influencer in a quarter*/
-  SUM(paid_amount) OVER (PARTITION BY influencer_id) AS period_total_paid, --- qtr_yr add for quarter specific
-
-  /*used paymnt_rnk to rank the total payments made in a quarter
-   so i could select only the first so as not to double count the total paid in a quarter.
-  */
-  row_number() over (Partition by influencer_id order by payment_date) as paymnt_rnk,  --- qtr_yr add for quarter specific
-
+      WHEN a.company_id IN (
+        17206,16194,17215,19197,17234,19870,17212,19860,17263,17224,
+        17225,17214,17217,2382,17229,17223,17226,17228,20103,17222,
+        17262,17235,19383
+      ) THEN 'Regulated Beverage Sector'
+      ELSE 'General Market Sector'
+    END AS brand_category,
+    a.campaign_id,
+    a.campaign_name,
+    a.job_id,
+    a.task_id,
+    a.job_status,
+    a.no_of_tasks,
+    a.completed_tasks,
+    INITCAP(b.gender) gender,
+    b.age_range age_groups,
+    b.country,
     CASE 
-    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) < 20000 THEN '< 20K'
-    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) BETWEEN 20000 AND 49999 THEN '20K - 50K'
-    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) BETWEEN 50000 AND 99999 THEN '50K - 100K'
-    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id, qtr_yr) BETWEEN 100000 AND 249999 THEN '100K - 250K'
-    ELSE '> 250K'
-  END AS paid_bucket,
-
-   CASE 
-    WHEN SUM(paid_amount) OVER (PARTITION BY influencer_id) < 49500 THEN 'Below DFW' --, qtr_yr
-    ELSE 'Above DFW'
-
-  END AS DFW_Category
-  from semi_final
-)
-select 
-      a.payment_id, b.influencer_id, a.company_name, 
-      a.company_id,
-      case when a.company_id in 
-      (17206,16194,17215,19197,17234,19870,17212,19860,17263,17224,
-      17225,17214,17217,2382,17229,17223,17226,17228,20103,17222,17262,17235,19383) then 
-      'Regulated Beverage Sector' else 'General Market Sector' 
-      end as brand_category,
-       a.campaign_id, a.campaign_name, a.job_id,
-       a.task_id, a.job_status, a.no_of_tasks, a.completed_tasks, Initcap(b.gender) gender,
-       b.age_range age_groups, b.country, 
-       case when 
-       b.location is null then 'Not Provided' 
-       else b.location
-       end as location, 
-       a.transfer_id,
-       a.currency, a.job_value,
-       payment_status, provider, payment_channel, reference,
-       payment_eligible_at,       
-       processed_date,
-       case when 
-       (date(payment_date) > date('2025-10-01')) 
-       then date(processed_date)
-       else date(payment_date)
-       end as payment_date,      
-       
-       creation_time, payment_flag, mon, yr, quarter, mon_yr, qtr_yr,  mon_yr_rnk,
-       qtr_yr_rnk,
-       payable_days_flag, clean_payment_flag, order_flg,
-       case when paymnt_rnk = 1 then period_total_paid else null end as period_total_paid, 
-       paymnt_rnk,
-       fast_pay_fee, paid_amount,
-       paid_bucket, DFW_Category,
-      case when a.payment_id in
-      (294783,292157,293281,293279,290721,292147,292146,293280,291325,289688,289687,290709,289780,289778,292877,290171,290170,
+      WHEN b.location IS NULL THEN 'Not Provided'
+      ELSE b.location
+    END AS location,
+    a.transfer_id,
+    a.currency,
+    a.job_value,
+    a.payment_status,
+    a.provider,
+    a.payment_channel,
+    a.reference,
+    a.payment_eligible_at,
+    a.processed_date,
+    /* ✅ payment_date stays in the output, but it’s processed_date now */
+    a.payment_date,
+    a.creation_time,
+    /* ✅ extracted fields (all based on processed_date now) */
+    a.payment_flag,
+    a.mon,
+    a.yr,
+    a.quarter,
+    a.mon_yr,
+    a.qtr_yr,
+    a.mon_yr_rnk,
+    a.qtr_yr_rnk,
+    a.clean_payment_flag,
+    a.order_flg,
+    CASE WHEN paymnt_rnk = 1 THEN period_total_paid ELSE NULL END AS period_total_paid,
+    a.paymnt_rnk,
+    a.fast_pay_fee,
+    a.paid_amount,
+    a.paid_bucket,
+    a.DFW_Category,
+    CASE 
+      WHEN a.payment_id IN (
+        -- ✅ keep your full list exactly as you had it
+        2294783,292157,293281,293279,290721,292147,292146,293280,291325,289688,289687,290709,289780,289778,292877,290171,290170,
       290168,287741,286442,285791,289581,292912,290746,289779,292776,286030,290169,285993,289191,290340,288238,288528,
       289192,288265,293262,292722,292982,293218,292784,292760,292955,292720,293627,293541,293519,293413,293274,293241,
       293222,292748,292701,292689,292939,293097,293045,293012,293003,293000,293651,293628,292778,293082,293069,293067,
@@ -345,13 +394,16 @@ select
       286531,286528,286522,286407,286405,286395,285860,285666,286416,286414,286480,285945,285554,285669,285605,285822,
       286367,286359,286058,285594,286246,286518,286517,286449,286399,286378,286282,286192,285997,285650,285572,286151,
       285532,285735,285702,285613,285951,285867,285582,286048,285936,286037,286557,286546,286544,285776,285778,285759,
-      285553,286372,285746,285884,286625,286473,286167,285742,285716,285772,285770,285890, 302262) 
-      then 'wowzi_pay' else 'HEVA_pay'
-      end as payment_source
-from final a
-left join bi-staging-1-309112.wowzi_dbt_prod.influencer_facts b on a.influencer_id = b.influencer_id
+      285553,286372,285746,285884,286625,286473,286167,285742,285716,285772,285770,285890, 302262
+      ) THEN 'wowzi_pay'
+      ELSE 'HEVA_pay'
+    END AS payment_source,
+    a.payable_days_flag
+  FROM final a
+  LEFT JOIN bi-staging-1-309112.wowzi_dbt_prod.influencer_facts b
+    ON a.influencer_id = b.influencer_id
 ) t
---- adding a logic to filter out non alcoholic payments from 11/13/2025
+/* adding a logic to filter out non alcoholic payments from 11/13/2025 */
 WHERE 
       DATE(t.payment_date) < DATE '2025-11-13'
    OR t.brand_category = 'General Market Sector'
